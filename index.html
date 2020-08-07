@@ -13,7 +13,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"mans0n.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"mans0n.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta property="og:type" content="website">
@@ -105,6 +105,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -133,20 +134,43 @@
     <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>태그</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
 
     
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
 
 
     <main class="main">
@@ -191,7 +215,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Updated at: 2020-07-19 00:46:09" itemprop="dateModified" datetime="2020-07-19T00:46:09+09:00">2020-07-19</time>
+                <time title="Updated at: 2020-07-27 19:43:48" itemprop="dateModified" datetime="2020-07-27T19:43:48+09:00">2020-07-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -214,8 +238,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="발단"><a href="#발단" class="headerlink" title="발단"></a>발단</h1><p>사실 증폭기 Pro는 한참 전부터 눈독을 들이고 있던 모델이었습니다. 실사용하려는 목적은 전혀 아니었고, 생긴 게 앙증맞고 예쁘니 여기다 OpenWrt를 올리면 금상첨화겠다, 라는 생각이었습니다.</p>
-<p>제품을 구하기 전에 미리 하드웨어 정보를 알 수 있으면 좋을 텐데, 이 모델의 내부 사진을 찾기가 쉽지 않네요. 가끔씩 생각날 때마다 찾아보길 반복하다가 2019년 8월 말에 운좋게 <a href="https://www.znj.com/news/3744.html" target="_blank" rel="noopener">분해기</a>를 하나 발견했습니다.</p>
+          <h1 id="발단">발단<a class="header-anchor" href="#발단"></a></h1>
+<p>사실 증폭기 Pro는 한참 전부터 눈독을 들이고 있던 모델이었습니다. 실사용하려는 목적은 전혀 아니었고, 생긴 게 앙증맞고 예쁘니 여기다 OpenWrt를 올리면 금상첨화겠다, 라는 생각이었습니다.</p>
+<p>제품을 구하기 전에 미리 하드웨어 정보를 알 수 있으면 좋을 텐데, 이 모델의 내부 사진을 찾기가 쉽지 않네요. 가끔씩 생각날 때마다 찾아보길 반복하다가 2019년 8월 말에 운좋게 <span class="exturl" data-url="aHR0cHM6Ly93d3cuem5qLmNvbS9uZXdzLzM3NDQuaHRtbA==">분해기<i class="fa fa-external-link-alt"></i></span>를 하나 발견했습니다.</p>
 <p>뒷면 스티커 아래에 나사구멍이 숨어있었군요. 게다가 보드엔 시리얼 포트까지 떡하니 나와있네요. 괜찮아 보이는데요? 마침 그때 알리에서 $11.5에 팔길래 만약 실패하더라도 큰 부담이 안 되겠다 싶어 바로 하나 주문했습니다.</p>
 <p>…</p>
 <p>지금 와서 보면 성급한 충동구매였는데… 정말 가격이라도 싸서 다행이었네요.</p>
@@ -326,12 +351,16 @@
   </nav>
 </div>
   <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-sa.svg" alt="Creative Commons"></a>
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><img src="/images/cc-by-sa.svg" alt="Creative Commons"></span>
   </div>
 
 
 
       </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
 
     </div>
   </aside>
@@ -356,7 +385,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">mans0n</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  <div class="powered-by">Powered by <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span>
   </div>
 
         
@@ -391,6 +420,10 @@
   
 
 
+
+
+  
+<script src="/js/local-search.js"></script>
 
 
 
