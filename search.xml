@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>샤오미 WiFi 증폭기 Pro 열어보기</title>
-    <url>/2020/07/12/xiaomi-wifi-extender-pro/</url>
+    <url>/2020/07/19/xiaomi-wifi-extender-pro/</url>
     <content><![CDATA[<h1 id="발단">발단<a class="header-anchor" href="#발단"></a></h1>
 <p>사실 증폭기 Pro는 한참 전부터 눈독을 들이고 있던 모델이었습니다. 실사용하려는 목적은 전혀 아니었고, 생긴 게 앙증맞고 예쁘니 여기다 OpenWrt를 올리면 금상첨화겠다, 라는 생각이었습니다.</p>
 <p>제품을 구하기 전에 미리 하드웨어 정보를 알 수 있으면 좋을 텐데, 이 모델의 내부 사진을 찾기가 쉽지 않네요. 가끔씩 생각날 때마다 찾아보길 반복하다가 2019년 8월 말에 운좋게 <span class="exturl" data-url="aHR0cHM6Ly93d3cuem5qLmNvbS9uZXdzLzM3NDQuaHRtbA==">분해기<i class="fa fa-external-link-alt"></i></span>를 하나 발견했습니다.</p>
