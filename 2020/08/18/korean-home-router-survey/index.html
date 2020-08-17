@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"mans0n.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="개괄  ⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.  2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="국내 공유기에도 OpenWrt를 올릴 수 있을까">
+<meta property="og:url" content="https://mans0n.github.io/2020/08/18/korean-home-router-survey/index.html">
+<meta property="og:site_name" content="맨손잡이">
+<meta property="og:description" content="개괄  ⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.  2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.">
+<meta property="og:locale" content="ko_KR">
+<meta property="article:published_time" content="2020-08-17T15:21:22.000Z">
+<meta property="article:modified_time" content="2020-08-17T15:30:02.136Z">
+<meta property="article:author" content="mans0n">
+<meta property="article:tag" content="OpenWrt">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://mans0n.github.io/2020/08/18/korean-home-router-survey/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>국내 공유기에도 OpenWrt를 올릴 수 있을까 | 맨손잡이</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173005416-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-173005416-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">맨손잡이</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">이것저것 만듭니다</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>태그</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://mans0n.github.io/2020/08/18/korean-home-router-survey/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="mans0n">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="맨손잡이">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          국내 공유기에도 OpenWrt를 올릴 수 있을까
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+              
+
+              <time title="Post created: 2020-08-18 00:21:22 / Updated at: 00:30:02" itemprop="dateCreated datePublished" datetime="2020-08-18T00:21:22+09:00">2020-08-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/" itemprop="url" rel="index"><span itemprop="name">자유시간 프로젝트</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="개괄">개괄<a class="header-anchor" href="#개괄"></a></h1>
+<blockquote>
+<p>⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.</p>
+</blockquote>
+<p>2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.</p>
+<a id="more"></a>
+<p>제가 보기에 국내 공유기는 크게 두 종류로 나눌 수 있습니다: 통신사 공유기와 사제 공유기.</p>
+<p>통신사 공유기라 하면 일반적으로 가정용 임대 공유기를 말하나, 그 외의 것도 조금 있긴 합니다.<br>
+사제 공유기의 대표 주자는 역시 ipTIME이죠. 그 외의 제조사는 점유율이 낮은 편이고요.</p>
+<p>사제 공유기의 포팅 가능성은 대체로 SoC 제조사별 특성에 따라가는 걸로 알고 있습니다.</p>
+<ul>
+<li>Qualcomm Atheros: 포팅 잘 됩니다. 작동도 잘 합니다.</li>
+<li>Ralink/MediaTek: 포팅 잘 됩니다. 작동도 잘 합니다. 다만 RT6856처럼 지원되지 않는 SoC도 간혹 있습니다.</li>
+<li>Broadcom: 포팅은 할 수 있을 겁니다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 다만 무선 칩셋이 작동하지 않을 수 있습니다. 포팅 시도하기 전에 <span class="exturl" data-url="aHR0cHM6Ly93aXJlbGVzcy53aWtpLmtlcm5lbC5vcmcvZW4vdXNlcnMvZHJpdmVycy9icmNtODAyMTE=">드라이버<i class="fa fa-external-link-alt"></i></span>가 해당 칩셋 모델을 지원하는지 미리 확인해보세요.</li>
+<li>Realtek: 포팅할 수 없습니다. 인터넷에 돌아다니는 SDK 같은 게 있긴 한데 버전이 좀 오래됐습니다.</li>
+<li>Intel: 포팅할 수 없습니다. 원래 Lantiq란 회사였는데 Intel이 인수했다고 합니다. 옛날 Lantiq 칩셋은 OpenWrt에서 지원하는 것 같은데, 최신 Intel 칩셋은 안 되나 보네요.</li>
+<li>Marvell: 포팅도 잘 되고 작동도 잘 하는데 국내 가정용 공유기에선 유난히 존재감이 없습니다.</li>
+</ul>
+<p>포팅 가능한 SoC를 쓰고 RAM이 32MB, 플래시가 4MB 이상이면 OpenWrt를 올릴 수 있다고 보면 됩니다.</p>
+<p>통신사 공유기는 SoC 지원 이전에 쉘을 얻을 수 있는지부터 걱정해야 할 판이기 때문에 기기 제조사나 통신사가 어딘지가 중요합니다.</p>
+<h1 id="ipTIME">ipTIME<a class="header-anchor" href="#ipTIME"></a></h1>
+<p>ipTIME 기기는 SoC 제조사별로 이미지 포맷이 좀 많이 다릅니다.<br>
+라링크 MIPS 계열은 별다른 제조사 헤더/꼬리가 없고, 미디어텍 ARM 계열은 아직 모델 종류가 많지 않아 두고봐야겠지만 아마 간단한 헤더가 붙는 정도로 끝날 것 같습니다. 브로드컴에도 간단한 꼬리가 붙어있고, 마벨은 조금 더 복잡한 헤더가 달려있습니다. 아데로스과 리얼텍은 펌웨어 이미지에 헤더도 달려있고 부트로더도 포함되어 있어서 좀 까다로워 보입니다.</p>
+<p>N 시리즈의 모델도 포팅은 가능하나, 대부분 메모리 사양이 안 좋은 편이기 때문에 만약 OpenWrt를 올린다 하더라도 실사용은 힘들 수도 있습니다.</p>
+<p>한때 사측에서 펌웨어 소스코드를 풀었었기 때문에(지금도 공개는 하지만 업데이트는 더 이상 안 해주는 것 같습니다) 포팅 작업시 참고하면 도움이 됩니다.</p>
+<p>현재 OpenWrt에서 공식 지원하고 있는 모델은 다음과 같습니다.</p>
+<ul>
+<li>A604M, A3: MT7628 사용</li>
+<li>A104ns, A1004ns: MT7620 사용</li>
+<li>A6ns-M, A8004T: MT7621+MT7615 사용</li>
+</ul>
+<p>이 외에 제가 포팅에 성공했던 모델은 다음과 같습니다.</p>
+<ul>
+<li>N604Black: RAM이 32MB입니다.</li>
+<li>N704BCM, N904ns: WiFi가 작동하지 않습니다.</li>
+<li>Extender-N3: 플래시가 4MB입니다.</li>
+<li>A804NS-MU: 이미지 포맷이 좀 복잡합니다.</li>
+<li>A9004M: NAND 테스트가 부족합니다.</li>
+</ul>
+<h1 id="그-외-사제-공유기">그 외 사제 공유기<a class="header-anchor" href="#그-외-사제-공유기"></a></h1>
+<p>퀄컴을 사용하는 (ipTIME 이외의) 사제 공유기를 본 적이 없고, 브로드컴은 시도조차 해본 적이 없어서 잘 모릅니다. 아래 내용은 전부 ramips 기기에만 초점을 맞추고 있습니다.</p>
+<p>현재 OpenWrt에서 공식 지원하고 있는 모델은 다음과 같습니다.</p>
+<ul>
+<li>WeVO 11AC NAS Router: 비슷한 변종이 여러 개 있습니다. <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLnF1ZW5kaS5tb2UvMjAxNi8xMS8xNS9rby13ZXZvLXcyOTE0bnMtdjItJWVkJThiJWIwJWVjJTk2JWI0JWViJThiJWE0JWVjJTlhJWI0JWVhJWIzJWJjLWxlZGUtJWVkJThmJWFjJWVkJThhJWI4Lw==">perillamint님<i class="fa fa-external-link-alt"></i></span>이 공식 지원을 넣었습니다.</li>
+<li>netis WF2770</li>
+<li>netis WF2881: 비슷한 변종이 여러 개 있습니다. <span class="exturl" data-url="aHR0cHM6Ly9jYWZlLm5hdmVyLmNvbS8wNjJzYW1vLzc4NTU=">luxflow님<i class="fa fa-external-link-alt"></i></span>이 공식 지원을 넣었습니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></li>
+<li>ZIO FREEZIO: 보드가 11AC NAS랑 거의 판박이인데, 대신 전원 스위치와 방열판이 달려있어서 살짝 더 고급이란 느낌은 듭니다.</li>
+<li>스토리링크 SAP-G3200U3: OpenWrt 메인테이너가 직접 지원을 추가했다고 합니다. 근데 정작 국내엔 거의 알려져있지 않은 것 같네요.</li>
+<li>삼성전자 CY-SWR1100: D-Link OEM인 것 같습니다.</li>
+</ul>
+<p>제가 보기에 WeVO, netis, 스토리링크 공유기는 포팅이 어렵지 않을 것 같습니다. 셋 다 부트로더 쉘에 접근 가능하고, 이미지 검증절차는 uImage 이미지 이름이나 간단한 꼬리 검사 정도뿐이라 커펌을 설치하기 용이해 보입니다.</p>
+<p>HUMAX에서 내놓은 공유기는 대부분 인텔이나 리얼텍을 쓰는 걸로 알고 있습니다. 비싸기도 하고 정보도 얻기 어려워서 이쪽은 건드려볼 엄두가 안 나네요.</p>
+<h1 id="통신사-임대-공유기">통신사 임대 공유기<a class="header-anchor" href="#통신사-임대-공유기"></a></h1>
+<p>제가 직접 써본 건 KT와 LG U+뿐입니다. SKB는 대부분 리얼텍을 쓰는 것 같아 시도해보지 않았습니다.</p>
+<p>사제 공유기엔 퀄컴 쓰는 모델을 찾기가 힘든데 통신사 공유기 중엔 꽤 많은 것 같습니다.</p>
+<p>그리고 아마 반기가 지원 공유기에는 반드시 리얼텍이 들어갈 겁니다.</p>
+<p>같은 통신사 제품 이름을 쓰는데(예를 들어 kt GiGA WiFi Wave 2) 제조사가 다른 모델이 여러 개인 경우가 있기 때문에(예를 들어 머큐리의 KM08-708H, 올래디오의 TI04-708H, 다보링크의 DV01-901H) 정확한 모델명으로 구별하는 게 좋습니다.</p>
+<p>대체로 WiFi 5 이후 공유기는 콘솔 접근을 막아놓은 상태인 걸로 알고 있습니다.</p>
+<h2 id="머큐리">머큐리<a class="header-anchor" href="#머큐리"></a></h2>
+<p>머큐리는 펌웨어를 단단하게 잘 만들어서 공략이 쉽지 않았습니다.</p>
+<p>WiFi 4 이전 공유기는 쉘을 막아놓지 않은 것 같던데 다 리얼텍이라 별로 가치가 없네요.</p>
+<h2 id="다보링크">다보링크<a class="header-anchor" href="#다보링크"></a></h2>
+<p>왠지 모르겠는데 OpenWrt에서 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy90b2gvZGF2b2xpbmsvZHYtMjAxYW1y">DV-201AMR<i class="fa fa-external-link-alt"></i></span>란 모델을 지원합니다. 국내용 모델은 아닌 것 같긴 한데 좀 신기하네요.</p>
+<p>콘솔 접근을 막아놓았지만 보드에 다른 디버그 포트가 있기 때문에 별로 상관이 없습니다. IPQ4018 쓰는 모델은 포팅도 아주 잘 됩니다. 감사합니다!</p>
+<p>다보링크는 홈페이지에 SoC 모델명도 분명하게 적어줘서 정보 찾기도 쉽습니다.</p>
+<h2 id="올래디오">올래디오<a class="header-anchor" href="#올래디오"></a></h2>
+<p>동원티앤아이 -&gt; 티앤아이이 -&gt; 올래디오 순으로 회사명을 바꿨다가 지금은 HFR에 인수됐다고 합니다. 아이고 헷갈려라.</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9tYW5hdGFpbHMubmV0L2Jsb2cvMjAxOC8wMS9rdC0lRUIlQUMlQjQlRUMlODQlQTAtJUVBJUIzJUI1JUVDJTlDJUEwJUVBJUI4JUIwLSVFQyVCQiVBNCVFQyU4QSVBNCVFRCU4NSU4MC0lRUQlOEUlOEMlRUMlOUIlQTglRUMlOTYlQjQtJUVBJUIwJTlDJUVCJUIwJTlDJUVBJUI4JUIwLw==">manatail님<i class="fa fa-external-link-alt"></i></span>과 <span class="exturl" data-url="aHR0cHM6Ly90Z2Qua3Ivcy9mdW56aW5udS8zNjY4OTM5Ng==">여우는르나르님<i class="fa fa-external-link-alt"></i></span>이 포팅한 공유기 모델인 DW02-412H를 비롯해 DW03-608H과 TI04-708H까지 모두 퀄컴 SoC를 씁니다. DW01-410H은 확인해보지 못했지만 비슷하지 않을까요.</p>
+<p>콘솔 접근을 막아놓긴 했는데 부트로더 단에서 다 뚫립니다. 포팅도 그럭저럭 잘 됩니다.</p>
+<h2 id="LG전자-한빛전자">LG전자 / 한빛전자<a class="header-anchor" href="#LG전자-한빛전자"></a></h2>
+<p>NAPL-5000과 CAPL-6000은 AR7241를 쓰고 보드도 대략 비슷합니다. CAPL이 메모리 용량이 두 배고 USB도 달려있습니다.</p>
+<p>사양이 그리 좋지 않고 이미지 포맷이 지저분해서 개인적으로 별로 좋아하는 기기는 아닙니다.</p>
+<p>중국 <span class="exturl" data-url="aHR0cHM6Ly93d3cucmlnaHQuY29tLmNuL0ZPUlVNL2ZvcnVtLnBocD9tb2Q9dmlld3RocmVhZCZhbXA7dGlkPTE2OTQ2Ng==">포럼<i class="fa fa-external-link-alt"></i></span>이나 <span class="exturl" data-url="aHR0cDovL2Jsb2cuaWNrLmltLyMvcG9zdHMvMg==">블로그<i class="fa fa-external-link-alt"></i></span>를 보면 한때 NAPL이나 CAPL에 UBNT 커펌을 올려 쓴 사람이 꽤 있었던 것 같습니다.</p>
+<p>CAPL의 경우 국내에도 <span class="exturl" data-url="aHR0cHM6Ly9rYXN1Z2Fuby50aXN0b3J5LmNvbS8xNTQ=">박윤지 님<i class="fa fa-external-link-alt"></i></span>의 포팅 사례가 있습니다.</p>
+<h1 id="그-외-통신사-공유기">그 외 통신사 공유기<a class="header-anchor" href="#그-외-통신사-공유기"></a></h1>
+<p>지트론이란 데서 만든 WNVR-001이란 공유기가 있습니다. 원랜 CCTV 관리용으로 만들었나본데 사양이 “생각보다” 괜찮습니다.<br>
+<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLm5hdmVyLmNvbS96ZXRlbmdpbmU3LzIyMTU0NzMyMzcwOQ==">사용 사례<i class="fa fa-external-link-alt"></i></span>를 보면 지금은 대충 비슷한 모델 펌웨어를 빌려쓰는 것 같은데, 누가 제대로 한번 포팅해보면 좋을 것 같네요.</p>
+<p>에그도 일종의 무선전용 공유기라 볼 수 있지 않을까요? 인포마크 에그를 몇 개 살펴봤는데 SoC로 GCT GDM7243를 쓰네요. 메인라인 커널이 지원하지 않는 칩 같은데<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> 그러면 포팅이 어렵겠죠.</p>
+<p>그 외에 유선 포트가 달린 LTE 공유기 같은 것도 있는데, 만약 위의 에그처럼 LTE 모뎀이 통합된 SoC를 쓴다면 포팅이 안 될 것이고, 일반 공유기 SoC에 주변장치로 LTE 모뎀을 달아놓은 거라면 포팅 가능성이 있겠습니다.</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>그러나 최신 64비트 SoC는 아직 지원이 안 되는 걸로 압니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>링크에 접속할 수 없으면 네이버에서 &quot;WF-2881 커스텀펌웨어 &lt;2017-03-05&gt;&quot;로 검색해보세요. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>대신 이 칩셋을 USB 모뎀 장치로 사용하는 드라이버는 있네요 <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>mans0n
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://mans0n.github.io/2020/08/18/korean-home-router-survey/" title="국내 공유기에도 OpenWrt를 올릴 수 있을까">https://mans0n.github.io/2020/08/18/korean-home-router-survey/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/openwrt/" rel="tag"><i class="fa fa-tag"></i> OpenWrt</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/08/winxp-on-a9004m/" rel="prev" title="ipTIME A9004M 공유기에 Windows XP 올리기">
+      <i class="fa fa-chevron-left"></i> ipTIME A9004M 공유기에 Windows XP 올리기
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#개괄"><span class="nav-number">1.</span> <span class="nav-text">개괄</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ipTIME"><span class="nav-number">2.</span> <span class="nav-text">ipTIME</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#그-외-사제-공유기"><span class="nav-number">3.</span> <span class="nav-text">그 외 사제 공유기</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#통신사-임대-공유기"><span class="nav-number">4.</span> <span class="nav-text">통신사 임대 공유기</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#머큐리"><span class="nav-number">4.1.</span> <span class="nav-text">머큐리</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#다보링크"><span class="nav-number">4.2.</span> <span class="nav-text">다보링크</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#올래디오"><span class="nav-number">4.3.</span> <span class="nav-text">올래디오</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LG전자-한빛전자"><span class="nav-number">4.4.</span> <span class="nav-text">LG전자 &#x2F; 한빛전자</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#그-외-통신사-공유기"><span class="nav-number">5.</span> <span class="nav-text">그 외 통신사 공유기</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">mans0n</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">태그</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license motion-element" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><img src="/images/cc-by-sa.svg" alt="Creative Commons"></span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mans0n</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
