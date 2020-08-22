@@ -1,0 +1,344 @@
+From d4df1a1da15eafdab6f5a5771372bf46d81df110 Mon Sep 17 00:00:00 2001
+From: mans0n <mans0n@gorani.run>
+Date: Mon, 17 Aug 2020 03:56:14 +0000
+Subject: [PATCH] ramips: drop mt7628 iptime devices
+
+---
+ target/linux/ramips/dts/mt7628an_iptime.dtsi  | 106 ------------------
+ .../linux/ramips/dts/mt7628an_iptime_a3.dts   |  36 ------
+ .../ramips/dts/mt7628an_iptime_a604m.dts      |  44 --------
+ .../linux/ramips/dts/mt7628an_totolink_a3.dts |  36 ------
+ target/linux/ramips/image/mt76x8.mk           |  27 -----
+ .../mt76x8/base-files/etc/board.d/02_network  |  14 ---
+ 6 files changed, 263 deletions(-)
+ delete mode 100644 target/linux/ramips/dts/mt7628an_iptime.dtsi
+ delete mode 100644 target/linux/ramips/dts/mt7628an_iptime_a3.dts
+ delete mode 100644 target/linux/ramips/dts/mt7628an_iptime_a604m.dts
+ delete mode 100644 target/linux/ramips/dts/mt7628an_totolink_a3.dts
+
+diff --git a/target/linux/ramips/dts/mt7628an_iptime.dtsi b/target/linux/ramips/dts/mt7628an_iptime.dtsi
+deleted file mode 100644
+index 8a33c37f7a..0000000000
+--- a/target/linux/ramips/dts/mt7628an_iptime.dtsi
++++ /dev/null
+@@ -1,106 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+-
+-#include "mt7628an.dtsi"
+-
+-#include <dt-bindings/gpio/gpio.h>
+-#include <dt-bindings/input/input.h>
+-
+-/ {
+-	aliases {
+-		label-mac-device = &ethernet;
+-	};
+-
+-	keys {
+-		compatible = "gpio-keys";
+-
+-		reset {
+-			label = "reset";
+-			gpios = <&gpio 38 GPIO_ACTIVE_LOW>;
+-			linux,code = <KEY_RESTART>;
+-			debounce-interval = <60>;
+-		};
+-
+-		wps {
+-			label = "wps";
+-			gpios = <&gpio 45 GPIO_ACTIVE_LOW>;
+-			linux,code = <KEY_WPS_BUTTON>;
+-			debounce-interval = <60>;
+-		};
+-	};
+-};
+-
+-&spi0 {
+-	status = "okay";
+-
+-	flash@0 {
+-		compatible = "jedec,spi-nor";
+-		reg = <0>;
+-		spi-max-frequency = <40000000>;
+-
+-		partitions {
+-			compatible = "fixed-partitions";
+-			#address-cells = <1>;
+-			#size-cells = <1>;
+-
+-			uboot: partition@0 {
+-				label = "u-boot";
+-				reg = <0x0 0x20000>;
+-				read-only;
+-			};
+-
+-			partition@20000 {
+-				label = "config";
+-				reg = <0x20000 0x10000>;
+-				read-only;
+-			};
+-
+-			factory: partition@30000 {
+-				label = "factory";
+-				reg = <0x30000 0x10000>;
+-				read-only;
+-			};
+-
+-			partition@40000 {
+-				compatible = "denx,uimage";
+-				label = "firmware";
+-				reg = <0x40000 0x7c0000>;
+-			};
+-		};
+-	};
+-};
+-
+-&state_default {
+-	gpio {
+-		groups = "uart1", "wdt";
+-		function = "gpio";
+-	};
+-};
+-
+-&ehci {
+-	status = "disabled";
+-};
+-
+-&ohci {
+-	status = "disabled";
+-};
+-
+-&ethernet {
+-	mtd-mac-address = <&uboot 0x1fc20>;
+-};
+-
+-&pcie {
+-	status = "okay";
+-};
+-
+-&pcie0 {
+-	wifi@0,0 {
+-		compatible = "mediatek,mt76";
+-		reg = <0x0000 0 0 0 0>;
+-		mediatek,mtd-eeprom = <&factory 0x8000>;
+-		ieee80211-freq-limit = <5000000 6000000>;
+-	};
+-};
+-
+-&wmac {
+-	status = "okay";
+-};
+diff --git a/target/linux/ramips/dts/mt7628an_iptime_a3.dts b/target/linux/ramips/dts/mt7628an_iptime_a3.dts
+deleted file mode 100644
+index 6b124cc2c8..0000000000
+--- a/target/linux/ramips/dts/mt7628an_iptime_a3.dts
++++ /dev/null
+@@ -1,36 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+-/dts-v1/;
+-
+-#include "mt7628an_iptime.dtsi"
+-
+-/ {
+-	compatible = "iptime,a3", "mediatek,mt7628an-soc";
+-	model = "ipTIME A3";
+-
+-	aliases {
+-		led-boot = &led_cpu;
+-		led-failsafe = &led_cpu;
+-		led-running = &led_cpu;
+-		led-upgrade = &led_cpu;
+-	};
+-
+-	leds {
+-		compatible = "gpio-leds";
+-
+-		led_cpu: cpu {
+-			label = "a3:blue:cpu";
+-			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+-		};
+-
+-		wlan {
+-			label = "a3:blue:wlan";
+-			gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
+-			linux,default-trigger = "phy0tpt";
+-		};
+-	};
+-};
+-
+-&esw {
+-	mediatek,portmap = <0x3e>;
+-	mediatek,portdisable = <0x32>;
+-};
+diff --git a/target/linux/ramips/dts/mt7628an_iptime_a604m.dts b/target/linux/ramips/dts/mt7628an_iptime_a604m.dts
+deleted file mode 100644
+index 661439f03b..0000000000
+--- a/target/linux/ramips/dts/mt7628an_iptime_a604m.dts
++++ /dev/null
+@@ -1,44 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+-/dts-v1/;
+-
+-#include "mt7628an_iptime.dtsi"
+-
+-/ {
+-	compatible = "iptime,a604m", "mediatek,mt7628an-soc";
+-	model = "ipTIME A604M";
+-
+-	aliases {
+-		led-boot = &led_cpu;
+-		led-failsafe = &led_cpu;
+-		led-running = &led_cpu;
+-		led-upgrade = &led_cpu;
+-	};
+-
+-	leds {
+-		compatible = "gpio-leds";
+-
+-		wlan5g {
+-			label = "a604m:blue:wlan5g";
+-			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
+-			linux,default-trigger = "phy1tpt";
+-		};
+-
+-		led_cpu: cpu {
+-			label = "a604m:blue:cpu";
+-			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+-		};
+-
+-		wlan2g {
+-			label = "a604m:blue:wlan2g";
+-			gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
+-			linux,default-trigger = "phy0tpt";
+-		};
+-	};
+-};
+-
+-&state_default {
+-	gpio {
+-		groups = "i2c", "uart1", "wdt";
+-		function = "gpio";
+-	};
+-};
+diff --git a/target/linux/ramips/dts/mt7628an_totolink_a3.dts b/target/linux/ramips/dts/mt7628an_totolink_a3.dts
+deleted file mode 100644
+index a5b8d91499..0000000000
+--- a/target/linux/ramips/dts/mt7628an_totolink_a3.dts
++++ /dev/null
+@@ -1,36 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+-/dts-v1/;
+-
+-#include "mt7628an_iptime.dtsi"
+-
+-/ {
+-	compatible = "totolink,a3", "mediatek,mt7628an-soc";
+-	model = "TOTOLINK A3";
+-
+-	aliases {
+-		led-boot = &led_cpu;
+-		led-failsafe = &led_cpu;
+-		led-running = &led_cpu;
+-		led-upgrade = &led_cpu;
+-	};
+-
+-	leds {
+-		compatible = "gpio-leds";
+-
+-		led_cpu: cpu {
+-			label = "a3:blue:cpu";
+-			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+-		};
+-
+-		wlan {
+-			label = "a3:blue:wlan";
+-			gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
+-			linux,default-trigger = "phy0tpt";
+-		};
+-	};
+-};
+-
+-&esw {
+-	mediatek,portmap = <0x3e>;
+-	mediatek,portdisable = <0x32>;
+-};
+diff --git a/target/linux/ramips/image/mt76x8.mk b/target/linux/ramips/image/mt76x8.mk
+index 908e2df529..305052cebb 100644
+--- a/target/linux/ramips/image/mt76x8.mk
++++ b/target/linux/ramips/image/mt76x8.mk
+@@ -142,24 +142,6 @@ define Device/hiwifi_hc5861b
+ endef
+ TARGET_DEVICES += hiwifi_hc5861b
+ 
+-define Device/iptime_a3
+-  IMAGE_SIZE := 7936k
+-  UIMAGE_NAME := a3
+-  DEVICE_VENDOR := ipTIME
+-  DEVICE_MODEL := A3
+-  DEVICE_PACKAGES := kmod-mt76x2
+-endef
+-TARGET_DEVICES += iptime_a3
+-
+-define Device/iptime_a604m
+-  IMAGE_SIZE := 7936k
+-  UIMAGE_NAME := a604m
+-  DEVICE_VENDOR := ipTIME
+-  DEVICE_MODEL := A604M
+-  DEVICE_PACKAGES := kmod-mt76x2
+-endef
+-TARGET_DEVICES += iptime_a604m
+-
+ define Device/jotale_js76x8
+   DEVICE_VENDOR := Jotale
+   DEVICE_MODEL := JS76x8
+@@ -309,15 +291,6 @@ define Device/tama_w06
+ endef
+ TARGET_DEVICES += tama_w06
+ 
+-define Device/totolink_a3
+-  IMAGE_SIZE := 7936k
+-  UIMAGE_NAME := za3
+-  DEVICE_VENDOR := TOTOLINK
+-  DEVICE_MODEL := A3
+-  DEVICE_PACKAGES := kmod-mt76x2
+-endef
+-TARGET_DEVICES += totolink_a3
+-
+ define Device/totolink_lr1200
+   IMAGE_SIZE := 7872k
+   DEVICE_VENDOR := TOTOLINK
+diff --git a/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network b/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
+index 5a5ba587d5..ca79720210 100755
+--- a/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
++++ b/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
+@@ -84,15 +84,6 @@ ramips_setup_interfaces()
+ 		ucidef_add_switch "switch0" \
+ 			"0:lan" "1:lan" "4:wan" "6@eth0"
+ 		;;
+-	iptime,a3|\
+-	totolink,a3)
+-		ucidef_add_switch "switch0" \
+-			"2:lan:2" "3:lan:1" "0:wan" "6@eth0"
+-		;;
+-	iptime,a604m)
+-		ucidef_add_switch "switch0" \
+-			"1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "0:wan" "6@eth0"
+-		;;
+ 	jotale,js76x8-8m|\
+ 	jotale,js76x8-16m|\
+ 	jotale,js76x8-32m)
+@@ -176,11 +167,6 @@ ramips_setup_macs()
+ 		[ -n "$lan_mac" ] || lan_mac=$(cat /sys/class/net/eth0/address)
+ 		wan_mac=$(macaddr_add "$lan_mac" 1)
+ 		;;
+-	iptime,a3|\
+-	iptime,a604m|\
+-	totolink,a3)
+-		wan_mac=$(mtd_get_mac_binary u-boot 0x1fc40)
+-		;;
+ 	jotale,js76x8-8m|\
+ 	jotale,js76x8-16m|\
+ 	jotale,js76x8-32m|\
+-- 
+2.25.1
+

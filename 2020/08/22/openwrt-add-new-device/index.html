@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"mans0n.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="들어가기 전에 글의 목적 뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenWrt에 새 기기 지원 추가하기">
+<meta property="og:url" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/index.html">
+<meta property="og:site_name" content="맨손잡이">
+<meta property="og:description" content="들어가기 전에 글의 목적 뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/001-lid.jpg">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/002-internal.jpg">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/003-uart.jpg">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/004-boot-start.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/005-boot-end.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/006-bootloader.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/007-tftp-put.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/008-menuconfig.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/009-openwrt-image.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/010-binwalk-stock.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/011-binwalk-initramfs.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/012-tftp-fail.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/013-uimage-name.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/014-tftp-success.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/015-baudrate-fail.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/016-baudrate-fix.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/017-boot-success.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/018-grep-mir4a-100m.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/019-menuconfig-a604m.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/020-dts-esw.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/021-swconfig.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/022-setup-interfaces.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/023-ethernet-test.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/024-stock-partition.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/025-dts-partition.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/026-flash-freq.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/027-flash-dump.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/028-factory-entropy.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/029-flash-wifi-mac.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/030-dts-wifi.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/031-iwinfo.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/032-stock-eth-mac.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/033-flash-eth-mac.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/034-dts-ethernet.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/035-setup_macs.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/037-dts-usb.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/038-pin-table.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/039-dts-pinctrl.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/040-sysfs-gpio.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/041-dts-led-key.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/042-dts-status-led.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/043-failsafe-mode.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/044-binwalk-sysupgrade.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/045-boot-sysupgrade.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/046-platform-do-upgrade.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/047-sysupgrade-start.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/048-sysupgrade-success.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/049-stock-web-sysupgrade.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/050-no-rootfs.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/051-stock-mtd-write.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/052-image-makefile.png">
+<meta property="article:published_time" content="2020-08-22T10:32:37.000Z">
+<meta property="article:modified_time" content="2020-08-22T10:35:08.678Z">
+<meta property="article:author" content="mans0n">
+<meta property="article:tag" content="분해">
+<meta property="article:tag" content="OpenWrt">
+<meta property="article:tag" content="포팅">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/001-lid.jpg">
+
+<link rel="canonical" href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>OpenWrt에 새 기기 지원 추가하기 | 맨손잡이</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173005416-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-173005416-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">맨손잡이</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">이것저것 만듭니다</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>태그</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="mans0n">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="맨손잡이">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OpenWrt에 새 기기 지원 추가하기
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+              
+
+              <time title="Post created: 2020-08-22 19:32:37 / Updated at: 19:35:08" itemprop="dateCreated datePublished" datetime="2020-08-22T19:32:37+09:00">2020-08-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/" itemprop="url" rel="index"><span itemprop="name">자유시간 프로젝트</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="들어가기-전에">들어가기 전에<a class="header-anchor" href="#들어가기-전에"></a></h1>
+<h2 id="글의-목적">글의 목적<a class="header-anchor" href="#글의-목적"></a></h2>
+<p>뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야에 숨은 고수의 유입을 유도함으로써 저도 편하게 버스타고 가고 싶다는 사적인 소망을 이루고자 이 글을 썼다는 얘기입니다.</p>
+<a id="more"></a>
+<h2 id="왜-OpenWrt">왜 OpenWrt?<a class="header-anchor" href="#왜-OpenWrt"></a></h2>
+<p>OpenWrt는 유무선공유기, NAS, SBC와 같이 자원이 제약된 임베디드 시스템을 위한 리눅스 배포판입니다. 사용자마다 각각의 원하는 점이 있겠지만(무선 성능 개선, 원하는 패키지 설치, 보안 향상 등등) 개인적으로는 잘 정돈된 코드베이스와 개발 환경이라는 데에 큰 점수를 주고 싶습니다. 메인라인에 가까운 최신 버전 커널과 툴체인은 칩셋 제조사 SDK나 그에 의존하는 여타 커펌 프로젝트에선 기대하기 어려운 일이지요. 다른 오픈소스 프로젝트와 비교해봤을 때도 기능성과 복잡도 면에서 Buildroot와 Yocto 사이에 끼어있기에 적당한 타협안이 된다고 생각합니다.</p>
+<p>또한 <span class="exturl" data-url="aHR0cHM6Ly9wb3N0bWFya2V0b3Mub3JnLw==">스마트폰<i class="fa fa-external-link-alt"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cucm9ja2JveC5vcmcv">MP3<i class="fa fa-external-link-alt"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly9xbWsuZm0v">키보드<i class="fa fa-external-link-alt"></i></span> 등과 마찬가지로, 제조사 펌웨어에 발묶여있는 공유기에 오픈소스 커펌을 포팅하는 작업은 프로그래머의 소일거리로도 적당하다고 봅니다.</p>
+<h2 id="글의-방향">글의 방향<a class="header-anchor" href="#글의-방향"></a></h2>
+<div class="note warning"><p><strong>disclaimer: 케이스를 열거나 커펌을 설치하면 제품 보증이 무효가 되고 자칫하면 기기가 손상될 수 있습니다.</strong><br>
+<strong>이 글의 내용을 따라함으로써 (또는 잘못된 방식으로 활용함으로써) 생길 수 있는 결과에 대한 책임은 사용자 스스로에게 있습니다.</strong></p>
+</div>
+<p>이 글에선 OpenWrt에 새 기기 지원을 추가하는 전반적인 과정(하드웨어 정보를 얻는 것부터 시작해서 업스트림에 패치를 보내는 데까지)을 다루고자 합니다.</p>
+<p>이 글은 읽는 사람이 이미 리눅스에 익숙하고 기본적인 하드웨어 지식이 있다는 가정 하에 작성되었습니다.</p>
+<p>예시로 사용할 기기는 제 첫 업스트림 모델이면서 하드웨어와 패치가 단순한 ipTIME A604M으로 선택했습니다.</p>
+<h1 id="사전조사">사전조사<a class="header-anchor" href="#사전조사"></a></h1>
+<p>어떤 기기에 OpenWrt를 포팅해보자고 마음을 먹은 다음에 가장 먼저 해야할 일이 뭘까요? 그 기기에 OpenWrt를 올리는 것이 가능할지, 올린 다음에 실사용이 가능할지, 이미 포팅을 시도한 사례가 있는지 등을 먼저 확인하는 과정이 필요합니다. 이미 가지고 있는 기기라면 상관없지만, 덥썩 구매해놓고 나중 가서 올릴 수 없다는 걸 알게 되면 실망이 크잖아요.</p>
+<p>일단 A604M의 하드웨어 스펙을 조사해봅시다.</p>
+<ul>
+<li>SoC: MediaTek MT7628A (580MHz)</li>
+<li>RAM: DDR2 64MB</li>
+<li>플래시: 8MB</li>
+<li>이더넷 포트: 100Mbps WAN x1, 100Mbps LAN x4</li>
+<li>WiFi: 2.4GHz 2x2, 5GHz 2x2</li>
+</ul>
+<p><span class="exturl" data-url="aHR0cDovL2lwdGltZS5jb20vaXB0aW1lLz9wYWdlX2lkPTExJmFtcDtwZj0zJmFtcDtwYWdlPSZhbXA7cHQ9MzQ2JmFtcDtwZD0z">제품소개<i class="fa fa-external-link-alt"></i></span>에선 WiFi 칩셋으로 뭘 쓰는지까진 안 나오는데, 사실 이 정도만 해도 감지덕지고, 제조사에서 어떤 CPU를 쓰는지조차 알려주지 않는 경우도 흔합니다.</p>
+<p>만약 기기의 <span class="exturl" data-url="aHR0cDovL3d3dy5uZXdzdGFwLmNvLmtyL25ld3MvcGhvdG8vMjAxNzEwLzYwMjA0XzkzMjExXzEyMzQuSlBH">내부 사진<i class="fa fa-external-link-alt"></i></span>을 얻을 수 있다면 정보 수집에 큰 도움이 됩니다. 공유기 리뷰어 분들은 겉모습만 찍고 넘기지 말고 분해도 해서 내부 칩이 보이는 사진도 올려주시면 좋겠습니다…</p>
+<p>해외/국제 모델의 경우엔 <span class="exturl" data-url="aHR0cDovL3dpa2lkZXZpLndpLWNhdC5ydS8=">WikiDevi<i class="fa fa-external-link-alt"></i></span>와 <span class="exturl" data-url="aHR0cHM6Ly9mY2NpZC5pby8=">fccid.io<i class="fa fa-external-link-alt"></i></span>의 힘을 빌리는 것이 가능합니다. WikiDevi에는 공유기 디바이스 및 칩셋 정보가 모여있고, fccid.io에서는 FCC ID가 있는 제품의 내부 사진을 열람할 수 있습니다.</p>
+<p>또한 펌웨어 <span class="exturl" data-url="aHR0cHM6Ly9pcHRpbWUuY29tL2lwdGltZS8/cGFnZV9pZD0xMjYmYW1wO2Rmc2lkPTMmYW1wO2RmdGlkPTM3NyZhbXA7dWlkPTE5NzQwJmFtcDttb2Q9ZG9jdW1lbnQ=">바이너리<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cDovL2dwbC5pcHRpbWUub3JnL2dwbC9IREQxL0dQTC8=">소스코드<i class="fa fa-external-link-alt"></i></span>도 좋은 정보원이 됩니다.</p>
+<p>다시 본론으로 돌아가면, MT7628A는 OpenWrt에서 지원하는 SoC이고 ramips/mt76x8 타겟에 해당합니다.<br>
+현재 OpenWrt가 지원하는 플랫폼 중 인기 있는 몇 개를 살펴보자면 다음과 같습니다.</p>
+<ul>
+<li>ar71xx, ath79: (MIPS 기반) Atheros SoC를 사용합니다. 전자는 mach.c를 사용하고 후자는 DTS를 사용합니다.</li>
+<li>ipq40xx, ipq806x: (ARM 기반) Qualcomm Atheros SoC를 사용합니다.</li>
+<li>bcm47xx, bcm53xx: Broadcom SoC를 사용합니다. 전자는 MIPS 아키텍처고 후자는 ARM 아키텍처입니다.</li>
+<li>ramips, mediatek: Ralink/MediaTek SoC를 사용합니다. 전자는 MIPS 아키텍처고 후자는 ARM 아키텍처입니다.</li>
+<li>kirkwood, mvebu: Marvell SoC를 사용합니다. 이 계열은 공유기뿐만 아니라 NAS 기기에도 많이 사용됩니다.</li>
+</ul>
+<p>(Lexra 기반의) Realtek SoC는 지원되지 않습니다. 애초에 (메인라인) 리눅스 커널에도 없는 녀석이라 간단히 지원을 추가할 수 있는 상황도 아닙니다.</p>
+<p>이 중 ramips 타겟은 지원이 잘 되고 있는 상태고, 지원하는 기종도 많은 걸 봤을 때, A604M 포팅에 SoC가 걸림돌이 되진 않을 것으로 보입니다. 또한 OpenWrt의 최소 요구 사양으로 여겨지는 4/32 조건(플래시 4MB, RAM 32MB)도 넘기고 있습니다.</p>
+<p>위에 링크를 달아놓은 내부 사진을 잘 살펴보면 보드에 UART로 추측되는 4핀 핀헤더가 달려있는 게 보입니다. 시리얼 콘솔은 디바이스 정보를 얻고 디버깅을 하는 데 필수적이고, 이게 없으면 이후 진행이 매우 골치아파지기 때문에, UART 핀의 존재 여부 정도는 미리 확인해두는 게 좋습니다.</p>
+<h1 id="하드웨어-및-펌웨어-조사">하드웨어 및 펌웨어 조사<a class="header-anchor" href="#하드웨어-및-펌웨어-조사"></a></h1>
+<p>사전조사에서 OpenWrt를 올릴 수 있을 것 같다는 희망이 보였다면 이제 본격적인 조사 작업에 들어가봅시다.</p>
+<p>기기 아랫면의 고무 패킹을 빼고 나사를 풀어줍니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/001-lid.jpg" class="">
+<p>제가 분해에 능하지 못해 그러는 걸진 모르겠지만, 남들은 잘만 분해된다는데 나는 아무리 힘을 줘도 뚜껑이 안 열리면 울고 싶어집니다. 노하우를 안다고 해서 분해가 반드시 쉬워지는 건 아니지만, 적어도 걸쇠의 위치라도 안다면 공략이 한결 수월해진다고 생각합니다.</p>
+<p>다행히 이 케이스는 별로 걸리적거릴 게 없어서 쉽게쉽게 열립니다.</p>
+<p>분해 후 내부 칩의 부품번호를 확인합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/002-internal.jpg" class="">
+<ul>
+<li>SoC: MediaTek MT7628AN (MIPS 24KEc 580MHz, bgn 2x2)</li>
+<li>RAM: ESMT M14D5121632A (DDR2 64MB)</li>
+<li>플래시: cFeon QH64-104HIP (SPI NOR 8MB, Eon EN25QH64와 동일한 모델로 보임)</li>
+<li>WiFi 5GHz: MediaTek MT7612EN (abgn+ac 2x2)</li>
+</ul>
+<p>각 부품의 데이터시트도 (찾을 수 있으면) 구해둡니다.</p>
+<p>이제 시리얼 포트에 접속해봅니다. 원랜 멀티미터로 전압과 핀아웃을 먼저 확인하는 것이 정석이지만, 프로브 대고 있는 사진을 찍기 귀찮아서 생략하겠습니다. 다행히 A604M은 포트 옆에 핀아웃이 친절하게 적혀있어서 따로 찾아볼 필요가 없겠네요.</p>
+<img src="/2020/08/22/openwrt-add-new-device/003-uart.jpg" class="">
+<p>잠시 보충설명을 하자면,</p>
+<ul>
+<li>3~5핀 포트가 있으면 십중팔구 UART이고, 10~20핀 포트가 있으면 JTAG일 가능성이 높습니다.</li>
+<li>대부분의 공유기 SoC는 TTL 전압이 3.3V입니다. 하지만 IPQ806X 같은 예외도 있습니다.</li>
+<li>GND, RXD, TXD 핀만 연결하면 됩니다. VCC는 (보드에 이미 전원을 넣고 있다면) 불필요할뿐더러 괜한 전압 충돌만 생길 수 있으니 꽂지 마세요.</li>
+<li>경험상 Atheros SoC를 사용하는 공유기에서 UART 연결문제가 발생할 때가 많았습니다.(시리얼 어댑터를 연결하고 전원을 넣으면 부팅이 안 된다든가, RX는 되는데 TX가 안 된다든가) 뭔가 잘 안 되면 USB-UART 어댑터를 다른 걸로 바꿔보세요.</li>
+</ul>
+<p>UART 보율은 어떻게 알아낼까요? 이것도 무작정 시도해보는 방법도 있지만, 보통 SoC별로 많이 쓰는 값이 있기 때문에(일반적으로 115200, ramips는 57600, realtek은 38400) 그것부터 시도해보면 좋습니다. A604M은 57600에 걸렸습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/004-boot-start.png" class="">
+<p>전원 넣고서 부팅이 완료될 때까지의 전체 로그를 한 번은 수집해야 합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/005-boot-end.png" class="">
+<p>ipTIME 공유기는 부팅이 끝난 다음에 별다른 쉘을 띄워주지 않습니다.</p>
+<p>부팅 로그 첫 부분을 보면 부트로더에서 선택지가 뜨는 것을 볼 수 있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/006-bootloader.png" class="">
+<p>WeVO나 netis 공유기에선 부트로더 쉘도 열 수 있는데 ipTIME ramips 기기에선 TFTP 복구모드밖에 쓸 수 없습니다.</p>
+<p>이 복구모드는 원래 펌웨어 업데이트에 실패했을 때 부트로더에서 자동으로 진입하는 모드입니다. 딱히 숨겨진 기능이 아니기 때문에 ipTIME 홈페이지에 사용법 <span class="exturl" data-url="aHR0cDovL2lwdGltZS5jb20vaXB0aW1lLz9wYWdlPTImYW1wO3BhZ2VfaWQ9NjcmYW1wO3VpZD03MzYwJmFtcDttb2Q9ZG9jdW1lbnQ=">설명글<i class="fa fa-external-link-alt"></i></span>도 올라와 있습니다.</p>
+<p><code>t</code>를 눌러 복구 모드에 들어가면 공유기는 TFTP 서버를 열어줍니다. 컴퓨터에서 고정 IP로 이더넷 연결 후(LAN 포트에 꽂아야 합니다) TFTP 클라이언트를 실행합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/007-tftp-put.png" class="">
+<p>일단 기능 테스트를 위해 정펌을 올려봤는데 잘 되네요.</p>
+<p>처음 써보는 기기라면 관리자 웹페이지도 둘러보고 LED는 언제 불이 들어오는지도 살펴보고 하면서 기능을 더 탐색해야겠지만, ipTIME 공유기 기능은 다들 아시리라 믿고 넘어가겠습니다.</p>
+<h1 id="빌드-및-부팅">빌드 및 부팅<a class="header-anchor" href="#빌드-및-부팅"></a></h1>
+<p>이제 OpenWrt 펌웨어를 빌드해봅시다. 처음엔 19.07 릴리즈를 사용할까도 했는데, 그 이후로 master 브랜치에서 많은 변화가 있었기 때문에 옛 버전보다는 최신 snapshot 기준으로 설명하는 게 낫겠다고 판단했습니다.</p>
+<p>이 글에선 2020-08-11 시점에서 가장 최근 커밋인 <span class="exturl" data-url="aHR0cHM6Ly9naXQub3BlbndydC5vcmcvYjU5YTk4YjAwOWI5">b59a98b009b9<i class="fa fa-external-link-alt"></i></span> 버전을 사용하겠습니다. 최신 snapshot엔 제가 이미 업스트림시킨 A604M 지원 패치가 들어가 있지만, 여기선 없다고 가정하고 진행하겠습니다.</p>
+<p>빌드 환경으론 Ubuntu 20.04를 사용하겠습니다. RAM은 4GB, 여유 저장공간은 10GB 이상 있어야 빌드가 수월할 겁니다.</p>
+<p>일단 OpenWrt에서 이미 지원하는 mt76x8 디바이스 중 A604M과 사양이 대략 비슷해보이는 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy90b2gvaHdkYXRhL3hpYW9taS94aWFvbWlfbWlfcm91dGVyXzRhXzEwMG0=">Mi Router 4A<i class="fa fa-external-link-alt"></i></span>의 펌웨어 이미지를 빌드하겠습니다. 이는 디바이스에서 OpenWrt 이미지를 정상적으로 부팅하는 것이 가능한지 테스트해보려는 목적이고, 나중에 제대로 전용 이미지를 만들 겁니다.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 패키지 설치 및 저장소 클론</span></span><br><span class="line">sudo apt-get install build-essential libncurses-dev gawk unzip wget python3 git file rsync</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/openwrt/openwrt.git</span><br><span class="line"><span class="built_in">cd</span> openwrt</span><br><span class="line"><span class="comment"># git switch -c dev-a604m b59a98b009b9</span></span><br><span class="line"><span class="comment"># wget https://mans0n.github.io/2020/08/18/openwrt-add-device/b59a98b009b9-pre-a604m.patch</span></span><br><span class="line"><span class="comment"># git am b59a98b009b9-pre-a604m.patch</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 외부 패키지 가져오기, 한 번만 하면 됨</span></span><br><span class="line">./scripts/feeds update -a</span><br><span class="line">./scripts/feeds install -a</span><br><span class="line"><span class="comment">## 빌드 타겟 설정</span></span><br><span class="line">make menuconfig</span><br><span class="line"><span class="comment">## "Target System" -&gt; "MediaTek Ralink MIPS"</span></span><br><span class="line"><span class="comment">## "Subtarget" -&gt; "MT76x8 based boards"</span></span><br><span class="line"><span class="comment">## "Target Profile" -&gt; "Xiaomi Mi Router 4A 100M Edition"</span></span><br><span class="line"><span class="comment">## 빌드 중간에 실패할 때를 대비해 CONFIG_BUILD_LOG도 활성화시켜두면 좋음</span></span><br><span class="line"><span class="comment">## "Advanced configuration options (for developers)" -&gt; "Enable log files during build process"</span></span><br><span class="line">make defconfig</span><br><span class="line"><span class="comment"># ./scripts/diffconfig.sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 소스파일 다운로드, 한 번만 하면 됨</span></span><br><span class="line">make download -j3</span><br><span class="line"><span class="comment">## 빌드 시작, (CPU 스레드 수 + 1)개의 프로세스로 병렬처리</span></span><br><span class="line">make -j$((`nproc` + 1))</span><br></pre></td></tr></table></figure>
+<img src="/2020/08/22/openwrt-add-new-device/008-menuconfig.png" class="">
+<p>처음 빌드할 땐 툴체인까지 빌드해야 하기 때문에 시간이 좀 많이 걸립니다. 컴퓨터 성능이 좋다면 30분만에 끝날 수도 있고, 별로라면 한두 시간 걸릴 수도 있습니다.</p>
+<div class="note info"><p>참고문서:</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9xdWlja3N0YXJ0LWJ1aWxkLWltYWdlcw==">https://openwrt.org/docs/guide-developer/quickstart-build-images<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9idWlsZC1zeXN0ZW0vdXNlLWJ1aWxkc3lzdGVt">https://openwrt.org/docs/guide-developer/build-system/use-buildsystem<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+</div>
+<p>빌드 후 새로 생기는 디렉토리 몇 개를 살펴보면 다음과 같습니다.</p>
+<ul>
+<li>bin: 빌드 결과물인 펌웨어 이미지와 패키지가 저장되는 장소</li>
+<li>build_dir: 소스코드가 빌드되는 장소 (만약 저장공간이 부족해진다면 <code>build_dir/toolchain-*</code>부터 삭제하세요)</li>
+<li>dl: 다운로드 받은 소스 압축 파일이 저장되는 장소</li>
+<li>staging_dir: 빌드한 툴체인 바이너리나 라이브러리 헤더 등이 저장되는 장소</li>
+</ul>
+<p>설치에 사용할 이미지는 <code>bin/targets/ramips/mt76x8/</code> 아래에 있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/009-openwrt-image.png" class="">
+<p>참고로 initramfs와 squashfs 이미지의 차이점을 알아보자면,</p>
+<ul>
+<li>initramfs: 커널과 rootfs가 모두 포함된 이미지입니다. rootfs는 RAM에만 존재하고, 모든 파일 변경사항은 시스템 종료시 사라집니다. U-Boot의 <code>tftpboot</code> 명령어를 쓰면 RAM에 이미지를 바로 올리고 부팅하는 것이 가능합니다. 보통 디버깅용으로 많이 쓰지만, 원한다면 실사용 목적으로 쓸 수도 있습니다.</li>
+<li>squashfs: 커널과 읽기전용 rootfs(squashfs)와 읽고쓰기 가능한 추가 파일시스템(jffs2를 overlayfs로 사용)이 담긴 이미지입니다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 모든 파일 변경사항은 이 overlayfs에 저장되어 플래시에 기록됩니다. 만약 리셋을 한다면 오버레이만 날려버려서 초기상태로 되돌아갑니다.</li>
+</ul>
+<p>이제부터 하려는 건 정펌 상태에서 커펌을 올릴 수 있는 길을 찾는 것입니다. 가장 확실한 방법은 플래시를 보드에서 떼내서 커펌을 기록하고 다시 보드에 붙이는 방법이지만, 보통은 그렇게까지 하고 싶진 않죠. 통상적으론 다음의 셋 중에 하나를 얻으면 됩니다.</p>
+<ul>
+<li>루트 권한의 유닉스 쉘</li>
+<li>부트로더 쉘</li>
+<li>원하는 코드를 실행시킬 수 있는 하드웨어 인터페이스 (JTAG 등)</li>
+</ul>
+<p>A604M은 이 중에 해당하는 항목이 없지만, 대신 부트로더에서 진입할 수 있는 복구모드가 있었죠.</p>
+<p>복구모드도 바보는 아닐 테니 아무 이미지나 막 받아들이진 않을 거고, OpenWrt 이미지를 정펌 포맷에 맞춰줄 필요가 있을 겁니다.</p>
+<p>우선 정펌 포맷을 살펴보겠습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/010-binwalk-stock.png" class="">
+<p>uImage 헤더가 앞에 달려있고, 커널과 rootfs가 뒤따라오는 구조입니다. <code>hexdump</code>로 살펴봐도 제조사 헤더나 꼬리가 붙어있는 것 같진 않네요.</p>
+<p>이걸 아까 빌드한 <code>openwrt-ramips-mt76x8-xiaomi_mir4a-100m-initramfs-kernel.bin</code> 이미지 포맷과 비교해봅니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/011-binwalk-initramfs.png" class="">
+<p>똑같이 uImage 헤더로 시작하고, 뒤에는 커널만 따라옵니다. squashfs가 빠지긴 했지만 구조는 대충 비슷하니 이 정도면 복구모드도 만족해하지 않을까요.</p>
+<p>이 initramfs 이미지를 TFTP로 올려보겠습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/012-tftp-fail.png" class="">
+<p>이미지를 거부하네요? 정펌 이미지엔 <code>a604m</code>이라 적혀있는 부분이 initramfs 이미지엔 <code>MIPS OpenWrt Linux-5.4.52</code>이라 적혀있어서 안 된다는 것 같습니다. 아까 <code>binwalk</code> 결과에서 uImage 헤더의 이미지 이름란에 이런 문자열이 들어가 있었죠.</p>
+<p>다행히 이건 이미지 Makefile에 한 줄만 추가해주면 해결됩니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/013-uimage-name.png" class="">
+<p>다시 이미지를 빌드하고 TFTP로 올리면 이번엔 이미지를 정상적으로 접수합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/014-tftp-success.png" class="">
+<p>근데 잘 부팅하다가 도중에 콘솔 글자가 깨져버리네요.</p>
+<img src="/2020/08/22/openwrt-add-new-device/015-baudrate-fail.png" class="">
+<p>글자가 깨진다는 건 보율이 안 맞는다는 거죠. 샤오미 공유기는 보율로 115200을 써서 그렇습니다. 이건 dts에서 수정해주면 됩니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/016-baudrate-fix.png" class="">
+<p>부팅이 끝나고 쉘이 뜨면 성공한 겁니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/017-boot-success.png" class="">
+<p>Q: 근데 아직 플래시 덤프도 안 했는데 너무 무작정 설치해버린 거 아닌가요?<br>
+A: 네 맞습니다… 경험상 ipTIME ramips 기기에서 부트로더 복구모드를 믿어도 괜찮고, 덤프는 나중에 남은 부분만 해도 충분하다는 걸 알기 때문에 이렇게 간 거고, 다른 디바이스 작업할 땐 꼭 덤프부터 하세요.</p>
+<h1 id="기능-살리기">기능 살리기<a class="header-anchor" href="#기능-살리기"></a></h1>
+<p>OpenWrt 부팅에 성공했으니, 이제 본격적으로 디바이스 지원 패치를 작성해봅시다.</p>
+<p>일단 A604M 이미지를 만드는 것부터 시작하겠습니다. Mi Router 4A 지원 패치를 복사해 A604M으로 이름만 바꿔줍니다. <code>mir4a-100m</code>로 검색하면 금방 찾을 수 있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/018-grep-mir4a-100m.png" class="">
+<p>대충 이 정도? 별로 안 많죠? dts는 파일을 새로 만들어야 합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/019-menuconfig-a604m.png" class="">
+<p>이 다음에 <code>make menuconfig</code>를 다시 하면 모델 목록에 A604M이 뜹니다. 새로 빌드한 <code>openwrt-ramips-mt76x8-iptime_a604m-initramfs-kernel.bin</code> 이미지로 재설치하면 이전처럼 잘 부팅되어야 합니다.</p>
+<p>다음으로 넘어가기 전에 잠깐 DTS가 무엇인지에 대해 짧게 설명하겠습니다.</p>
+<p>예전엔 (그리고 지금도 일부는) 각 기기 모델마다 존재하는 <code>mach-*.c</code> 또는 <code>board-*.c</code>에서 주변장치 초기화 및 설정 작업을 진행했지만, 현재는 이 목적을 위해 DTS(Device Tree Source)라는 별개 형식의 파일을 사용하는 추세입니다. dtc라는 별도의 컴파일러를 써서 DTS 소스파일을 DTB 바이너리로 만들고, 이걸 커널 이미지 옆에 덧붙이거나 저장장치 어딘가에 저장해놨다가 부팅 시 불러와서 사용합니다. DT는 실행 코드가 아니라 단순히 하드웨어를 기술하는 역할만 하고, 드라이버는 DTB를 읽어들여 기기에 어떤 장치가 달려있고 각각을 어떻게 사용해야 하는지 파악합니다.</p>
+<p>참고로 모든 기기가 디바이스 트리를 쓰는 건 아니고, 이외에도 여러 하드웨어 정보 관리 방법이 있습니다. 브로드컴 공유기는 nvram을 사용하기도 하고, x86 컴퓨터에선 ACPI(특히 DSDT)를 사용합니다.</p>
+<p>ramips는 아직 커널 업스트림이 덜 됐기 때문에 아직도 많은 부분이 OpenWrt 다운스트림 패치로 남아있고, dts도 커널 소스트리에 들어간 걸 쓰지 않고 <code>target/linux/ramips/dts/</code>에 있는 로컬 파일을 사용합니다. 내용을 보면 SoC의 전반적인 기능을 dtsi 파일에서 정의하고, 이걸 디바이스 dts에서 불러와 필요한 기능만 활성화시켜 사용하는 구조로 되어있습니다.</p>
+<div class="note info"><p>참고문서:</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9lbGludXgub3JnL2ltYWdlcy9mL2Y5L1BldGF6em9uaS1kZXZpY2UtdHJlZS1kdW1taWVzXzAucGRm">https://elinux.org/images/f/f9/Petazzoni-device-tree-dummies_0.pdf<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9qdW5nLW1heC5naXRodWIuaW8vMjAxOS8xMC8yMi9EZXZpY2VfVHJlZV8lRUIlQUMlQjglRUIlQjIlOTUv">https://jung-max.github.io/2019/10/22/Device_Tree_문법/<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+</div>
+<p>이제부터 할 일은 A604M의 기능을 하나씩 살려나가는 것입니다. 확인해야 할 항목을 꼽아보자면 이더넷, 플래시, WiFi, LED, 버튼 정도가 되겠네요.</p>
+<p>뭘 어떻게 해야 하는 건지 막막할 땐 다른 디바이스 지원 패치에선 어떻게 했는지 소스코드나 커밋 로그를 찾아보세요. DT 속성의 의미나 사용방법이 궁금할 땐 커널 <code>Documentation/devicetree/bindings/</code> 경로 아래 있는 문서를 읽어보면 도움이 됩니다.</p>
+<div class="note info"><p>참고문서:</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9hZGRpbmdfbmV3X2RldmljZQ==">https://openwrt.org/docs/guide-developer/adding_new_device<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+</div>
+<h2 id="이더넷">이더넷<a class="header-anchor" href="#이더넷"></a></h2>
+<p>일단 이더넷이 돼야 이후 작업이 편해집니다. 이더넷 설정은 dts와 <code>02_network</code>에 담겨있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/020-dts-esw.png" class="">
+<p><code>&amp;esw</code> 노드는 그냥 날려버립니다. 스위치 LAN/WAN 설정과 안 쓰는 포트 비활성화하는 역할인데, 전자는 어차피 <code>02_network</code>에서 할 거고, 후자는 A604M은 포트 5개 모두 사용하니 해당사항이 없습니다. <code>&amp;ethernet</code> 노드는 지금은 그대로 둬도 됩니다.</p>
+<p>LAN/WAN 설정을 하기 위해선 각 포트가 MT7628A에 내장된 이더넷 스위치의 몇 번 포트에 해당하는지를 알아야 합니다. 이건 <code>swconfig</code>를 쓰면 쉽게 알아낼 수 있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/021-swconfig.png" class="">
+<p>처음에 외부 포트에 아무 선도 꽂지 않으면 6번 포트만 연결된 것으로 나옵니다. 6번 포트는 스위치와 CPU를 연결하는 내부포트이겠지요. 그리고 WAN 포트에 선을 꽂으니 0번 포트가 연결된 것으로 뜹니다.</p>
+<p>이런 식으로 각 외부포트와 스위치 포트번호를 짝지으면 이렇게 나옵니다.</p>
+<ul>
+<li>0번 포트 - WAN</li>
+<li>1번 포트 - LAN 4</li>
+<li>2번 포트 - LAN 3</li>
+<li>3번 포트 - LAN 2</li>
+<li>4번 포트 - LAN 1</li>
+<li>6번 포트 - CPU</li>
+</ul>
+<p>이걸 <code>02_network</code>에 적을 겁니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/022-setup-interfaces.png" class="">
+<p><code>2:lan:3</code>의 의미는 스위치 2번 포트가 LAN 3 포트와 연결되어 있다는 뜻입니다.</p>
+<p>이제 이더넷 LAN/WAN이 모두 잘 될 겁니다. 컴퓨터와 외부 인터넷 선을 꽂아서 확인해보세요.</p>
+<img src="/2020/08/22/openwrt-add-new-device/023-ethernet-test.png" class="">
+<h2 id="플래시">플래시<a class="header-anchor" href="#플래시"></a></h2>
+<p>A604M은 저장장치로 SPI NOR 플래시를 사용합니다. 리눅스에서는 이러한 FTL이 없는 플래시 칩을 MTD 장치로 나타냅니다. MTD 저장공간을 파티션으로 분할하려면 하드 디스크처럼 파티션 테이블을 쓰는 게 아니라, 파티션 정보를 커널 또는 dts에 직접 적어줘야 합니다.</p>
+<p>정펌 부팅 로그를 보면 mtd 파티션을 어떻게 나눠놨는지가 뜹니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/024-stock-partition.png" class="">
+<p>대충 정리해보면 이렇습니다.</p>
+<table>
+<thead>
+<tr>
+<th>파티션 시작 위치</th>
+<th>파티션 크기</th>
+<th>파티션 이름</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x000000</td>
+<td>0x020000</td>
+<td>bootloader</td>
+</tr>
+<tr>
+<td>0x020000</td>
+<td>0x010000</td>
+<td>config</td>
+</tr>
+<tr>
+<td>0x030000</td>
+<td>0x010000</td>
+<td>factory</td>
+</tr>
+<tr>
+<td>0x040000</td>
+<td>0x7c0000</td>
+<td>firmware</td>
+</tr>
+</tbody>
+</table>
+<p>bootloader 파티션엔 U-Boot 부트로더가 있을 거고, firmware 파티션엔 정펌 이미지가 들어가 있겠죠.<br>
+factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데이터와 MAC 주소를 담는 장소고, config 파티션엔 보통 부트로더 환경변수나 기기 설정값(WiFi SSID와 비번 등)이 담겨있습니다.</p>
+<p>이걸 dts에 옮겨 적습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/025-dts-partition.png" class="">
+<ul>
+<li>&quot;firmware&quot;는 OpenWrt에서 특별한 파티션 이름입니다. 커널은 이 이름의 파티션을 살펴보고 kernel, rootfs, rootfs_data 파티션으로 분할합니다.</li>
+<li><code>compatible = &quot;denx,uimage&quot;</code>는 펌웨어 이미지가 uImage 포맷임을 알리는 속성입니다.</li>
+<li>firmware 파티션 이외엔 손대서 좋을 게 없으니 읽기전용으로 강제합니다. 만약 읽기전용 파티션을 수정해야 할 일이 생긴다면 <code>kmod-mtd-rw</code>를 쓰세요.</li>
+<li><code>spi-max-frequency</code>는 플래시 I/O 속도를 결정합니다. 이 값이 너무 작으면 읽기쓰기 속도가 느리고, 너무 크면 CPU가 플래시를 인식하지 못합니다. 이 값을 제대로 정하는 과정은 좀 복잡한데, 일단 <span class="exturl" data-url="aHR0cDovL3d3dy5iZHRpYy5jb20vZGF0YXNoZWV0L0VPTi9FTjI1UUg2NC5wZGY=">플래시 데이터시트<i class="fa fa-external-link-alt"></i></span>에 따르면 50MHz 이하로 두는 게 안전할 것 같습니다.<img src="/2020/08/22/openwrt-add-new-device/026-flash-freq.png" class="">
+</li>
+</ul>
+<p>아직 플래시 덤프를 못 했죠? 이제 할 수 있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/027-flash-dump.png" class="">
+<p>개인적으론 플래시 전체 크기의 파티션을 따로 만들어서 덤프하는 방법을 선호합니다.</p>
+<p>NOR는 대체로 살리기도 쉽고 덤프하기도 쉬운데, NAND는 ECC나 BBT 등 신경써줘야 할 게 많아서 더 복잡합니다.</p>
+<div class="note info"><p>참고문서:</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cDovL3d3dy5saW51eC1tdGQuaW5mcmFkZWFkLm9yZy9mYXEvZ2VuZXJhbC5odG1s">http://www.linux-mtd.infradead.org/faq/general.html<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL3RlY2hyZWYvZmxhc2gubGF5b3V0">https://openwrt.org/docs/techref/flash.layout<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+</div>
+<h2 id="WiFi">WiFi<a class="header-anchor" href="#WiFi"></a></h2>
+<p>보드에 WiFi 칩셋이 두 개 있었죠. MT7628A는 2.4GHz 대역을 담당하고, PCIe로 연결된 MT7612E는 5GHz 대역을 담당합니다. 각각은 factory 파티션에 저장된 캘값을 필요로 하고, dts에는 이 캘값의 위치를 적어주어야 합니다.</p>
+<p>factory 파티션 내용을 쭉 훓어보면 알겠지만, 대부분의 공간은 텅 비어있고 0x0 부분과 0x8000 부분에 약간의 데이터가 저장되어 있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/028-factory-entropy.png" class="">
+<p>이 중에 어떤 게 누구 건지 어떻게 알 수 있을까요? 가장 간단한 방법은 둘 다 시도해보는 겁니다. 캘값엔 칩셋 정보도 들어가있기 때문에 잘못 넣으면 못 받아먹고 토해냅니다.</p>
+<p>또 다른 방법은 MAC 주소를 비교해보는 겁니다. 보통 WiFi 칩셋마다 서로 다른 MAC 주소를 할당하기 때문에, 정펌 상태에서 어떤 주소를 쓰는지 확인하고 캘값에 적힌 주소와 비교해보면 되겠습니다. WiFi AP의 MAC 주소는 관리자 웹페이지에서 확인할 수도 있고, WiFi 스캔 앱이나 <code>iw</code> 명령어로 확인할 수도 있습니다.</p>
+<p>제 기기의 MAC 주소는 이렇습니다.</p>
+<ul>
+<li>2.4GHz: 88:36:6c:xx:xx:<strong>dc</strong></li>
+<li>5GHz: 88:36:6c:xx:xx:<strong>de</strong></li>
+</ul>
+<p>보통 마지막 바이트만 살짝 다르게 나옵니다. 이 주소를 factory 파티션에서 검색해봅니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/029-flash-wifi-mac.png" class="">
+<p>0x0이 2.4GHz, 0x8000이 5GHz네요. 이걸 dts에 적어줍니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/030-dts-wifi.png" class="">
+<ul>
+<li><code>&amp;wmac</code>은 MT7628A의 내장 WiFi 모듈입니다. <code>0x0</code>은 SoC dtsi에 이미 들어가있으니 다시 안 써줘도 됩니다.</li>
+<li>MT7628A는 PCIe 포트가 하나밖에 없어서 별로 상관없지만, 포트가 여러 개인 기기에서 작업할 땐 <code>lspci -nn</code>으로 어떤 게 어디에 물려있는지 확인해야 합니다.</li>
+<li><code>ieee80211-freq-limit</code>는 WiFi 칩셋이 사용할 주파수 대역을 제한하기 위해 사용합니다. 원래 MT7612E는 2.4GHz와 5GHz를 둘 다 지원하는데, A604M에선 5GHz 안테나 선만 연결해서 사용하고 있습니다. 하지만 커널은 그걸 모르니 수동으로 알려줘야 합니다.</li>
+</ul>
+<p>Mi Router 4A의 설정과 똑같아서 따로 수정할 게 없군요.</p>
+<p>WiFi 커널 모듈도 추가해줘야 하는데, <code>kmod-mt7603</code>과 <code>kmod-mt76x2</code>가 이미 이미지에 포함되어 있어서 더 건들 게 없습니다.</p>
+<p>WiFi 작동확인을 하려면 <code>/etc/config/wireless</code>에서 장치를 켜면 됩니다. 자세한 방법은 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLXVzZXIvbmV0d29yay93aWZpL2Jhc2lj">위키 문서<i class="fa fa-external-link-alt"></i></span>를 참조하세요.</p>
+<img src="/2020/08/22/openwrt-add-new-device/031-iwinfo.png" class="">
+<h2 id="이더넷-MAC-주소">이더넷 MAC 주소<a class="header-anchor" href="#이더넷-MAC-주소"></a></h2>
+<p>이더넷 MAC 주소도 정펌과 같게 해주는 게 좋습니다. 이것도 관리자 웹페이지에서 확인하거나 <code>arp-scan</code> 명령어로 직접 확인할 수 있습니다.</p>
+<p>또는 정펌 부팅 로그에서 읽어올 수도 있고요.</p>
+<img src="/2020/08/22/openwrt-add-new-device/032-stock-eth-mac.png" class="">
+<p>이 MAC 주소는 이상하게 부트로더 파티션에 있네요.</p>
+<img src="/2020/08/22/openwrt-add-new-device/033-flash-eth-mac.png" class="">
+<p>LAN 주소는 dts에, WAN 주소는 <code>02_network</code>에 적어줍니다. 둘 다 <code>02_network</code>에 넣어도 되긴 하지만, 커널한테도 귀띔해줘서 나쁠 거 없으니까요.</p>
+<img src="/2020/08/22/openwrt-add-new-device/034-dts-ethernet.png" class="">
+<img src="/2020/08/22/openwrt-add-new-device/035-setup_macs.png" class="">
+<p>이제 MAC 주소가 다 맞게 되었네요.</p>
+
+<ul>
+<li>만약 플래시에 정확하게 일치하는 MAC 주소가 없으면 비슷한 주소에다 차이값을 더해서 쓸 수 있습니다.</li>
+<li>기기 어딘가에 대표 MAC 주소가 적혀 있으면 <code>label-mac</code>에 넣을 수 있지만, ipTIME은 더 이상 보드에 MAC 주소 스티커를 붙이지 않는 모양입니다.</li>
+<li>ipTIME 이지메시 지원 펌웨어 버전 이후로 MAC 주소가 조금 변한 것 같습니다.</li>
+</ul>
+<div class="note info"><p>참고문서:</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9tYWMuYWRkcmVzcw==">https://openwrt.org/docs/guide-developer/mac.address<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+</div>
+<h2 id="USB">USB<a class="header-anchor" href="#USB"></a></h2>
+<p>A604M엔 외부 USB 포트가 없습니다. 보드에 USB 포트 흔적이 남아있긴 한데, 굳이 납땜해서 달고 싶은 마음은 안 드네요.</p>
+<p>왠진 모르겠지만 SoC dtsi에서 USB를 기본적으로 활성화해둔 상태이므로 dts에서 비활성화해둡니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/037-dts-usb.png" class="">
+<p>참고로 ohci는 USB 1.x, ehci는 USB 2.x, xhci는 USB 3.x에 해당합니다.</p>
+<h2 id="LED와-버튼">LED와 버튼<a class="header-anchor" href="#LED와-버튼"></a></h2>
+<p>A604M에 달린 LED와 버튼 목록은 다음과 같습니다.</p>
+<ul>
+<li>LED: 전원, CPU, WiFi 2.4G, WiFi 5G, LAN 1~4, WAN</li>
+<li>버튼: WPS, 리셋</li>
+</ul>
+<p>LED 중에서 소프트웨어로 제어해야 하는 건 CPU와 WiFi 정도네요. 전원 LED는 VCC에 직결되어 있고, LAN/WAN LED는 스위치에서 자동제어 해주는데 굳이 건들 필요 없겠죠.</p>
+<p>보통 이런 LED는 SoC의 GPIO 핀에 연결되어 있습니다. 어떤 LED가 몇 번 핀에 달려있는지 확인하기 위해선 GPIO 핀을 차례로 올렸다 내렸다 하면서 반응하는 LED를 찾는게 일반적인 방법이지만, 지금 보니 커널 버전이 5.4로 올라가면서 gpio 드라이버가 바뀌고 핀 순서가 뒤죽박죽 되어버렸네요. 에휴… 그냥 바로 지름길로 가겠습니다.</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2lwdGltZS1ncGwvdXNlcmFwcHNfYTYwNG0vYmxvYi9tYXN0ZXIvZnMvbXQ3NjIxL2Nsb25lcy9hNjA0bS9zaS9odw==">정펌 소스<i class="fa fa-external-link-alt"></i></span>를 보면 LED/버튼의 핀 번호가 나와있습니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> 예를 들어 WiFi 5G LED는 5번 핀이라고 하네요.</p>
+<ul>
+<li>CPU LED: GPIO #11</li>
+<li>WiFi 2.4G LED: GPIO #46</li>
+<li>WiFi 5G LED: GPIO #5</li>
+<li>리셋 버튼: GPIO #38</li>
+<li>WPS 버튼: GPIO #45</li>
+</ul>
+<p><span class="exturl" data-url="aHR0cDovL3Zvbmdlci5jbi91cGxvYWQvTVQ3NjI4X0Z1bGwucGRm">MT7628 데이터시트<i class="fa fa-external-link-alt"></i></span>를 보면 각 GPIO 핀이 SoC에서 어떤 다른 역할을 할 수 있는지 적혀있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/038-pin-table.png" class="">
+<p>그러니까 GPIO 5번 핀은 I2C SDA 핀으로도 쓰일 수 있다는 겁니다. 이 핀을 I2C가 아니라 GPIO로 쓰고 싶다면 dts pinctrl 노드에 이를 명시해주어야 합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/039-dts-pinctrl.png" class="">
+<p>콘솔에서 GPIO 제어 한번 안 해보고 이대로 지나가버리는 건 좀 섭섭하니 핀 테스트도 해봅시다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/040-sysfs-gpio.png" class="">
+<p>5번 핀은 리눅스에서 gpio485에 해당합니다. 이미 export된 gpio는 아직 삭제 안한 Mi Router 4A의 LED/버튼입니다.<br>
+<code>value</code>에 0을 넣으면 LED가 켜지고, 1을 넣으면 LED가 꺼질 겁니다. LED가 켜질 때/버튼이 눌릴 때(active) GPIO가 1(high)이면 active high, GPIO가 0(low)이면 active low라고 합니다.</p>
+<p>이 정보를 바탕으로 dts 노드를 작성합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/041-dts-led-key.png" class="">
+<img src="/2020/08/22/openwrt-add-new-device/042-dts-status-led.png" class="">
+<ul>
+<li><code>linux,default-trigger</code>는 해당 LED가 사용할 트리거를 지정합니다. <code>phy0tpt</code>는 WiFi phy0 장치에 트래픽이 발생할 때 깜박이는 트리거입니다.<br>
+예전엔 <code>01_leds</code>에서 트리거 지정을 했는데, 요즘은 이것도 dts로 넘기고 있는 추세입니다. DT는 사용자가 수정할 수 없지만 부팅 중에 빠르게 설정이 적용된다는 장점이 있고, <code>01_leds</code>는 UCI 설정이므로 부팅이 다 된 후에야 로딩되지만 LuCI에서 사용자가 수정할 수 있다는 장점이 있습니다.</li>
+<li><code>linux,code</code>는 해당 버튼이 눌릴 때 입력될 신호를 지정합니다.</li>
+<li><code>led-boot</code> alias는 OpenWrt가 부팅하는 동안 깜박일 상태 LED를 지정합니다.</li>
+</ul>
+<p>이제 LED와 버튼이 모두 작동할 것입니다. 참고로 OpenWrt에서는 버튼이 눌리면 <code>/etc/rc.button/</code>에 있는 스크립트가 실행됩니다.</p>
+<div class="note info"><p>참고문서:</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL3RlY2hyZWYvaGFyZHdhcmUvcG9ydC5ncGlv">https://openwrt.org/docs/techref/hardware/port.gpio<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+</div>
+<h2 id="Failsafe">Failsafe<a class="header-anchor" href="#Failsafe"></a></h2>
+<p>OpenWrt를 쓰다가 뭔가 설정을 잘못해서 더 이상 원격 접속이 안 되는 상황이 생길 수 있습니다. 이럴 때를 대비해 OpenWrt에도 안전 모드 같은 게 있는데, 이게 바로 failsafe 모드입니다. 부팅 중에 상태 LED가 빠르게 깜박일 때 콘솔에서 <code>f</code>를 누르거나 보드에 달린 아무 버튼을 누르면 failsafe 모드로 진입합니다. 공유기는 192.168.1.1 고정 IP 상태가 되고, 외부에서 고정 IP로 유선 연결해서 ssh 접속을 할 수 있게 됩니다.</p>
+<p>이걸 왜 여기서 다루냐면, 디바이스 지원 패치를 작성하면서 failsafe 모드가 정상 작동하는지도 확인할 필요가 있기 때문입니다. 갑자기 큰일이 생겨서 failsafe 모드에 의존할 일이 생겼는데, 이더넷 설정에 문제가 있어서 ssh 접속이 안 되면 눈물이 나겠죠. 대부분의 경우엔 별다른 추가 설정 필요없이 잘 될 겁니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/043-failsafe-mode.png" class="">
+<h2 id="부트로더">부트로더<a class="header-anchor" href="#부트로더"></a></h2>
+<p>정펌 부트로더에는 이런저런 기능적 제약이 걸려있는 경우가 많기 때문에 U-Boot 부트로더를 새로 빌드해 갈아치우는 경우도 꽤 있습니다. 이 경우 U-Boot 지원 패치도 따로 만들어서 넣어야 합니다.</p>
+<p>하지만 A604M의 경우엔 굳이 바꾸지 않아도 잘 돌아가고, ramips 타겟에선 부트로더는 그대로 두는 경우가 많아서 여기서도 따로 건들지 않겠습니다.</p>
+<h1 id="설치법">설치법<a class="header-anchor" href="#설치법"></a></h1>
+<p>이제 기기의 웬만한 기능은 다 살려놨습니다. 마지막으로 설치 이미지를 만들어봅시다.</p>
+<p>OpenWrt에선 squashfs 설치 이미지를 크게 두 가지로 분류합니다.</p>
+<ul>
+<li>factory: 정펌에서 OpenWrt를 설치할 때 사용하는 이미지입니다. 제조사의 펌웨어 검증 절차를 통과하기 위해 이상한 게 덕지덕지 붙어있는 경우가 많습니다.</li>
+<li>sysupgrade: 이미 OpenWrt가 설치된 기기에서 다시 OpenWrt를 설치할 때(보통 새 버전으로 업그레이드 할 때) 사용하는 이미지입니다.</li>
+</ul>
+<p>factory 이미지가 반드시 따로 존재할 필요는 없습니다. 만약 정펌에서 sysupgrade 이미지를 바로 설치하는 게 가능하면 sysupgrade가 factory 역할도 하게 되는 겁니다.</p>
+<blockquote>
+<p>으… 매번 &quot;이미지&quot;를 반복하는 것도 슬슬 귀찮아지니 앞으로 initramfs, factory, sysupgrade 이미지를 각각 I펌, F펌, S펌으로 줄여서 부르겠습니다.</p>
+</blockquote>
+<p>일단 S펌부터 살펴보겠습니다. 따로 이미지 생성방법을 지정하지 않으면 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iL2I1OWE5OGIwMDliOWMyNDUzZjEyMWJjYmQyOTI1MmFkMjExMjhhOWMvdGFyZ2V0L2xpbnV4L3JhbWlwcy9pbWFnZS9NYWtlZmlsZSNMMTc2">기본 레시피<i class="fa fa-external-link-alt"></i></span>에 따라 S펌이 빌드됩니다.</p>
+<p>빌드 이미지 디렉토리에 있는 S펌 포맷을 확인합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/044-binwalk-sysupgrade.png" class="">
+<p>uImage 헤더로 시작하고, 커널과 rootfs가 뒤따라오는 건 정펌과 매우 유사해 보입니다. 오…? 그러면 복구모드에서 S펌을 받아들일지도 모르겠네요.</p>
+<img src="/2020/08/22/openwrt-add-new-device/045-boot-sysupgrade.png" class="">
+<p>해보니 잘 됩니다. S펌 첫 부팅은 jffs2 초기화 때문에 시간이 더 걸립니다.</p>
+<p>OpenWrt를 재설치할 땐 <code>sysupgrade</code> 명령어를 쓰고, 모델별 재설치 절차는 <code>platform.sh</code>에서 지정합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/046-platform-do-upgrade.png" class="">
+<p>ramips 타겟의 기본 재설치 절차는 <code>default_do_upgrade</code>인데, 이건 NOR 플래시의 firmware 파티션에 이미지를 설치하는 일반적인 방법입니다.</p>
+<p>OpenWrt를 재설치하면 기존에 설치해둔 패키지 등은 사라지지만, <code>/etc/config/</code>에 있는 설정값은 보존됩니다. 한번 테스트 해보겠습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/047-sysupgrade-start.png" class="">
+<p>hostname을 &quot;a604m&quot;으로 바꾸고 재설치를 했으니 다음에 부팅하면 hostname이 a604m으로 떠야합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/048-sysupgrade-success.png" class="">
+<p>그리고 실제로 그렇게 됐네요. 이로써 재설치 기능도 검증이 된 셈입니다.</p>
+<p>개인이 혼자 사용할 거라면 이걸로 포팅이 끝났다고 볼 수 있지만, 만약 지원 패치를 업스트림에 머지시킬 생각이라면 보다 손쉬운 설치법을 찾는 게 좋을 겁니다. 모든 사람이 시리얼 어댑터를 가지고 있는 건 아니니까요.</p>
+<p>가장 좋은 방법은 정펌 관리자 웹페이지의 펌업 메뉴를 이용하는 것입니다. 이것만큼 쉬운 방법도 없겠죠.</p>
+<img src="/2020/08/22/openwrt-add-new-device/049-stock-web-sysupgrade.png" class="">
+<p>이미지를 접수하고 플래싱하고 OpenWrt로 부팅하는 데까진 잘 되는데, 중간에 커널 패닉이 나면서 부팅에 실패합니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/050-no-rootfs.png" class="">
+<p>요지는 rootfs를 못 찾겠다는 얘깁니다. 대체 왜? <code>tftpboot</code>를 쓸 수 있다면 플래시 덤프라도 해보겠지만, 방법이 없으니 펌업 로그라도 읽어봐야죠.</p>
+<img src="/2020/08/22/openwrt-add-new-device/051-stock-mtd-write.png" class="">
+<p>정펌에서 플래싱을 할 때 1941972 바이트만큼 기록하겠다고 하네요. 1.9MB는 너무 적은데요. 이 값은 어디서 온 걸까요?</p>
+<p>아까 S펌 <code>binwalk</code> 결과에서 uImage 헤더의 이미지 크기란에 1941908 바이트라고 적혀있었습니다. 1941908는 커널만 포함하는 크기고, rootfs는 딱 1941972(= 1941908 + 64) 바이트 지점에서 시작합니다. 이 말인즉슨, 정펌은 헤더의 이미지 크기란을 기준으로 플래싱을 하고, S펌의 uImage는 딱 커널까지만 포함하기 때문에, 그 이후 부분이 플래싱이 되지 않아 커널이 rootfs를 못 찾는 겁니다.</p>
+<p>두 이미지의 포맷 차이를 그림으로 대충 그려보면 이렇습니다.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 정펌</span><br><span class="line">┌────┬────┬─────┐</span><br><span class="line">│ header │ kernel │ squashfs │</span><br><span class="line">└────┴────┴─────┘</span><br><span class="line"></span><br><span class="line"># S펌</span><br><span class="line">┌────┬────┐┌─────┐┌───────┐┌─────┐</span><br><span class="line">│ header │ kernel ││ squashfs ││ jffs2 marker ││ metadata │</span><br><span class="line">└────┴────┘└─────┘└───────┘└─────┘</span><br></pre></td></tr></table></figure>
+<p>만약 uImage가 커널 이후 범위도 포함하게 한다면 어떨까요? 제가 알아본 바로는, OpenWrt의 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iL2I1OWE5OGIwMDliOWMyNDUzZjEyMWJjYmQyOTI1MmFkMjExMjhhOWMvdGFyZ2V0L2xpbnV4L2dlbmVyaWMvZmlsZXMvZHJpdmVycy9tdGQvbXRkc3BsaXQvbXRkc3BsaXRfdWltYWdlLmMjTDE1Ng==">mtdsplit 코드<i class="fa fa-external-link-alt"></i></span>는 uImage가 커널만 포함하는 걸 전제로 짜여있기 때문에, 헤더를 수정하면 아마 커널이 rootfs를 못 찾을 겁니다.</p>
+<p>S펌을 정펌 포맷에 맞추는 것보다 더 쉬운 방법이 있습니다. I펌은 정펌 포맷에 들어맞기 때문에 웹페이지에서도 펌업이 잘 됩니다. 그럼 I펌을 F펌으로 쓰면 되겠죠. 다만 위에서 말했듯 I펌은 파일 변경사항이 저장이 안 되기 때문에 다시 S펌으로 재설치할 필요는 있을 겁니다.</p>
+<p>여기서 스샷을 따로 첨부하진 않겠지만 I펌-&gt;S펌, S펌-&gt;정펌 설치도 잘 됩니다. 모두 <code>sysupgrade</code> 명령어로 처리 가능합니다.(다만 후자의 경우 정펌엔 OpenWrt 메타데이터가 없기 때문에 <code>-F</code> 옵션을 추가해주어야 합니다.) OpenWrt에선 config 파티션에 손대지 않기 때문에 정펌으로 돌아가도 기존 설정은 그대로 유지될 것입니다.</p>
+<p>참고로, 리셋 버튼을 누른 상태에서 전원을 넣어도 TFTP 복구모드에 들어가지진 않는 것으로 보입니다. 강제로 복구모드에 진입하기 위해 정펌 업데이트 중간에 전원을 끄는 방법도 있긴 하지만 이건 남한테 추천은 못 하겠네요.</p>
+<p>마지막으로 이미지 Makefile을 한번 보고 가도록 하겠습니다. dts가 하드웨어 정보를 모아놓은 곳이라면, <code>image/Makefile</code>은 이미지 생성방법이 적힌 곳입니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/052-image-makefile.png" class="">
+<ul>
+<li><code>IMAGE_SIZE</code>는 펌웨어의 최대 크기를 지정합니다. 그냥 firmware 파티션 크기를 적어주면 됩니다.</li>
+<li><code>DEVICE_PACKAGES</code>는 이미지에 포함될 기본 패키지를 지정합니다. 플래시 공간을 절약하기 위해선 단순히 있으면 좋은 정도가 아니라 기본 작동에 필수적인 것들만 포함시켜야 합니다.</li>
+<li>이미지 종류나 생성방법을 바꾸려면 <code>IMAGES</code>나 <code>IMAGE/&lt;image&gt;</code>를 설정하면 되는데, A604M의 경우엔 기본 S펌만으로도 충분하므로 따로 설정하지 않습니다.</li>
+</ul>
+<h1 id="업스트림">업스트림<a class="header-anchor" href="#업스트림"></a></h1>
+<p>여태까지의 코드를 하나의 패치로 만들면 이렇게 됩니다. <a href="/2020/08/22/openwrt-add-new-device/b59a98b009b9-a604m.diff" title="b59a98b009b9-a604m.diff">b59a98b009b9-a604m.diff</a></p>
+<p>이 패치를 혼자 사용하거나 개인 리포지토리에 올리고 끝내는 것도 방법이지만, 만약 OpenWrt 공식 저장소에 넣을 수 있다면 더 많은 사람들이 지원 패치의 혜택을 볼 수 있겠죠.</p>
+<p>업스트림 저장소에 패치를 머지했을 때 좋은 점을 몇 가지 들어보자면,</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cDovL2J1aWxkYm90Lm9wZW53cnQub3JnL21hc3Rlci9pbWFnZXMvZ3JpZA==">공식 빌드봇<i class="fa fa-external-link-alt"></i></span>이 이미지를 자동으로 빌드해주므로 직접 빌드할 필요가 없습니다.</li>
+<li>만약 직접 빌드한 이미지를 쓴다면, 일반 패키지는 opkg로 다운로드받아 설치할 수 있지만, 커널 모듈만큼은 다운로드받아 쓸 수 없고 다시 빌드해 넣어야합니다. 이는 커널 빌드 옵션이 달라서 생기는 일으로, 공식 빌드봇과 같은 옵션을 줘서 빌드하면 해결되긴 하지만 이는 시간이 꽤 오래 걸리는 일입니다. 만약 패치에 커널 옵션 변경사항이 있다면 그마저도 불가능하고요.</li>
+<li>공식 저장소에 머지되고 나면 로컬에서 업스트림 버전 업데이트를 따라갈 필요가 없다는 건 당연하겠죠.</li>
+</ul>
+<p>다만 패치가 &quot;hack&quot;에 가깝거나, 다른 모델에 부작용을 끼치거나, 코드 관리 부담이 큰 경우엔 머지가 거부될 수 있습니다.</p>
+<p>현재 OpenWrt는 패치를 <span class="exturl" data-url="aHR0cHM6Ly9saXN0cy5vcGVud3J0Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL29wZW53cnQtZGV2ZWw=">메일링 리스트<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9wdWxscw==">GitHub<i class="fa fa-external-link-alt"></i></span>에서 받고 있습니다. 나중에 자체운영 GitLab으로 넘어갈 거라곤 하는데 아직은 별다른 소식이 없네요. OpenWrt 메인테이너 중에는 커널 개발자도 많아서 패치 처리 절차도 비슷하게 따라가는 것 같습니다.</p>
+<p>이 글에서 GitHub PR 여는 법을 설명하진 않겠지만, 대신 몇 가지 주의사항을 언급하자면,</p>
+<ul>
+<li>많은 오픈소스 프로젝트에서 패치를 어떻게 작성해야 하는지 가이드라인을 제시합니다. OpenWrt의 경우에도 마찬가지로 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9zdWJtaXR0aW5nLXBhdGNoZXM=">공식 가이드<i class="fa fa-external-link-alt"></i></span>에 따라 패치의 형식을 맞춰주어야 합니다.</li>
+<li>다른 리뷰어의 질문과 코멘트에 적절히 응답해야 합니다. 나는 작동하는 패치를 줬으니 너희들이 알아서 고쳐서 넣어라, 식으로 나오는 사람이 가끔 있는데 이러면 머지될 확률이 낮아집니다.</li>
+<li>대부분의 오픈소스 프로젝트가 그렇듯이, PR은 <span class="exturl" data-url="aHR0cHM6Ly9lZHlraW0uY29tL2tvL3Bvc3Qvb3Blbi1zb3VyY2UtbWFpbnRhaW5lcnMtb3dlLXlvdS1ub3RoaW5nLw==">관리자의 선의<i class="fa fa-external-link-alt"></i></span>로 머지됩니다. 특히 기기 지원 패치는 머지되기까지 몇 주 걸리는 게 보통입니다. PR에 아무런 반응이 달리지 않고 시간만 지나가는 데에 실망감이 드는 건 전혀 이상한 일이 아닙니다. 그렇지만 인내심을 갖고 기다리면서 가끔씩 관련자를 호출하는 것 외에 달리 할 수 있는 게 있는 것도 아닙니다.</li>
+</ul>
+<p>당연하다면 당연한 얘기지만 이것도 지키지 못해 거부되는 PR을 몇 번 봤기 때문에 노파심에 언급해둡니다…</p>
+<p>운이 좋아 PR이 머지가 된다면 축하드립니다! 하루이틀 지나면 <span class="exturl" data-url="aHR0cHM6Ly9kb3dubG9hZHMub3BlbndydC5vcmcv">공식 다운로드 서버<i class="fa fa-external-link-alt"></i></span>에서 이미지를 다운받을 수 있을 겁니다.</p>
+<p>이 또한 의무는 아니지만(패치는 기여자의 선의로 작성됩니다), 머지 이후에도 당분간 기기를 처분하지 말고 혹시 들어올지 모르는 버그 제보에 대비하면 더욱 좋을 것 같습니다.</p>
+<div class="note info"><p>참고문서:</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9zdWJtaXR0aW5nLXBhdGNoZXM=">https://openwrt.org/submitting-patches<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9kZXZpY2Utc3VwcG9ydC1wb2xpY2llcw==">https://openwrt.org/docs/guide-developer/device-support-policies<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+</div>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>NOR 플래시 이미지에 해당하는 얘기고, NAND 플래시나 SD카드 이미지는 구조가 조금 다릅니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>그 외에도 메모리 크기, 주변장치 종류, 스위치 포트 순서도 알려주는 아주 좋은 자료입니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>mans0n
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/" title="OpenWrt에 새 기기 지원 추가하기">https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%EB%B6%84%ED%95%B4/" rel="tag"><i class="fa fa-tag"></i> 분해</a>
+              <a href="/tags/openwrt/" rel="tag"><i class="fa fa-tag"></i> OpenWrt</a>
+              <a href="/tags/%ED%8F%AC%ED%8C%85/" rel="tag"><i class="fa fa-tag"></i> 포팅</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/18/korean-home-router-survey/" rel="prev" title="국내 공유기에도 OpenWrt를 올릴 수 있을까">
+      <i class="fa fa-chevron-left"></i> 국내 공유기에도 OpenWrt를 올릴 수 있을까
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#들어가기-전에"><span class="nav-number">1.</span> <span class="nav-text">들어가기 전에</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#글의-목적"><span class="nav-number">1.1.</span> <span class="nav-text">글의 목적</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#왜-OpenWrt"><span class="nav-number">1.2.</span> <span class="nav-text">왜 OpenWrt?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#글의-방향"><span class="nav-number">1.3.</span> <span class="nav-text">글의 방향</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#사전조사"><span class="nav-number">2.</span> <span class="nav-text">사전조사</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#하드웨어-및-펌웨어-조사"><span class="nav-number">3.</span> <span class="nav-text">하드웨어 및 펌웨어 조사</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#빌드-및-부팅"><span class="nav-number">4.</span> <span class="nav-text">빌드 및 부팅</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#기능-살리기"><span class="nav-number">5.</span> <span class="nav-text">기능 살리기</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#이더넷"><span class="nav-number">5.1.</span> <span class="nav-text">이더넷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#플래시"><span class="nav-number">5.2.</span> <span class="nav-text">플래시</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WiFi"><span class="nav-number">5.3.</span> <span class="nav-text">WiFi</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#이더넷-MAC-주소"><span class="nav-number">5.4.</span> <span class="nav-text">이더넷 MAC 주소</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USB"><span class="nav-number">5.5.</span> <span class="nav-text">USB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LED와-버튼"><span class="nav-number">5.6.</span> <span class="nav-text">LED와 버튼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Failsafe"><span class="nav-number">5.7.</span> <span class="nav-text">Failsafe</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#부트로더"><span class="nav-number">5.8.</span> <span class="nav-text">부트로더</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#설치법"><span class="nav-number">6.</span> <span class="nav-text">설치법</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#업스트림"><span class="nav-number">7.</span> <span class="nav-text">업스트림</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">mans0n</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">태그</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license motion-element" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><img src="/images/cc-by-sa.svg" alt="Creative Commons"></span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mans0n</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
