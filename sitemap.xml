@@ -4,43 +4,54 @@
   <url>
     <loc>https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</loc>
     
-    <lastmod>2020-08-22T10:35:08.678Z</lastmod>
+    <lastmod>2020-08-22</lastmod>
     
   </url>
   
   <url>
     <loc>https://mans0n.github.io/2020/08/18/korean-home-router-survey/</loc>
     
-    <lastmod>2020-08-21T14:50:32.000Z</lastmod>
+    <lastmod>2020-08-21</lastmod>
     
   </url>
   
   <url>
     <loc>https://mans0n.github.io/2020/08/08/winxp-on-a9004m/</loc>
     
-    <lastmod>2020-08-08T14:55:41.000Z</lastmod>
+    <lastmod>2020-08-08</lastmod>
     
   </url>
   
   <url>
     <loc>https://mans0n.github.io/2020/07/19/xiaomi-wifi-extender-pro/</loc>
     
-    <lastmod>2020-08-08T13:08:49.920Z</lastmod>
+    <lastmod>2020-08-08</lastmod>
     
   </url>
   
   <url>
     <loc>https://mans0n.github.io/tags/index.html</loc>
     
-    <lastmod>2020-07-18T14:02:20.891Z</lastmod>
+    <lastmod>2020-07-18</lastmod>
     
   </url>
   
   <url>
     <loc>https://mans0n.github.io/categories/index.html</loc>
     
-    <lastmod>2020-07-18T14:02:17.638Z</lastmod>
+    <lastmod>2020-07-18</lastmod>
     
   </url>
+  
+
+  <url>
+    <loc>https://mans0n.github.io/</loc>
+    <lastmod>2020-08-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  
+
   
 </urlset>

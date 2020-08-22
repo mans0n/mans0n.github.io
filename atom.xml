@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>맨손잡이</title>
+  
+  <subtitle>이것저것 만듭니다</subtitle>
+  <link href="https://mans0n.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://mans0n.github.io/"/>
+  <updated>2020-08-22T10:35:08.678Z</updated>
+  <id>https://mans0n.github.io/</id>
+  
+  <author>
+    <name>mans0n</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>OpenWrt에 새 기기 지원 추가하기</title>
+    <link href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/"/>
+    <id>https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</id>
+    <published>2020-08-22T10:32:37.000Z</published>
+    <updated>2020-08-22T10:35:08.678Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;들어가기-전에&quot;&gt;들어가기 전에&lt;a class=&quot;header-anchor&quot; href=&quot;#들어가기-전에&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
+&lt;h2 id=&quot;글의-목적&quot;&gt;글의 목적&lt;a class=&quot;header-anchor&quot; href=&quot;#글의-목적&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야에 숨은 고수의 유입을 유도함으로써 저도 편하게 버스타고 가고 싶다는 사적인 소망을 이루고자 이 글을 썼다는 얘기입니다.&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="자유시간 프로젝트" scheme="https://mans0n.github.io/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/"/>
+    
+    
+    <category term="분해" scheme="https://mans0n.github.io/tags/%EB%B6%84%ED%95%B4/"/>
+    
+    <category term="OpenWrt" scheme="https://mans0n.github.io/tags/openwrt/"/>
+    
+    <category term="포팅" scheme="https://mans0n.github.io/tags/%ED%8F%AC%ED%8C%85/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>국내 공유기에도 OpenWrt를 올릴 수 있을까</title>
+    <link href="https://mans0n.github.io/2020/08/18/korean-home-router-survey/"/>
+    <id>https://mans0n.github.io/2020/08/18/korean-home-router-survey/</id>
+    <published>2020-08-17T15:21:22.000Z</published>
+    <updated>2020-08-21T14:50:32.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;개괄&quot;&gt;개괄&lt;a class=&quot;header-anchor&quot; href=&quot;#개괄&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="자유시간 프로젝트" scheme="https://mans0n.github.io/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/"/>
+    
+    
+    <category term="OpenWrt" scheme="https://mans0n.github.io/tags/openwrt/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ipTIME A9004M 공유기에 Windows XP 올리기</title>
+    <link href="https://mans0n.github.io/2020/08/08/winxp-on-a9004m/"/>
+    <id>https://mans0n.github.io/2020/08/08/winxp-on-a9004m/</id>
+    <published>2020-08-08T14:53:02.000Z</published>
+    <updated>2020-08-08T14:55:41.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;계기&quot;&gt;계기&lt;a class=&quot;header-anchor&quot; href=&quot;#계기&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
+&lt;p&gt;작년에 우연히 이 트윗을 보게 되었습니다.&lt;/p&gt;
+&lt;img src=&quot;/2020/08/08/winxp-on-a9004m/001-tweet.png&quot; class=&quot;&quot;&gt;
+&lt;p&gt;그때까진 공유기에 OpenWrt 외의 일반 리눅스 배포판을 올려볼 생각을 해본 적이 없어서, 공유기에 VNC 서버를 올린다는 생각이 제겐 상당히 신선하게 다가왔습니다.&lt;/p&gt;
+&lt;p&gt;만약 WRT1900ACS에서 VNC 서버를 돌릴 수 있다면 “저급하지 않은” ipTIME 기기에서도 가능할 것이라 생각했습니다. 예를 들어 NAS1dual의 경우 WRT1900ACS과 동일한 CPU(Marvell 88F6820)를 쓰는 데다 RAM이 512MB의 네 배인 2GB이므로 단순히 연산성능상으로만 봤을 땐 딱히 꿀릴 것이 없겠지요.&lt;/p&gt;
+&lt;p&gt;그래도 똑같은 플랫폼에서 똑같은 걸 따라하는 건 재미가 덜할 것 같고, ipTIME 공유기 중에서 충분히 성능이 좋은 A9004M에서 시도해보기로 했습니다.&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="자유시간 프로젝트" scheme="https://mans0n.github.io/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/"/>
+    
+    
+    <category term="OpenWrt" scheme="https://mans0n.github.io/tags/openwrt/"/>
+    
+    <category term="Docker" scheme="https://mans0n.github.io/tags/docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>샤오미 WiFi 증폭기 Pro 열어보기</title>
+    <link href="https://mans0n.github.io/2020/07/19/xiaomi-wifi-extender-pro/"/>
+    <id>https://mans0n.github.io/2020/07/19/xiaomi-wifi-extender-pro/</id>
+    <published>2020-07-18T15:58:41.000Z</published>
+    <updated>2020-08-08T13:08:49.920Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;발단&quot;&gt;발단&lt;a class=&quot;header-anchor&quot; href=&quot;#발단&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
+&lt;p&gt;사실 증폭기 Pro는 한참 전부터 눈독을 들이고 있던 모델이었습니다. 실사용하려는 목적은 전혀 아니었고, 생긴 게 앙증맞고 예쁘니 여기다 OpenWrt를 올리면 금상첨화겠다, 라는 생각이었습니다.&lt;/p&gt;
+&lt;p&gt;제품을 구하기 전에 미리 하드웨어 정보를 알 수 있으면 좋을 텐데, 이 모델의 내부 사진을 찾기가 쉽지 않네요. 가끔씩 생각날 때마다 찾아보길 반복하다가 2019년 8월 말에 운좋게 &lt;span class=&quot;exturl&quot; data-url=&quot;aHR0cHM6Ly93d3cuem5qLmNvbS9uZXdzLzM3NDQuaHRtbA==&quot;&gt;분해기&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;&lt;/span&gt;를 하나 발견했습니다.&lt;/p&gt;
+&lt;p&gt;뒷면 스티커 아래에 나사구멍이 숨어있었군요. 게다가 보드엔 시리얼 포트까지 떡하니 나와있네요. 괜찮아 보이는데요? 마침 그때 알리에서 $11.5에 팔길래 만약 실패하더라도 큰 부담이 안 되겠다 싶어 바로 하나 주문했습니다.&lt;/p&gt;
+&lt;p&gt;…&lt;/p&gt;
+&lt;p&gt;지금 와서 보면 성급한 충동구매였는데… 정말 가격이라도 싸서 다행이었네요.&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="자유시간 프로젝트" scheme="https://mans0n.github.io/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/"/>
+    
+    
+    <category term="분해" scheme="https://mans0n.github.io/tags/%EB%B6%84%ED%95%B4/"/>
+    
+  </entry>
+  
+</feed>
