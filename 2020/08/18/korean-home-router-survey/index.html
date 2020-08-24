@@ -18,13 +18,13 @@
 
   <meta name="description" content="개괄  ⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.  2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="국내 공유기에도 OpenWrt를 올릴 수 있을까">
+<meta property="og:title" content="국산 공유기에도 OpenWrt를 올릴 수 있을까">
 <meta property="og:url" content="https://mans0n.github.io/2020/08/18/korean-home-router-survey/index.html">
 <meta property="og:site_name" content="맨손잡이">
 <meta property="og:description" content="개괄  ⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.  2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.">
 <meta property="og:locale" content="ko_KR">
 <meta property="article:published_time" content="2020-08-17T15:21:22.000Z">
-<meta property="article:modified_time" content="2020-08-21T14:50:32.000Z">
+<meta property="article:modified_time" content="2020-08-24T12:03:50.431Z">
 <meta property="article:author" content="mans0n">
 <meta property="article:tag" content="OpenWrt">
 <meta name="twitter:card" content="summary">
@@ -42,7 +42,7 @@
   };
 </script>
 
-  <title>국내 공유기에도 OpenWrt를 올릴 수 있을까 | 맨손잡이</title>
+  <title>국산 공유기에도 OpenWrt를 올릴 수 있을까 | 맨손잡이</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173005416-1"></script>
     <script>
@@ -204,7 +204,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          국내 공유기에도 OpenWrt를 올릴 수 있을까
+          국산 공유기에도 OpenWrt를 올릴 수 있을까
         </h1>
 
         <div class="post-meta">
@@ -221,7 +221,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Updated at: 2020-08-21 23:50:32" itemprop="dateModified" datetime="2020-08-21T23:50:32+09:00">2020-08-21</time>
+                <time title="Updated at: 2020-08-24 21:03:50" itemprop="dateModified" datetime="2020-08-24T21:03:50+09:00">2020-08-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -250,7 +250,7 @@
 </blockquote>
 <p>2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.</p>
 <a id="more"></a>
-<p>제가 보기에 국내 공유기는 크게 두 종류로 나눌 수 있습니다: 통신사 공유기와 사제 공유기.</p>
+<p>제가 보기에 국산 공유기는 크게 두 종류로 나눌 수 있습니다: 통신사 공유기와 사제 공유기.</p>
 <p>통신사 공유기라 하면 일반적으로 가정용 임대 공유기를 말하나, 그 외의 것도 조금 있긴 합니다.<br>
 사제 공유기의 대표 주자는 역시 ipTIME이죠. 그 외의 제조사는 점유율이 낮은 편이고요.</p>
 <p>사제 공유기의 포팅 가능성은 대체로 SoC 제조사별 특성에 따라가는 걸로 알고 있습니다.</p>
@@ -260,7 +260,7 @@
 <li>Broadcom: 포팅은 할 수 있을 겁니다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 다만 무선 칩셋이 작동하지 않을 수 있습니다. 포팅 시도하기 전에 <span class="exturl" data-url="aHR0cHM6Ly93aXJlbGVzcy53aWtpLmtlcm5lbC5vcmcvZW4vdXNlcnMvZHJpdmVycy9icmNtODAyMTE=">드라이버<i class="fa fa-external-link-alt"></i></span>가 해당 칩셋 모델을 지원하는지 미리 확인해보세요.</li>
 <li>Realtek: 포팅할 수 없습니다. 인터넷에 돌아다니는 SDK 같은 게 있긴 한데 버전이 좀 오래됐습니다.</li>
 <li>Intel: 포팅할 수 없습니다. 원래 Lantiq란 회사였는데 Intel이 인수했다고 합니다. 옛날 Lantiq 칩셋은 OpenWrt에서 지원하는 것 같은데, 최신 Intel 칩셋은 안 되나 보네요.</li>
-<li>Marvell: 포팅도 잘 되고 작동도 잘 하는데 국내 가정용 공유기에선 유난히 존재감이 없습니다. 무선 드라이버인 mwlwifi는 꾸준히 관리는 되고 있지만 메인라인 커널에 들어간 상태는 아닙니다.</li>
+<li>Marvell: 포팅도 잘 되고 작동도 잘 하는데 국내 가정용 공유기 시장에선 유난히 존재감이 없습니다. 무선 드라이버인 mwlwifi는 꾸준히 관리는 되고 있지만 메인라인 커널에 들어간 상태는 아닙니다.</li>
 </ul>
 <p>포팅 가능한 SoC를 쓰고 RAM이 32MB, 플래시가 4MB 이상이면 OpenWrt를 올릴 수 있다고 보면 됩니다.</p>
 <p>통신사 공유기는 SoC 지원 이전에 쉘을 얻을 수 있는지부터 걱정해야 할 판이기 때문에 기기 제조사나 통신사가 어딘지가 중요합니다.</p>
@@ -352,7 +352,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://mans0n.github.io/2020/08/18/korean-home-router-survey/" title="국내 공유기에도 OpenWrt를 올릴 수 있을까">https://mans0n.github.io/2020/08/18/korean-home-router-survey/</a>
+    <a href="https://mans0n.github.io/2020/08/18/korean-home-router-survey/" title="국산 공유기에도 OpenWrt를 올릴 수 있을까">https://mans0n.github.io/2020/08/18/korean-home-router-survey/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-SA</span> unless stating additionally.
