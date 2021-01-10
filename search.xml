@@ -1,6 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>국산 공유기에도 OpenWrt를 올릴 수 있을까</title>
+    <url>/2020/08/18/korean-home-router-survey/</url>
+    <content><![CDATA[<p>※ 2021-01-10: 정보 업데이트</p>
+<h1 id="개괄">개괄<a class="header-anchor" href="#개괄"></a></h1>
+<blockquote>
+<p>⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.</p>
+</blockquote>
+<p>2021-01-10 기준으로 국내 회사에서 내놓은 인터넷 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.<br>
+기업용 AP나 라우터 쪽은 제가 잘 모르기 때문에 이 글에선 가정 및 SOHO용 공유기를 주로 다룰 겁니다.</p>
+<a id="more"></a>
+<hr>
+<p>국산 공유기는 크게 두 종류로 나눌 수 있겠습니다: 통신사 공유기와 “사제” 리테일 공유기.</p>
+<p>통신사 공유기라 하면 일반적으로 가정용 임대 공유기를 말하지만, 그 외의 것도 조금 있긴 합니다.<br>
+리테일 공유기의 경우 예전엔 제조사 수가 꽤 많았지만, 지금은 ipTIME 외엔 대부분 정리되고 몇몇 군데만 남은 상황입니다.</p>
+<p>리테일 공유기의 포팅 가능성은 대체로 SoC 제조사별 특성에 따라갑니다.</p>
+<ul>
+<li>Qualcomm Atheros: 포팅 잘 되고 작동도 잘 합니다. 무선 성능을 제대로 이끌어내기 위해선 정펌에서 따온 boardfile이 필요할 수 있습니다.</li>
+<li>Ralink/MediaTek: 포팅 잘 되고 작동도 잘 합니다. 예전엔 무선 칩셋 드라이버에 버그가 많았는데 지금은 좀 나아진 편입니다.</li>
+<li>Broadcom: (32비트 CPU를 쓴다면) 포팅은 가능하겠지만, 무선 칩셋이 작동하지 않을 수 있습니다. 포팅 시도하기 전에 <span class="exturl" data-url="aHR0cHM6Ly93aXJlbGVzcy53aWtpLmtlcm5lbC5vcmcvZW4vdXNlcnMvZHJpdmVycy9icmNtODAyMTE=">드라이버<i class="fa fa-external-link-alt"></i></span>가 해당 칩셋 모델을 지원하는지 미리 확인해보세요.</li>
+<li>Realtek: 포팅할 수 없습니다…라고 생각했는데 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9jb21taXQvZGY4ZTZiZTU5YTFmYmNlM2Y4YzY4NzhmZTc0NDBhMTI5YjEyNDVkNg==">이거<i class="fa fa-external-link-alt"></i></span>와 <span class="exturl" data-url="aHR0cHM6Ly9mb3J1bS5vcGVud3J0Lm9yZy90L2FueS1wbGFucy1mb3ItcmVhbHRlay1zb2Mtc3VwcG9ydC8xNTcyNy8yMQ==">이거<i class="fa fa-external-link-alt"></i></span>를 보면 그렇게까지 불가능한 일은 아닐지도 모르겠네요. 현재 snapshot에선 매니지드 스위치에 들어가는 SoC를 지원합니다.</li>
+<li>Intel: 포팅할 수 없습니다. 원래 Lantiq란 회사였는데 Intel에 인수됐습니다. 옛날 Lantiq 칩셋은 OpenWrt에서 지원하나 본데 최신 Intel 칩셋은 별다른 소식이 없네요.</li>
+<li>Marvell: 포팅도 잘 되고 작동도 잘 하는데 국내 가정용 공유기 시장에선 유난히 존재감이 없습니다. 무선 드라이버인 mwlwifi는 꾸준히 관리는 되고 있지만 메인라인 커널에 들어간 상태는 아닙니다.</li>
+</ul>
+<p>포팅 가능한 SoC를 쓰고 RAM이 32MB, 플래시가 4MB 이상이면 OpenWrt를 올릴 수 있다고 보면 됩니다.</p>
+<p>통신사 공유기는 SoC 지원 이전에 쉘을 얻을 수 있는지부터 걱정해야 할 판이기 때문에 기기 제조사나 통신사가 어딘지가 중요합니다.</p>
+<h1 id="ipTIME">ipTIME<a class="header-anchor" href="#ipTIME"></a></h1>
+<p>ipTIME 기기는 SoC 제조사별로 이미지 포맷이 좀 많이 다릅니다. 이미지 헤더 생성하는 코드 짜는 것도 일이라…간단할수록 포팅이 쉽겠죠. 11ac 및 유선 공유기에 흔히 쓰이는 MT7621의 경우엔 별다른 제조사 헤더/테일이 없어서 작업이 수월합니다.</p>
+<p>현재 아직 단종되지 않은 11ac 리얼텍 모델은 거의 대부분 RTL8197F 계열을 사용하고 있습니다. 특이하게도 RTL8197F는 여타 리얼텍 SoC와 다르게 Lexra가 아닌 진짜배기 MIPS 아키텍처를 사용합니다.</p>
+<p>11n 모델도 포팅은 가능하나, 대부분 메모리 사양이 안 좋은 편이기 때문에 만약 OpenWrt를 올린다 하더라도 실사용은 힘들 수도 있습니다.</p>
+<p>한때 사측에서 펌웨어 소스코드를 풀었었기 때문에(지금도 공개는 하지만 업데이트는 더 이상 안 해주는 것 같습니다) 포팅 작업시 참고하면 도움이 됩니다.</p>
+<p>현재 OpenWrt에서 공식 지원하고 있는 모델은 다음과 같습니다.</p>
+<ul>
+<li>A604M, A3: MT7628 사용</li>
+<li>A104ns, A1004ns: MT7620 사용</li>
+<li>A6ns-M, <span class="exturl" data-url="aHR0cHM6Ly9naWdnbGVoZC5jb20vZ2cvYmJzLzYzNzkyODQ=">A8004T<i class="fa fa-external-link-alt"></i></span>: MT7621+MT7615 사용</li>
+</ul>
+<p>이 외에도 제가 포팅에 성공했던 모델이 몇 개 더 있는데 여러가지 이유로 업스트림에 올리진 않았습니다.</p>
+<ul>
+<li>N604Black: 32MB RAM</li>
+<li>N704BCM, N904ns: WiFi가 안 됨</li>
+<li>Extender-N3: 4MB 플래시</li>
+<li>A804NS-MU: 복잡한 이미지 헤더</li>
+<li>A9004M: NAND BMT 미지원</li>
+</ul>
+<p>그리고 teslamint님이 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3Rlc2xhbWludC9vcGVud3J0L2NvbW1pdHMvYTgwMDR0LXhy">A8004T-XR<i class="fa fa-external-link-alt"></i></span>을 포팅한 사례가 있습니다.</p>
+<h1 id="그-외-리테일-공유기">그 외 리테일 공유기<a class="header-anchor" href="#그-외-리테일-공유기"></a></h1>
+<p>퀄컴을 사용하는 (ipTIME 이외의) 리테일 공유기를 본 적이 없고, 브로드컴은 시도조차 해본 적이 없어서 잘 모릅니다. 아래 내용은 전부 ramips 기종에만 초점을 맞추고 있습니다.</p>
+<p>현재 OpenWrt에서 공식 지원하고 있는 모델은 다음과 같습니다.</p>
+<ul>
+<li>WeVO 11AC NAS Router: <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLnF1ZW5kaS5tb2UvMjAxNi8xMS8xNS9rby13ZXZvLXcyOTE0bnMtdjItJWVkJThiJWIwJWVjJTk2JWI0JWViJThiJWE0JWVjJTlhJWI0JWVhJWIzJWJjLWxlZGUtJWVkJThmJWFjJWVkJThhJWI4Lw==">perillamint님<i class="fa fa-external-link-alt"></i></span>이 공식 지원을 넣었습니다. 비슷한 변종이 여러 개 있습니다.</li>
+<li>netis WF2770</li>
+<li>netis WF2881: <span class="exturl" data-url="aHR0cHM6Ly9jYWZlLm5hdmVyLmNvbS8wNjJzYW1vLzc4NTU=">luxflow님<i class="fa fa-external-link-alt"></i></span>이 공식 지원을 넣었습니다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 비슷한 변종이 여러 개 있습니다.</li>
+<li>ZIO FREEZIO: 보드가 11AC NAS랑 거의 판박이인데, 대신 전원 스위치와 방열판이 추가로 달려있어서 살짝 더 고급이란 느낌은 듭니다.</li>
+<li>스토리링크 SAP-G3200U3: <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9jb21taXQvZGNhZTM3MjNmZGRlNGVmNDhlZTEzMzZhYmZiZDJkNTdhMmI4Y2M4NQ==">OpenWrt 메인테이너<i class="fa fa-external-link-alt"></i></span>가 직접 지원을 추가했습니다. 근데 정작 국내엔 거의 알려져있지 않은 것 같네요.</li>
+<li>삼성전자 CY-SWR1100: D-Link OEM인 것 같습니다.</li>
+</ul>
+<p>제가 보기에 WeVO, netis, 스토리링크 공유기는 포팅이 어렵지 않을 것 같습니다. 셋 다 부트로더 쉘에 접근 가능하고, 이미지 검증절차는 uImage 이미지 이름이나 간단한 꼬리 검사 정도뿐이라 커펌을 설치하기 용이해 보입니다.</p>
+<p>HUMAX에서 내놓은 공유기는 대부분 인텔이나 리얼텍을 쓰는 걸로 알고 있습니다. 비싸기도 하고 정보도 얻기 어려워서 이쪽은 건드려볼 엄두가 안 나네요.</p>
+<p>딴 얘기지만 이지넷 NEXT-7004N 모델은(USB 포트 없는 신 버전은 해당사항 없고 구 버전만) 기가라이트를 지원한다고 제품설명에 적혀있는 유일한 (스위치허브가 아닌) 리테일 공유기인 것으로 보입니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+<h1 id="통신사-임대-공유기">통신사 임대 공유기<a class="header-anchor" href="#통신사-임대-공유기"></a></h1>
+<p>제가 직접 써본 건 KT와 LG U+뿐입니다. SKB는 대부분 리얼텍을 쓰는 것 같아 시도해보지 않았습니다.</p>
+<p>리테일 공유기는 퀄컴 쓰는 기종을 찾기가 힘든데 통신사 공유기 중엔 꽤 많은 것 같습니다.</p>
+<p>반기가 지원 공유기에는 리얼텍 칩셋이 들어갑니다. RTL8954E나 RTL8696을 쓰나본데 이쪽은 자료찾기가 무척 힘드네요.</p>
+<p>같은 통신사 제품 이름을 쓰는데(예를 들어 kt GiGA WiFi Wave 2) 제조사가 다른 모델이 여러 개인 경우가 있기 때문에(예를 들어 머큐리의 KM08-708H, 올래디오의 TI04-708H, 다보링크의 DV01-901H) 정확한 모델명으로 구별하는 게 좋습니다.</p>
+<p>대체로 11ac 이후 공유기는 콘솔 접근을 막아놓은 상태입니다.</p>
+<h2 id="머큐리">머큐리<a class="header-anchor" href="#머큐리"></a></h2>
+<p>머큐리는 주로 리얼텍이나 미디어텍 SoC를 사용하는 것으로 보입니다.</p>
+<p>미디어텍 모델을 하나 구해서 열어봤는데 콘솔을 잘 막아놔서 공략이 쉽지가 않았습니다. 11n 공유기는 쉘을 막아놓지 않은 것 같던데 다 리얼텍이라 별로 가치가 없네요.</p>
+<h2 id="다보링크">다보링크<a class="header-anchor" href="#다보링크"></a></h2>
+<p>다보링크는 주로 리얼텍이나 퀄컴 SoC를 사용하는 것으로 보입니다. 콘솔 접근은 막아놓았지만 보드에 다른 디버그 포트가 있어서 퀄컴 SoC의 경우 어렵지 않게 포팅할 수 있습니다.</p>
+<p>어쩌다 들어간 건진 모르겠지만 OpenWrt 지원 기기 목록에 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy90b2gvZGF2b2xpbmsvZHYtMjAxYW1y">DV-201AMR<i class="fa fa-external-link-alt"></i></span> 모델이 있습니다. 국내용 모델은 아닌 것 같긴 한데 좀 신기하네요.</p>
+<h2 id="올래디오">올래디오<a class="header-anchor" href="#올래디오"></a></h2>
+<p>동원티앤아이 -&gt; 티앤아이이 -&gt; 올래디오 순으로 회사명을 바꾸고 지금은 HFR에 인수된 상태입니다.</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9tYW5hdGFpbHMubmV0L2Jsb2cvMjAxOC8wMS9rdC0lRUIlQUMlQjQlRUMlODQlQTAtJUVBJUIzJUI1JUVDJTlDJUEwJUVBJUI4JUIwLSVFQyVCQiVBNCVFQyU4QSVBNCVFRCU4NSU4MC0lRUQlOEUlOEMlRUMlOUIlQTglRUMlOTYlQjQtJUVBJUIwJTlDJUVCJUIwJTlDJUVBJUI4JUIwLw==">manatail님<i class="fa fa-external-link-alt"></i></span>과 <span class="exturl" data-url="aHR0cHM6Ly90Z2Qua3Ivcy9mdW56aW5udS8zNjY4OTM5Ng==">여우는르나르님<i class="fa fa-external-link-alt"></i></span>이 포팅한 공유기 모델인 DW02-412H를 비롯해 DW03-608H과 TI04-708H 모두 퀄컴 SoC를 씁니다.</p>
+<p>콘솔 접근을 막아놓긴 했는데 뚫으려고 하면 뚫리긴 합니다. 포팅도 그럭저럭 잘 되고요.</p>
+<h2 id="LG전자-한빛전자">LG전자 / 한빛전자<a class="header-anchor" href="#LG전자-한빛전자"></a></h2>
+<p>NAPL-5000과 CAPL-6000은 AR7241를 쓰고 보드도 대략 비슷합니다. CAPL이 메모리 용량이 두 배고 USB 포트도 달려있습니다.</p>
+<p>사양이 그리 좋지 않고 이미지 포맷이 지저분해서 개인적으로 별로 좋아하는 기기는 아닙니다.</p>
+<p>중국 <span class="exturl" data-url="aHR0cHM6Ly93d3cucmlnaHQuY29tLmNuL0ZPUlVNL2ZvcnVtLnBocD9tb2Q9dmlld3RocmVhZCZhbXA7dGlkPTE2OTQ2Ng==">포럼<i class="fa fa-external-link-alt"></i></span>이나 <span class="exturl" data-url="aHR0cDovL2Jsb2cuaWNrLmltLyMvcG9zdHMvMg==">블로그<i class="fa fa-external-link-alt"></i></span>를 보면 한때 NAPL이나 CAPL에 UBNT 커펌을 올려 쓴 사람이 꽤 있었던 것 같습니다.</p>
+<p>CAPL의 경우 국내에도 <span class="exturl" data-url="aHR0cHM6Ly9rYXN1Z2Fuby50aXN0b3J5LmNvbS8xNTQ=">박윤지님<i class="fa fa-external-link-alt"></i></span>의 포팅 사례가 있습니다.</p>
+<h1 id="그-외-통신사-공유기">그 외 통신사 공유기<a class="header-anchor" href="#그-외-통신사-공유기"></a></h1>
+<p>지트론이란 데서 만든 WNVR-001이란 공유기가 있습니다. 원랜 CCTV 관리용으로 만들었나본데 사양이 “생각보다” 괜찮습니다.<br>
+<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLm5hdmVyLmNvbS96ZXRlbmdpbmU3LzIyMTU0NzMyMzcwOQ==">사용 사례<i class="fa fa-external-link-alt"></i></span>를 보면 지금은 대충 비슷한 모델 펌웨어를 빌려쓰는 것 같은데, 누가 제대로 한번 포팅해보면 좋을 것 같네요.</p>
+<p>에그도 일종의 무선전용 공유기라 볼 수 있지 않을까요? 인포마크 에그를 몇 개 살펴봤는데 SoC로 GCT GDM7243를 쓰네요. 메인라인 커널이 지원하지 않는 칩 같은데<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> 그러면 포팅이 어렵겠죠.</p>
+<p>그 외에 유선 포트가 달린 LTE 공유기 같은 것도 있는데, 만약 위의 에그처럼 LTE 모뎀이 통합된 SoC를 쓴다면 포팅이 안 될 것이고, 일반 공유기 SoC에 주변장치로 LTE 모뎀을 달아놓은 거라면 포팅 가능성이 있겠습니다.</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>링크에 접속할 수 없으면 네이버에서 &quot;WF-2881 커스텀펌웨어 &lt;2017-03-05&gt;&quot;로 검색해보세요. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>조만간(언젠가?) 리얼텍 특집글을 쓰게되면 거기서 자세한 내용을 다룰 예정입니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>대신 이 칩셋을 USB 모뎀 장치로 사용하는 드라이버는 있네요. <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+      <categories>
+        <category>자유시간 프로젝트</category>
+      </categories>
+      <tags>
+        <tag>OpenWrt</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>샤오미 WiFi 증폭기 Pro 열어보기</title>
     <url>/2020/07/19/xiaomi-wifi-extender-pro/</url>
     <content><![CDATA[<h1 id="발단">발단<a class="header-anchor" href="#발단"></a></h1>
@@ -53,110 +158,6 @@ nvram에서 <code>bootdelay</code> 값을 조절하면 부트로더 쉘도 열 �
       </tags>
   </entry>
   <entry>
-    <title>국산 공유기에도 OpenWrt를 올릴 수 있을까</title>
-    <url>/2020/08/18/korean-home-router-survey/</url>
-    <content><![CDATA[<h1 id="개괄">개괄<a class="header-anchor" href="#개괄"></a></h1>
-<blockquote>
-<p>⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.</p>
-</blockquote>
-<p>2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.</p>
-<a id="more"></a>
-<p>제가 보기에 국산 공유기는 크게 두 종류로 나눌 수 있습니다: 통신사 공유기와 사제 공유기.</p>
-<p>통신사 공유기라 하면 일반적으로 가정용 임대 공유기를 말하나, 그 외의 것도 조금 있긴 합니다.<br>
-사제 공유기의 대표 주자는 역시 ipTIME이죠. 그 외의 제조사는 점유율이 낮은 편이고요.</p>
-<p>사제 공유기의 포팅 가능성은 대체로 SoC 제조사별 특성에 따라가는 걸로 알고 있습니다.</p>
-<ul>
-<li>Qualcomm Atheros: 포팅 잘 됩니다. 작동도 잘 합니다. 무선 성능을 제대로 이끌어내기 위해선 정펌에서 따온 boardfile이 필요할 수 있습니다.</li>
-<li>Ralink/MediaTek: 포팅 잘 됩니다. 작동도 잘 합니다. 다만 RT6856처럼 지원되지 않는 SoC도 간혹 있습니다.</li>
-<li>Broadcom: 포팅은 할 수 있을 겁니다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 다만 무선 칩셋이 작동하지 않을 수 있습니다. 포팅 시도하기 전에 <span class="exturl" data-url="aHR0cHM6Ly93aXJlbGVzcy53aWtpLmtlcm5lbC5vcmcvZW4vdXNlcnMvZHJpdmVycy9icmNtODAyMTE=">드라이버<i class="fa fa-external-link-alt"></i></span>가 해당 칩셋 모델을 지원하는지 미리 확인해보세요.</li>
-<li>Realtek: 포팅할 수 없습니다. 인터넷에 돌아다니는 SDK 같은 게 있긴 한데 버전이 좀 오래됐습니다.</li>
-<li>Intel: 포팅할 수 없습니다. 원래 Lantiq란 회사였는데 Intel이 인수했다고 합니다. 옛날 Lantiq 칩셋은 OpenWrt에서 지원하는 것 같은데, 최신 Intel 칩셋은 안 되나 보네요.</li>
-<li>Marvell: 포팅도 잘 되고 작동도 잘 하는데 국내 가정용 공유기 시장에선 유난히 존재감이 없습니다. 무선 드라이버인 mwlwifi는 꾸준히 관리는 되고 있지만 메인라인 커널에 들어간 상태는 아닙니다.</li>
-</ul>
-<p>포팅 가능한 SoC를 쓰고 RAM이 32MB, 플래시가 4MB 이상이면 OpenWrt를 올릴 수 있다고 보면 됩니다.</p>
-<p>통신사 공유기는 SoC 지원 이전에 쉘을 얻을 수 있는지부터 걱정해야 할 판이기 때문에 기기 제조사나 통신사가 어딘지가 중요합니다.</p>
-<h1 id="ipTIME">ipTIME<a class="header-anchor" href="#ipTIME"></a></h1>
-<p>ipTIME 기기는 SoC 제조사별로 이미지 포맷이 좀 많이 다릅니다.<br>
-라링크 MIPS 계열은 별다른 제조사 헤더/꼬리가 없고, 미디어텍 ARM 계열은 아직 기종이 많지 않아 두고봐야겠지만 아마 간단한 헤더가 붙는 정도로 끝날 것 같습니다. 브로드컴에도 간단한 꼬리가 붙어있고, 마벨은 조금 더 복잡한 헤더가 달려있습니다. 아데로스과 리얼텍은 펌웨어 이미지에 헤더도 달려있고 부트로더도 포함되어 있어서 좀 까다로워 보입니다.</p>
-<p>현재 아직 단종되지 않은 A 시리즈 Realtek 모델은 하나를 제외하면 전부 RTL8197F 계열을 사용하고 있습니다. 특이하게도 RTL8197F는 여타 Realtek SoC와 다르게 Lexra가 아닌 진짜배기 MIPS 아키텍처를 사용합니다.</p>
-<p>N 시리즈의 모델도 포팅은 가능하나, 대부분 메모리 사양이 안 좋은 편이기 때문에 만약 OpenWrt를 올린다 하더라도 실사용은 힘들 수도 있습니다.</p>
-<p>한때 사측에서 펌웨어 소스코드를 풀었었기 때문에(지금도 공개는 하지만 업데이트는 더 이상 안 해주는 것 같습니다) 포팅 작업시 참고하면 도움이 됩니다.</p>
-<p>현재 OpenWrt에서 공식 지원하고 있는 모델은 다음과 같습니다.</p>
-<ul>
-<li>A604M, A3: MT7628 사용</li>
-<li>A104ns, A1004ns: MT7620 사용</li>
-<li>A6ns-M, <span class="exturl" data-url="aHR0cHM6Ly9naWdnbGVoZC5jb20vZ2cvYmJzLzYzNzkyODQ=">A8004T<i class="fa fa-external-link-alt"></i></span>: MT7621+MT7615 사용</li>
-</ul>
-<p>이 외에 제가 포팅에 성공했던 모델은 다음과 같습니다.</p>
-<ul>
-<li>N604Black: RAM이 32MB입니다.</li>
-<li>N704BCM, N904ns: WiFi가 작동하지 않습니다.</li>
-<li>Extender-N3: 플래시가 4MB입니다.</li>
-<li>A804NS-MU: 이미지 포맷이 좀 복잡합니다.</li>
-<li>A9004M: NAND 테스트가 부족합니다.</li>
-</ul>
-<h1 id="그-외-사제-공유기">그 외 사제 공유기<a class="header-anchor" href="#그-외-사제-공유기"></a></h1>
-<p>퀄컴을 사용하는 (ipTIME 이외의) 사제 공유기를 본 적이 없고, 브로드컴은 시도조차 해본 적이 없어서 잘 모릅니다. 아래 내용은 전부 ramips 기종에만 초점을 맞추고 있습니다.</p>
-<p>현재 OpenWrt에서 공식 지원하고 있는 모델은 다음과 같습니다.</p>
-<ul>
-<li>WeVO 11AC NAS Router: 비슷한 변종이 여러 개 있습니다. <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLnF1ZW5kaS5tb2UvMjAxNi8xMS8xNS9rby13ZXZvLXcyOTE0bnMtdjItJWVkJThiJWIwJWVjJTk2JWI0JWViJThiJWE0JWVjJTlhJWI0JWVhJWIzJWJjLWxlZGUtJWVkJThmJWFjJWVkJThhJWI4Lw==">perillamint님<i class="fa fa-external-link-alt"></i></span>이 공식 지원을 넣었습니다.</li>
-<li>netis WF2770</li>
-<li>netis WF2881: 비슷한 변종이 여러 개 있습니다. <span class="exturl" data-url="aHR0cHM6Ly9jYWZlLm5hdmVyLmNvbS8wNjJzYW1vLzc4NTU=">luxflow님<i class="fa fa-external-link-alt"></i></span>이 공식 지원을 넣었습니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></li>
-<li>ZIO FREEZIO: 보드가 11AC NAS랑 거의 판박이인데, 대신 전원 스위치와 방열판이 추가로 달려있어서 살짝 더 고급이란 느낌은 듭니다.</li>
-<li>스토리링크 SAP-G3200U3: OpenWrt 메인테이너가 직접 지원을 추가했다고 합니다. 근데 정작 국내엔 거의 알려져있지 않은 것 같네요.</li>
-<li>삼성전자 CY-SWR1100: D-Link OEM인 것 같습니다.</li>
-</ul>
-<p>제가 보기에 WeVO, netis, 스토리링크 공유기는 포팅이 어렵지 않을 것 같습니다. 셋 다 부트로더 쉘에 접근 가능하고, 이미지 검증절차는 uImage 이미지 이름이나 간단한 꼬리 검사 정도뿐이라 커펌을 설치하기 용이해 보입니다.</p>
-<p>HUMAX에서 내놓은 공유기는 대부분 인텔이나 리얼텍을 쓰는 걸로 알고 있습니다. 비싸기도 하고 정보도 얻기 어려워서 이쪽은 건드려볼 엄두가 안 나네요.</p>
-<h1 id="통신사-임대-공유기">통신사 임대 공유기<a class="header-anchor" href="#통신사-임대-공유기"></a></h1>
-<p>제가 직접 써본 건 KT와 LG U+뿐입니다. SKB는 대부분 리얼텍을 쓰는 것 같아 시도해보지 않았습니다.</p>
-<p>사제 공유기는 퀄컴 쓰는 기종을 찾기가 힘든데 통신사 공유기 중엔 꽤 많은 것 같습니다.</p>
-<p>그리고 아마 반기가 지원 공유기에는 반드시 리얼텍이 들어갈 겁니다. 제가 확인해본 바로는 RTL8198C나 RTL8954E를 쓰는 것 같던데, 재밌게도 둘 다 (RTL8197F와 마찬가지로) Lexra가 아닌 MIPS 아키텍처 기반인 모양입니다.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> 제가 왜 이 얘기를 꺼내는지 짐작이 가시나요?</p>
-<p>같은 통신사 제품 이름을 쓰는데(예를 들어 kt GiGA WiFi Wave 2) 제조사가 다른 모델이 여러 개인 경우가 있기 때문에(예를 들어 머큐리의 KM08-708H, 올래디오의 TI04-708H, 다보링크의 DV01-901H) 정확한 모델명으로 구별하는 게 좋습니다.</p>
-<p>대체로 WiFi 5 이후 공유기는 콘솔 접근을 막아놓은 상태인 걸로 알고 있습니다.</p>
-<h2 id="머큐리">머큐리<a class="header-anchor" href="#머큐리"></a></h2>
-<p>머큐리는 펌웨어를 단단하게 잘 만들어서 공략이 쉽지 않았습니다.</p>
-<p>WiFi 4 이전 공유기는 쉘을 막아놓지 않은 것 같던데 다 리얼텍이라 별로 가치가 없네요.</p>
-<h2 id="다보링크">다보링크<a class="header-anchor" href="#다보링크"></a></h2>
-<p>왠지 모르겠는데 OpenWrt에서 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy90b2gvZGF2b2xpbmsvZHYtMjAxYW1y">DV-201AMR<i class="fa fa-external-link-alt"></i></span>이란 모델을 지원합니다. 국내용 모델은 아닌 것 같긴 한데 좀 신기하네요.</p>
-<p>콘솔 접근을 막아놓았지만 보드에 다른 디버그 포트가 있기 때문에 별로 상관이 없습니다. IPQ4018 쓰는 모델은 포팅도 아주 잘 됩니다. 감사합니다!</p>
-<p>다보링크는 홈페이지에 SoC 모델명도 분명하게 적어줘서 정보 찾기도 쉽습니다.</p>
-<h2 id="올래디오">올래디오<a class="header-anchor" href="#올래디오"></a></h2>
-<p>동원티앤아이 -&gt; 티앤아이이 -&gt; 올래디오 순으로 회사명을 바꿨다가 지금은 HFR에 인수됐다고 합니다. 아이고 헷갈려라.</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9tYW5hdGFpbHMubmV0L2Jsb2cvMjAxOC8wMS9rdC0lRUIlQUMlQjQlRUMlODQlQTAtJUVBJUIzJUI1JUVDJTlDJUEwJUVBJUI4JUIwLSVFQyVCQiVBNCVFQyU4QSVBNCVFRCU4NSU4MC0lRUQlOEUlOEMlRUMlOUIlQTglRUMlOTYlQjQtJUVBJUIwJTlDJUVCJUIwJTlDJUVBJUI4JUIwLw==">manatail님<i class="fa fa-external-link-alt"></i></span>과 <span class="exturl" data-url="aHR0cHM6Ly90Z2Qua3Ivcy9mdW56aW5udS8zNjY4OTM5Ng==">여우는르나르님<i class="fa fa-external-link-alt"></i></span>이 포팅한 공유기 모델인 DW02-412H를 비롯해 DW03-608H과 TI04-708H까지 모두 퀄컴 SoC를 씁니다. DW01-410H은 확인해보지 못했지만 비슷하지 않을까요.</p>
-<p>콘솔 접근을 막아놓긴 했는데 부트로더 단에서 다 뚫립니다. 포팅도 그럭저럭 잘 됩니다.</p>
-<h2 id="LG전자-한빛전자">LG전자 / 한빛전자<a class="header-anchor" href="#LG전자-한빛전자"></a></h2>
-<p>NAPL-5000과 CAPL-6000은 AR7241를 쓰고 보드도 대략 비슷합니다. CAPL이 메모리 용량이 두 배고 USB 포트도 달려있습니다.</p>
-<p>사양이 그리 좋지 않고 이미지 포맷이 지저분해서 개인적으로 별로 좋아하는 기기는 아닙니다.</p>
-<p>중국 <span class="exturl" data-url="aHR0cHM6Ly93d3cucmlnaHQuY29tLmNuL0ZPUlVNL2ZvcnVtLnBocD9tb2Q9dmlld3RocmVhZCZhbXA7dGlkPTE2OTQ2Ng==">포럼<i class="fa fa-external-link-alt"></i></span>이나 <span class="exturl" data-url="aHR0cDovL2Jsb2cuaWNrLmltLyMvcG9zdHMvMg==">블로그<i class="fa fa-external-link-alt"></i></span>를 보면 한때 NAPL이나 CAPL에 UBNT 커펌을 올려 쓴 사람이 꽤 있었던 것 같습니다.</p>
-<p>CAPL의 경우 국내에도 <span class="exturl" data-url="aHR0cHM6Ly9rYXN1Z2Fuby50aXN0b3J5LmNvbS8xNTQ=">박윤지 님<i class="fa fa-external-link-alt"></i></span>의 포팅 사례가 있습니다.</p>
-<h1 id="그-외-통신사-공유기">그 외 통신사 공유기<a class="header-anchor" href="#그-외-통신사-공유기"></a></h1>
-<p>지트론이란 데서 만든 WNVR-001이란 공유기가 있습니다. 원랜 CCTV 관리용으로 만들었나본데 사양이 “생각보다” 괜찮습니다.<br>
-<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLm5hdmVyLmNvbS96ZXRlbmdpbmU3LzIyMTU0NzMyMzcwOQ==">사용 사례<i class="fa fa-external-link-alt"></i></span>를 보면 지금은 대충 비슷한 모델 펌웨어를 빌려쓰는 것 같은데, 누가 제대로 한번 포팅해보면 좋을 것 같네요.</p>
-<p>에그도 일종의 무선전용 공유기라 볼 수 있지 않을까요? 인포마크 에그를 몇 개 살펴봤는데 SoC로 GCT GDM7243를 쓰네요. 메인라인 커널이 지원하지 않는 칩 같은데<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> 그러면 포팅이 어렵겠죠.</p>
-<p>그 외에 유선 포트가 달린 LTE 공유기 같은 것도 있는데, 만약 위의 에그처럼 LTE 모뎀이 통합된 SoC를 쓴다면 포팅이 안 될 것이고, 일반 공유기 SoC에 주변장치로 LTE 모뎀을 달아놓은 거라면 포팅 가능성이 있겠습니다.</p>
-<hr class="footnotes-sep">
-<section class="footnotes">
-<ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>그러나 최신 64비트 SoC는 아직 지원이 안 되는 걸로 압니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
-</li>
-<li id="fn2" class="footnote-item"><p>링크에 접속할 수 없으면 네이버에서 &quot;WF-2881 커스텀펌웨어 &lt;2017-03-05&gt;&quot;로 검색해보세요. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
-</li>
-<li id="fn3" class="footnote-item"><p>Wikidevi엔 RTL8954E가 Lexra 기반이라고 뜨는데, 콘솔과 SDK에선 MIPS라고 하는 걸 봐선 이 쪽이 맞는 것 같습니다. <a href="#fnref3" class="footnote-backref">↩︎</a></p>
-</li>
-<li id="fn4" class="footnote-item"><p>대신 이 칩셋을 USB 모뎀 장치로 사용하는 드라이버는 있네요. <a href="#fnref4" class="footnote-backref">↩︎</a></p>
-</li>
-</ol>
-</section>
-]]></content>
-      <categories>
-        <category>자유시간 프로젝트</category>
-      </categories>
-      <tags>
-        <tag>OpenWrt</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>OpenWrt에 새 기기 지원 추가하기</title>
     <url>/2020/08/22/openwrt-add-new-device/</url>
     <content><![CDATA[<h1 id="들어가기-전에">들어가기 전에<a class="header-anchor" href="#들어가기-전에"></a></h1>
@@ -165,13 +166,14 @@ nvram에서 <code>bootdelay</code> 값을 조절하면 부트로더 쉘도 열 �
 <a id="more"></a>
 <h2 id="왜-OpenWrt">왜 OpenWrt?<a class="header-anchor" href="#왜-OpenWrt"></a></h2>
 <p>OpenWrt는 유무선공유기, NAS, SBC와 같이 자원이 제약된 임베디드 시스템을 위한 리눅스 배포판입니다. 사용자마다 각각의 원하는 점이 있겠지만(무선 성능 개선, 원하는 패키지 설치, 보안 향상 등등) 개인적으로는 잘 정돈된 코드베이스와 개발 환경이라는 데에 큰 점수를 주고 싶습니다. 메인라인에 가까운 최신 버전 커널과 툴체인은 칩셋 제조사 SDK나 그에 의존하는 여타 커펌 프로젝트에선 기대하기 어려운 일이지요. 다른 오픈소스 프로젝트와 비교해봤을 때도 기능성과 복잡도 면에서 Buildroot와 Yocto 사이에 끼어있기에 적당한 타협안이 된다고 생각합니다.</p>
-<p>또한 <span class="exturl" data-url="aHR0cHM6Ly9wb3N0bWFya2V0b3Mub3JnLw==">스마트폰<i class="fa fa-external-link-alt"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cucm9ja2JveC5vcmcv">MP3<i class="fa fa-external-link-alt"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly9xbWsuZm0v">키보드<i class="fa fa-external-link-alt"></i></span> 등과 마찬가지로, 제조사 펌웨어에 발묶여있는 공유기에 오픈소스 커펌을 포팅하는 작업은 프로그래머의 소일거리로도 적당하다고 봅니다.</p>
+<p>또한 <span class="exturl" data-url="aHR0cHM6Ly9wb3N0bWFya2V0b3Mub3JnLw==">스마트폰<i class="fa fa-external-link-alt"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cucm9ja2JveC5vcmcv">MP3<i class="fa fa-external-link-alt"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly9xbWsuZm0v">키보드<i class="fa fa-external-link-alt"></i></span> 등과 마찬가지로, 제조사 펌웨어에 발묶여있는 공유기에 오픈소스 커펌을 포팅하는 작업은 코더의 소일거리로도 적당하다고 봅니다.</p>
 <h2 id="글의-방향">글의 방향<a class="header-anchor" href="#글의-방향"></a></h2>
 <div class="note warning"><p><strong>disclaimer: 케이스를 열거나 커펌을 설치하면 제품 보증이 무효가 되고 자칫하면 기기가 손상될 수 있습니다.</strong><br>
 <strong>이 글의 내용을 따라함으로써 (또는 잘못된 방식으로 활용함으로써) 생길 수 있는 결과에 대한 책임은 사용자 스스로에게 있습니다.</strong></p>
 </div>
 <p>이 글에선 OpenWrt에 새 기기 지원을 추가하는 전반적인 과정(하드웨어 정보를 얻는 것부터 시작해서 업스트림에 패치를 보내는 데까지)을 다루고자 합니다.</p>
 <p>이 글은 읽는 사람이 이미 리눅스에 익숙하고 기본적인 하드웨어 지식이 있다는 가정 하에 작성되었습니다.</p>
+<p>이 글에서 설명하는 방법과 절차는 최선이 아닐 수 있습니다. 처음에야 일단 따라해보면서 익혀야겠지만, 어느 정도 익숙해지면 여기선 왜 이렇게 했을까, 더 좋은 방법은 없을까, 하고 고민하면서 스스로 개선점을 찾아보길 바랍니다.</p>
 <p>예시로 사용할 기기는 제 첫 업스트림 모델이면서 하드웨어와 패치가 단순한 ipTIME A604M으로 선택했습니다.</p>
 <h1 id="사전조사">사전조사<a class="header-anchor" href="#사전조사"></a></h1>
 <p>어떤 기기에 OpenWrt를 포팅해보자고 마음을 먹은 다음에 가장 먼저 해야할 일이 뭘까요? 그 기기에 OpenWrt를 올리는 것이 가능할지, 올린 다음에 실사용이 가능할지, 이미 포팅을 시도한 사례가 있는지 등을 먼저 확인하는 과정이 필요합니다. 이미 가지고 있는 기기라면 상관없지만, 덥썩 구매해놓고 나중 가서 올릴 수 없다는 걸 알게 되면 실망이 크잖아요.</p>
@@ -190,13 +192,13 @@ nvram에서 <code>bootdelay</code> 값을 조절하면 부트로더 쉘도 열 �
 <p>다시 본론으로 돌아가면, MT7628A는 OpenWrt에서 지원하는 SoC이고 ramips/mt76x8 타겟에 해당합니다.<br>
 현재 OpenWrt가 지원하는 플랫폼 중 인기 있는 몇 개를 살펴보자면 다음과 같습니다.</p>
 <ul>
-<li>ar71xx, ath79: (MIPS 기반) Atheros SoC를 사용합니다. 전자는 mach.c를 사용하고 후자는 DTS를 사용합니다.</li>
+<li>ar71xx, ath79: (MIPS 기반) Atheros SoC를 사용합니다. 전자는 mach.c를 사용하고 후자는 DTS를 사용합니다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></li>
 <li>ipq40xx, ipq806x: (ARM 기반) Qualcomm Atheros SoC를 사용합니다.</li>
 <li>bcm47xx, bcm53xx: Broadcom SoC를 사용합니다. 전자는 MIPS 아키텍처고 후자는 ARM 아키텍처입니다.</li>
 <li>ramips, mediatek: Ralink/MediaTek SoC를 사용합니다. 전자는 MIPS 아키텍처고 후자는 ARM 아키텍처입니다.</li>
 <li>kirkwood, mvebu: Marvell SoC를 사용합니다. 이 계열은 공유기뿐만 아니라 NAS 기기에도 많이 사용됩니다.</li>
 </ul>
-<p>(Lexra 기반의) Realtek SoC는 지원되지 않습니다. 애초에 (메인라인) 리눅스 커널에도 없는 녀석이라 간단히 지원을 추가할 수 있는 상황도 아닙니다.</p>
+<p>Lexra 기반의 Realtek SoC는 지원되지 않습니다. 다만 MIPS 기반 RTL838x 계열은 OpenWrt에 초기 지원이 추가된 상태입니다.</p>
 <p>이 중 ramips 타겟은 지원이 잘 되고 있는 상태고, 지원하는 기종도 많은 걸 봤을 때, A604M 포팅에 SoC가 걸림돌이 되진 않을 것으로 보입니다. 또한 OpenWrt의 최소 요구 사양으로 여겨지는 4/32 조건(플래시 4MB, RAM 32MB)도 넘기고 있습니다.</p>
 <p>위에 링크를 달아놓은 내부 사진을 잘 살펴보면 보드에 UART로 추측되는 4핀 핀헤더가 달려있는 게 보입니다. 시리얼 콘솔은 디바이스 정보를 얻고 디버깅을 하는 데 필수적이고, 이게 없으면 이후 진행이 매우 골치아파지기 때문에, UART 핀의 존재 여부 정도는 미리 확인해두는 게 좋습니다.</p>
 <h1 id="하드웨어-및-펌웨어-조사">하드웨어 및 펌웨어 조사<a class="header-anchor" href="#하드웨어-및-펌웨어-조사"></a></h1>
@@ -241,13 +243,13 @@ nvram에서 <code>bootdelay</code> 값을 조절하면 부트로더 쉘도 열 �
 <p>이 글에선 2020-08-11 시점에서 가장 최근 커밋인 <span class="exturl" data-url="aHR0cHM6Ly9naXQub3BlbndydC5vcmcvYjU5YTk4YjAwOWI5">b59a98b009b9<i class="fa fa-external-link-alt"></i></span> 버전을 사용하겠습니다. 최신 snapshot엔 제가 이미 업스트림시킨 A604M 지원 패치가 들어가 있지만, 여기선 없다고 가정하고 진행하겠습니다.</p>
 <p>빌드 환경으론 Ubuntu 20.04를 사용하겠습니다. RAM은 4GB, 여유 저장공간은 10GB 이상 있어야 빌드가 수월할 겁니다.</p>
 <p>일단 OpenWrt에서 이미 지원하는 mt76x8 디바이스 중 A604M과 사양이 대략 비슷해보이는 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy90b2gvaHdkYXRhL3hpYW9taS94aWFvbWlfbWlfcm91dGVyXzRhXzEwMG0=">Mi Router 4A<i class="fa fa-external-link-alt"></i></span>의 펌웨어 이미지를 빌드하겠습니다. 이는 디바이스에서 OpenWrt 이미지를 정상적으로 부팅하는 것이 가능한지 테스트해보려는 목적이고, 나중에 제대로 전용 이미지를 만들 겁니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 패키지 설치 및 저장소 클론</span></span><br><span class="line">sudo apt-get install build-essential libncurses-dev gawk unzip wget python3 git file rsync</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/openwrt/openwrt.git</span><br><span class="line"><span class="built_in">cd</span> openwrt</span><br><span class="line"><span class="comment"># git switch -c dev-a604m b59a98b009b9</span></span><br><span class="line"><span class="comment"># wget https://mans0n.github.io/2020/08/18/openwrt-add-device/b59a98b009b9-pre-a604m.patch</span></span><br><span class="line"><span class="comment"># git am b59a98b009b9-pre-a604m.patch</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 외부 패키지 가져오기, 한 번만 하면 됨</span></span><br><span class="line">./scripts/feeds update -a</span><br><span class="line">./scripts/feeds install -a</span><br><span class="line"><span class="comment">## 빌드 타겟 설정</span></span><br><span class="line">make menuconfig</span><br><span class="line"><span class="comment">## "Target System" -&gt; "MediaTek Ralink MIPS"</span></span><br><span class="line"><span class="comment">## "Subtarget" -&gt; "MT76x8 based boards"</span></span><br><span class="line"><span class="comment">## "Target Profile" -&gt; "Xiaomi Mi Router 4A 100M Edition"</span></span><br><span class="line"><span class="comment">## 빌드 중간에 실패할 때를 대비해 CONFIG_BUILD_LOG도 활성화시켜두면 좋음</span></span><br><span class="line"><span class="comment">## "Advanced configuration options (for developers)" -&gt; "Enable log files during build process"</span></span><br><span class="line">make defconfig</span><br><span class="line"><span class="comment"># ./scripts/diffconfig.sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 소스파일 다운로드, 한 번만 하면 됨</span></span><br><span class="line">make download -j3</span><br><span class="line"><span class="comment">## 빌드 시작, (CPU 스레드 수 + 1)개의 프로세스로 병렬처리</span></span><br><span class="line">make -j$((`nproc` + 1))</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 패키지 설치 및 저장소 클론</span></span><br><span class="line">sudo apt-get install build-essential libncurses-dev gawk unzip wget python3 git file rsync</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/openwrt/openwrt.git</span><br><span class="line"><span class="built_in">cd</span> openwrt</span><br><span class="line"><span class="comment">## 기존 패치 삭제</span></span><br><span class="line">git switch -c dev-a604m b59a98b009b9</span><br><span class="line">wget https://mans0n.github.io/2020/08/18/openwrt-add-device/b59a98b009b9-pre-a604m.patch</span><br><span class="line">git am b59a98b009b9-pre-a604m.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">## 외부 패키지 가져오기, 한 번만 하면 됨</span></span><br><span class="line">./scripts/feeds update -a</span><br><span class="line">./scripts/feeds install -a</span><br><span class="line"><span class="comment">## 빌드 타겟 설정</span></span><br><span class="line">make menuconfig</span><br><span class="line"><span class="comment">## "Target System" -&gt; "MediaTek Ralink MIPS"</span></span><br><span class="line"><span class="comment">## "Subtarget" -&gt; "MT76x8 based boards"</span></span><br><span class="line"><span class="comment">## "Target Profile" -&gt; "Xiaomi Mi Router 4A 100M Edition"</span></span><br><span class="line"><span class="comment">## 빌드 중간에 실패할 때를 대비해 CONFIG_BUILD_LOG도 활성화시켜두면 좋음</span></span><br><span class="line"><span class="comment">## "Advanced configuration options (for developers)" -&gt; "Enable log files during build process"</span></span><br><span class="line">make defconfig</span><br><span class="line"><span class="comment"># ./scripts/diffconfig.sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 소스파일 다운로드, 한 번만 하면 됨</span></span><br><span class="line">make download -j3</span><br><span class="line"><span class="comment">## 빌드 시작, (CPU 스레드 수 + 1)개의 프로세스로 병렬처리</span></span><br><span class="line">make -j$((`nproc` + 1))</span><br></pre></td></tr></table></figure>
 <img src="/2020/08/22/openwrt-add-new-device/008-menuconfig.png" class="">
 <p>처음 빌드할 땐 툴체인까지 빌드해야 하기 때문에 시간이 좀 많이 걸립니다. 컴퓨터 성능이 좋다면 30분만에 끝날 수도 있고, 별로라면 한두 시간 걸릴 수도 있습니다.</p>
 <div class="note info"><p>참고문서:</p>
 <ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9xdWlja3N0YXJ0LWJ1aWxkLWltYWdlcw==">https://openwrt.org/docs/guide-developer/quickstart-build-images<i class="fa fa-external-link-alt"></i></span></li>
-<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9idWlsZC1zeXN0ZW0vdXNlLWJ1aWxkc3lzdGVt">https://openwrt.org/docs/guide-developer/build-system/use-buildsystem<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9xdWlja3N0YXJ0LWJ1aWxkLWltYWdlcw==">[OpenWrt wiki] Quick Image Building Guide<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9idWlsZC1zeXN0ZW0vdXNlLWJ1aWxkc3lzdGVt">[OpenWrt wiki] Build system usage<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 </div>
 <p>빌드 후 새로 생기는 디렉토리 몇 개를 살펴보면 다음과 같습니다.</p>
@@ -262,7 +264,7 @@ nvram에서 <code>bootdelay</code> 값을 조절하면 부트로더 쉘도 열 �
 <p>참고로 initramfs와 squashfs 이미지의 차이점을 알아보자면,</p>
 <ul>
 <li>initramfs: 커널과 rootfs가 모두 포함된 이미지입니다. rootfs는 RAM에만 존재하고, 모든 파일 변경사항은 시스템 종료시 사라집니다. U-Boot의 <code>tftpboot</code> 명령어를 쓰면 RAM에 이미지를 바로 올리고 부팅하는 것이 가능합니다. 보통 디버깅용으로 많이 쓰지만, 원한다면 실사용 목적으로 쓸 수도 있습니다.</li>
-<li>squashfs: 커널과 읽기전용 rootfs(squashfs)와 읽고쓰기 가능한 추가 파일시스템(jffs2를 overlayfs로 사용)이 담긴 이미지입니다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 모든 파일 변경사항은 이 overlayfs에 저장되어 플래시에 기록됩니다. 만약 리셋을 한다면 오버레이만 날려버려서 초기상태로 되돌아갑니다.</li>
+<li>squashfs: 커널과 읽기전용 rootfs(squashfs)와 읽고쓰기 가능한 추가 파일시스템(jffs2를 overlayfs로 사용)이 담긴 이미지입니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> 모든 파일 변경사항은 이 overlayfs에 저장되어 플래시에 기록됩니다. 만약 리셋을 한다면 오버레이만 날려버려서 초기상태로 되돌아갑니다.</li>
 </ul>
 <p>이제부터 하려는 건 정펌 상태에서 커펌을 올릴 수 있는 길을 찾는 것입니다. 가장 확실한 방법은 플래시를 보드에서 떼내서 커펌을 기록하고 다시 보드에 붙이는 방법이지만, 보통은 그렇게까지 하고 싶진 않죠. 통상적으론 다음의 셋 중에 하나를 얻으면 됩니다.</p>
 <ul>
@@ -306,15 +308,15 @@ A: 네 맞습니다… 경험상 ipTIME ramips 기기에서 부트로더 복구�
 <p>ramips는 아직 커널 업스트림이 덜 됐기 때문에 아직도 많은 부분이 OpenWrt 다운스트림 패치로 남아있고, dts도 커널 소스트리에 들어간 걸 쓰지 않고 <code>target/linux/ramips/dts/</code>에 있는 로컬 파일을 사용합니다. 내용을 보면 SoC의 전반적인 기능을 dtsi 파일에서 정의하고, 이걸 디바이스 dts에서 불러와 필요한 기능만 활성화시켜 사용하는 구조로 되어있습니다.</p>
 <div class="note info"><p>참고문서:</p>
 <ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9lbGludXgub3JnL2ltYWdlcy9mL2Y5L1BldGF6em9uaS1kZXZpY2UtdHJlZS1kdW1taWVzXzAucGRm">https://elinux.org/images/f/f9/Petazzoni-device-tree-dummies_0.pdf<i class="fa fa-external-link-alt"></i></span></li>
-<li><span class="exturl" data-url="aHR0cHM6Ly9qdW5nLW1heC5naXRodWIuaW8vMjAxOS8xMC8yMi9EZXZpY2VfVHJlZV8lRUIlQUMlQjglRUIlQjIlOTUv">https://jung-max.github.io/2019/10/22/Device_Tree_문법/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9lbGludXgub3JnL2ltYWdlcy9mL2Y5L1BldGF6em9uaS1kZXZpY2UtdHJlZS1kdW1taWVzXzAucGRm">Device Tree for Dummies<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9qdW5nLW1heC5naXRodWIuaW8vMjAxOS8xMC8yMi9EZXZpY2VfVHJlZV8lRUIlQUMlQjglRUIlQjIlOTUv">Device Tree 문법<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 </div>
 <p>이제부터 할 일은 A604M의 기능을 하나씩 살려나가는 것입니다. 확인해야 할 항목을 꼽아보자면 이더넷, 플래시, WiFi, LED, 버튼 정도가 되겠네요.</p>
 <p>뭘 어떻게 해야 하는 건지 막막할 땐 다른 디바이스 지원 패치에선 어떻게 했는지 소스코드나 커밋 로그를 찾아보세요. DT 속성의 의미나 사용방법이 궁금할 땐 커널 <code>Documentation/devicetree/bindings/</code> 경로 아래 있는 문서를 읽어보면 도움이 됩니다.</p>
 <div class="note info"><p>참고문서:</p>
 <ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9hZGRpbmdfbmV3X2RldmljZQ==">https://openwrt.org/docs/guide-developer/adding_new_device<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9hZGRpbmdfbmV3X2RldmljZQ==">[OpenWrt wiki] Adding a new device<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 </div>
 <h2 id="이더넷">이더넷<a class="header-anchor" href="#이더넷"></a></h2>
@@ -391,8 +393,8 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <p>NOR는 대체로 살리기도 쉽고 덤프하기도 쉬운데, NAND는 ECC나 BBT 등 신경써줘야 할 게 많아서 더 복잡합니다.</p>
 <div class="note info"><p>참고문서:</p>
 <ul>
-<li><span class="exturl" data-url="aHR0cDovL3d3dy5saW51eC1tdGQuaW5mcmFkZWFkLm9yZy9mYXEvZ2VuZXJhbC5odG1s">http://www.linux-mtd.infradead.org/faq/general.html<i class="fa fa-external-link-alt"></i></span></li>
-<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL3RlY2hyZWYvZmxhc2gubGF5b3V0">https://openwrt.org/docs/techref/flash.layout<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cDovL3d3dy5saW51eC1tdGQuaW5mcmFkZWFkLm9yZy9mYXEvZ2VuZXJhbC5odG1s">Linux MTD FAQ<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL3RlY2hyZWYvZmxhc2gubGF5b3V0">[OpenWrt wiki] The OpenWrt Flash Layout<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 </div>
 <h2 id="WiFi">WiFi<a class="header-anchor" href="#WiFi"></a></h2>
@@ -437,7 +439,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 </ul>
 <div class="note info"><p>참고문서:</p>
 <ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9tYWMuYWRkcmVzcw==">https://openwrt.org/docs/guide-developer/mac.address<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9tYWMuYWRkcmVzcw==">[OpenWrt wiki] Device Support: MAC address setup<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 </div>
 <h2 id="USB">USB<a class="header-anchor" href="#USB"></a></h2>
@@ -453,7 +455,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 </ul>
 <p>LED 중에서 소프트웨어로 제어해야 하는 건 CPU와 WiFi 정도네요. 전원 LED는 VCC에 직결되어 있고, LAN/WAN LED는 스위치에서 자동제어 해주는데 굳이 건들 필요 없겠죠.</p>
 <p>보통 이런 LED는 SoC의 GPIO 핀에 연결되어 있습니다. 어떤 LED가 몇 번 핀에 달려있는지 확인하기 위해선 GPIO 핀을 차례로 올렸다 내렸다 하면서 반응하는 LED를 찾는게 일반적인 방법이지만, 지금 보니 커널 버전이 5.4로 올라가면서 gpio 드라이버가 바뀌고 핀 순서가 뒤죽박죽 되어버렸네요. 에휴… 그냥 바로 지름길로 가겠습니다.</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2lwdGltZS1ncGwvdXNlcmFwcHNfYTYwNG0vYmxvYi9tYXN0ZXIvZnMvbXQ3NjIxL2Nsb25lcy9hNjA0bS9zaS9odw==">정펌 소스<i class="fa fa-external-link-alt"></i></span>를 보면 LED/버튼의 핀 번호가 나와있습니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> 예를 들어 WiFi 5G LED는 5번 핀이라고 하네요.</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2lwdGltZS1ncGwvdXNlcmFwcHNfYTYwNG0vYmxvYi9tYXN0ZXIvZnMvbXQ3NjIxL2Nsb25lcy9hNjA0bS9zaS9odw==">정펌 소스<i class="fa fa-external-link-alt"></i></span>를 보면 LED/버튼의 핀 번호가 나와있습니다.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> 예를 들어 WiFi 5G LED는 5번 핀이라고 하네요.</p>
 <ul>
 <li>CPU LED: GPIO #11</li>
 <li>WiFi 2.4G LED: GPIO #46</li>
@@ -481,7 +483,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <p>이제 LED와 버튼이 모두 작동할 것입니다. 참고로 OpenWrt에서는 버튼이 눌리면 <code>/etc/rc.button/</code>에 있는 스크립트가 실행됩니다.</p>
 <div class="note info"><p>참고문서:</p>
 <ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL3RlY2hyZWYvaGFyZHdhcmUvcG9ydC5ncGlv">https://openwrt.org/docs/techref/hardware/port.gpio<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL3RlY2hyZWYvaGFyZHdhcmUvcG9ydC5ncGlv">[OpenWrt wiki] GPIO<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 </div>
 <h2 id="Failsafe">Failsafe<a class="header-anchor" href="#Failsafe"></a></h2>
@@ -548,7 +550,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <li>공식 저장소에 머지되고 나면 로컬에서 업스트림 버전 업데이트를 따라갈 필요가 없다는 건 당연하겠죠.</li>
 </ul>
 <p>다만 패치가 &quot;hack&quot;에 가깝거나, 다른 모델에 부작용을 끼치거나, 코드 관리 부담이 큰 경우엔 머지가 거부될 수 있습니다.</p>
-<p>현재 OpenWrt는 패치를 <span class="exturl" data-url="aHR0cHM6Ly9saXN0cy5vcGVud3J0Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL29wZW53cnQtZGV2ZWw=">메일링 리스트<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9wdWxscw==">GitHub<i class="fa fa-external-link-alt"></i></span>에서 받고 있습니다. 나중에 자체운영 GitLab으로 넘어갈 거라곤 하는데 아직은 별다른 소식이 없네요. OpenWrt 메인테이너 중에는 커널 개발자도 많아서 패치 처리 절차도 비슷하게 따라가는 것 같습니다.</p>
+<p>현재 OpenWrt는 패치를 <span class="exturl" data-url="aHR0cHM6Ly9saXN0cy5vcGVud3J0Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL29wZW53cnQtZGV2ZWw=">메일링 리스트<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9wdWxscw==">GitHub<i class="fa fa-external-link-alt"></i></span>에서 받고 있습니다.<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> OpenWrt 메인테이너 중에는 커널 개발자도 많아서 패치 처리 절차도 비슷하게 따라가는 것 같습니다.</p>
 <p>이 글에서 GitHub PR 여는 법을 설명하진 않겠지만, 대신 몇 가지 주의사항을 언급하자면,</p>
 <ul>
 <li>많은 오픈소스 프로젝트에서 패치를 어떻게 작성해야 하는지 가이드라인을 제시합니다. OpenWrt의 경우에도 마찬가지로 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9zdWJtaXR0aW5nLXBhdGNoZXM=">공식 가이드<i class="fa fa-external-link-alt"></i></span>에 따라 패치의 형식을 맞춰주어야 합니다.</li>
@@ -560,16 +562,20 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <p>이 또한 의무는 아니지만(패치는 기여자의 선의로 작성됩니다), 머지 이후에도 당분간 기기를 처분하지 말고 혹시 들어올지 모르는 버그 제보에 대비하면 더욱 좋을 것 같습니다.</p>
 <div class="note info"><p>참고문서:</p>
 <ul>
-<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9zdWJtaXR0aW5nLXBhdGNoZXM=">https://openwrt.org/submitting-patches<i class="fa fa-external-link-alt"></i></span></li>
-<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9kZXZpY2Utc3VwcG9ydC1wb2xpY2llcw==">https://openwrt.org/docs/guide-developer/device-support-policies<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9zdWJtaXR0aW5nLXBhdGNoZXM=">[OpenWrt wiki] Submitting patches<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9kZXZpY2Utc3VwcG9ydC1wb2xpY2llcw==">[OpenWrt wiki] Device support policies / best practices<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 </div>
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>NOR 플래시 이미지에 해당하는 얘기고, NAND 플래시나 SD카드 이미지는 구조가 조금 다릅니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+<li id="fn1" class="footnote-item"><p>이제 ar71xx 타겟은 master 브랜치에서 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9jb21taXQvNGU0ZWU0NjQ5NTUzYWI1MzYyMjUwNjBhMjdmYzMyMGJmNTRlNDU4Yw==">제거<i class="fa fa-external-link-alt"></i></span>되었기 때문에 앞으론 ath79 타겟을 써야합니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn2" class="footnote-item"><p>그 외에도 메모리 크기, 주변장치 종류, 스위치 포트 순서도 알려주는 아주 좋은 자료입니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+<li id="fn2" class="footnote-item"><p>NOR 플래시 이미지에 해당하는 얘기고, NAND 플래시나 SD카드 이미지는 구조가 조금 다릅니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>그 외에도 메모리 크기, 주변장치 종류, 스위치 포트 순서도 알려주는 아주 좋은 자료입니다. <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>나중에 자체운영 GitLab으로 넘어갈 거라곤 하는데 아직은 별다른 소식이 없네요. <a href="#fnref4" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
@@ -578,8 +584,8 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
         <category>자유시간 프로젝트</category>
       </categories>
       <tags>
-        <tag>분해</tag>
         <tag>OpenWrt</tag>
+        <tag>분해</tag>
         <tag>포팅</tag>
       </tags>
   </entry>

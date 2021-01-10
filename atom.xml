@@ -6,7 +6,7 @@
   <link href="https://mans0n.github.io/atom.xml" rel="self"/>
   
   <link href="https://mans0n.github.io/"/>
-  <updated>2020-08-22T10:35:52.000Z</updated>
+  <updated>2021-01-10T05:11:38.487Z</updated>
   <id>https://mans0n.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/"/>
     <id>https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</id>
     <published>2020-08-22T10:32:37.000Z</published>
-    <updated>2020-08-22T10:35:52.000Z</updated>
+    <updated>2021-01-10T05:11:38.487Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;들어가기-전에&quot;&gt;들어가기 전에&lt;a class=&quot;header-anchor&quot; href=&quot;#들어가기-전에&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
@@ -33,9 +33,9 @@
     <category term="자유시간 프로젝트" scheme="https://mans0n.github.io/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/"/>
     
     
-    <category term="분해" scheme="https://mans0n.github.io/tags/%EB%B6%84%ED%95%B4/"/>
-    
     <category term="OpenWrt" scheme="https://mans0n.github.io/tags/openwrt/"/>
+    
+    <category term="분해" scheme="https://mans0n.github.io/tags/%EB%B6%84%ED%95%B4/"/>
     
     <category term="포팅" scheme="https://mans0n.github.io/tags/%ED%8F%AC%ED%8C%85/"/>
     
@@ -46,14 +46,16 @@
     <link href="https://mans0n.github.io/2020/08/18/korean-home-router-survey/"/>
     <id>https://mans0n.github.io/2020/08/18/korean-home-router-survey/</id>
     <published>2020-08-17T15:21:22.000Z</published>
-    <updated>2020-08-24T12:03:50.431Z</updated>
+    <updated>2021-01-10T03:03:36.194Z</updated>
     
     
-    <summary type="html">&lt;h1 id=&quot;개괄&quot;&gt;개괄&lt;a class=&quot;header-anchor&quot; href=&quot;#개괄&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
+    <summary type="html">&lt;p&gt;※ 2021-01-10: 정보 업데이트&lt;/p&gt;
+&lt;h1 id=&quot;개괄&quot;&gt;개괄&lt;a class=&quot;header-anchor&quot; href=&quot;#개괄&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
 &lt;blockquote&gt;
 &lt;p&gt;⚠️ 이 글의 내용은 전적으로 제 좁은 경험과 얕은 조사에 기반한 것이고, 빠지거나 틀린 내용이 있을 수 있습니다.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;2020-08-18 현재 기준으로 국내 회사에서 내놓은 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.&lt;/p&gt;</summary>
+&lt;p&gt;2021-01-10 기준으로 국내 회사에서 내놓은 인터넷 공유기 중에 이미 OpenWrt를 지원하거나 포팅이 유망해보이는 기종이 어떤 게 있는지 정리해보려고 합니다.&lt;br&gt;
+기업용 AP나 라우터 쪽은 제가 잘 모르기 때문에 이 글에선 가정 및 SOHO용 공유기를 주로 다룰 겁니다.&lt;/p&gt;</summary>
     
     
     
