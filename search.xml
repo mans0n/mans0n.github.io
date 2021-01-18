@@ -1,6 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>샤오미 WiFi 증폭기 Pro 열어보기</title>
+    <url>/2020/07/19/xiaomi-wifi-extender-pro/</url>
+    <content><![CDATA[<h1 id="발단">발단<a class="header-anchor" href="#발단"></a></h1>
+<p>사실 증폭기 Pro는 한참 전부터 눈독을 들이고 있던 모델이었습니다. 실사용하려는 목적은 전혀 아니었고, 생긴 게 앙증맞고 예쁘니 여기다 OpenWrt를 올리면 금상첨화겠다, 라는 생각이었습니다.</p>
+<p>제품을 구하기 전에 미리 하드웨어 정보를 알 수 있으면 좋을 텐데, 이 모델의 내부 사진을 찾기가 쉽지 않네요. 가끔씩 생각날 때마다 찾아보길 반복하다가 2019년 8월 말에 운좋게 <span class="exturl" data-url="aHR0cHM6Ly93d3cuem5qLmNvbS9uZXdzLzM3NDQuaHRtbA==">분해기<i class="fa fa-external-link-alt"></i></span>를 하나 발견했습니다.</p>
+<p>뒷면 스티커 아래에 나사구멍이 숨어있었군요. 게다가 보드엔 시리얼 포트까지 떡하니 나와있네요. 괜찮아 보이는데요? 마침 그때 알리에서 $11.5에 팔길래 만약 실패하더라도 큰 부담이 안 되겠다 싶어 바로 하나 주문했습니다.</p>
+<p>…</p>
+<p>지금 와서 보면 성급한 충동구매였는데… 정말 가격이라도 싸서 다행이었네요.</p>
+<a id="more"></a>
+<h1 id="분해">분해<a class="header-anchor" href="#분해"></a></h1>
+<p>외관은 이렇게 생겼습니다.<br>
+<img src="001.jpg" alt="외관"></p>
+<p>뒷면 스티커를 과감히 떼면 나사구멍 하나가 드러납니다.<br>
+<img src="002.jpg" alt="뒷면 스티커 뗌"></p>
+<p>걸쇠의 위치입니다.<br>
+<img src="003.jpg" alt="걸쇠 위치"></p>
+<p>보드의 뒷면.<br>
+<img src="004.jpg" alt="보드 뒷면"></p>
+<p>보드의 앞면.<br>
+<img src="005.jpg" alt="보드 앞면"></p>
+<p>일단 먼저 SoC부터 확인해봅시다. 방열패드를 들어내니 칩 마킹이 보입니다.<br>
+<img src="006.jpg" alt="SoC"></p>
+<p>MT7628KN.</p>
+<p><img src="007.png" alt="MT7628K"></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cubWVkaWF0ZWsuY29tL3Byb2R1Y3RzL2hvbWVOZXR3b3JraW5nL210NzYyOGstbi1h">MediaTek 제품설명<i class="fa fa-external-link-alt"></i></span>을 보면 내장 DRAM이 8MB라고 합니다. 8메가아아? 8메가짜리에 어떻게 OpenWrt를 올려요… 망했네요.</p>
+<p>처음에 내부 사진을 봤을 때 별도의 RAM 칩이 보이지 않는다는 것에 주목했어야 했는데… 이제 와서 후회해봐야 늦었지만요.</p>
+<p>이미 여기서 모든 희망이 사라져 버렸지만, 그래도 이왕 산 건데 시리얼 접속까진 한번 해보죠.</p>
+<p><img src="008.jpg" alt="플래시"></p>
+<p>플래시는 <span class="exturl" data-url="aHR0cHM6Ly93d3cubWFjcm9uaXguY29tL0xpc3RzL0RhdGFzaGVldC9BdHRhY2htZW50cy83NDY1L01YMjVMMTYwNkUsJTIwM1YsJTIwMTZNYiwlMjB2MS45LnBkZg==">MX25L1606E<i class="fa fa-external-link-alt"></i></span>로 2MB. 메모리가 이렇게 쪼끄만할 줄이야… 이쯤 되면 펌웨어가 리눅스가 아닐 가능성도 있겠지요.</p>
+<h1 id="콘솔-접속">콘솔 접속<a class="header-anchor" href="#콘솔-접속"></a></h1>
+<p>보드에 적힌 대로 핀 연결을 하고 115200 보율로 접속하니 익숙한 U-Boot 로그가 우리를 반겨줍니다.<br>
+<img src="009.png" alt="콘솔1"></p>
+<p>부팅이 끝나고 엔터를 치니 쉘이 열립니다.<br>
+<img src="010.png" alt="콘솔2"></p>
+<p>분명 평범한 busybox 쉘은 아니네요.</p>
+<p><img src="011.png" alt="콘솔3"></p>
+<p>리눅스 대신 <span class="exturl" data-url="aHR0cHM6Ly9rby53aWtpcGVkaWEub3JnL3dpa2kvRUNvcw==">eCos<i class="fa fa-external-link-alt"></i></span>를 쓴 모양입니다. (참고로 ipTIME의 몇몇 기종도 eCos를 사용합니다.)<br>
+nvram에서 <code>bootdelay</code> 값을 조절하면 부트로더 쉘도 열 수 있겠죠?</p>
+<p><img src="012.png" alt="콘솔4"></p>
+<p>간단한 시스템 정보를 보거나,</p>
+<p><img src="013.png" alt="콘솔5"></p>
+<p>LED와 버튼을 테스트해볼 수 있습니다.</p>
+<p>이런 거 말고는 별로 할 수 있는 게 없는 것 같네요. Buildroot를 잘 쓰면 좁은 메모리 공간에 리눅스를 꾸겨넣을 수 있을 것 같기도 하지만, 그렇게까지 써보고 싶은 건 아니라 이쯤에서 마무리하겠습니다.</p>
+]]></content>
+      <categories>
+        <category>자유시간 프로젝트</category>
+      </categories>
+      <tags>
+        <tag>분해</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ipTIME A9004M 공유기에 Windows XP 올리기</title>
+    <url>/2020/08/08/winxp-on-a9004m/</url>
+    <content><![CDATA[<p>※ 2021-01-18: 서두의 트윗은 아이디어의 원천에 대한 레퍼런스 목적으로 달아둔 것이고, 누군가를 비하하거나 조롱하기 위함이 아닙니다. 이 점을 분명히 하기 위해 서두 부분을 살짝 수정했습니다.</p>
+<h1 id="계기">계기<a class="header-anchor" href="#계기"></a></h1>
+<p>작년에 우연히 이 <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9sZ19vbGVkX3R2L3N0YXR1cy8xMTQ3MTE5ODIxMjAyNDE1NjE2">트윗<i class="fa fa-external-link-alt"></i></span>을 보게 되었습니다.</p>
+<p>그때까진 공유기에 OpenWrt 외의 일반 리눅스 배포판을 올려볼 생각을 해본 적이 없어서, 공유기에 VNC 서버를 올린다는 생각이 제겐 상당히 신선하게 다가왔습니다.</p>
+<p>만약 WRT1900ACS에서 VNC 서버를 돌릴 수 있다면 충분히 사양이 좋은 ipTIME 기기에서도 가능할 것이라 생각했습니다. 예를 들어 NAS1dual에는 동일한 CPU와 더 큰 용량의 RAM이 들어가므로 단순히 연산성능으로만 봤을 땐 WRT1900ACS에 못지않다고 볼 수 있겠지요.</p>
+<p>그래도 똑같은 플랫폼에서 똑같은 걸 따라하는 건 재미가 덜할 것 같고, ipTIME 공유기 중에서 충분히 성능이 좋은 A9004M에서 시도해보기로 했습니다.</p>
+<a id="more"></a>
+<h1 id="A9004M-위에-OpenWrt">A9004M 위에 OpenWrt<a class="header-anchor" href="#A9004M-위에-OpenWrt"></a></h1>
+<p>일단 OpenWrt부터 올려봅시다.</p>
+<img src="/2020/08/08/winxp-on-a9004m/002-banner.png" class="">
+<p>OpenWrt에선 X11이나 VNC 같은 GUI 관련 패키지를 제공하고 있지 않기 때문에, OpenWrt 바로 위에 VNC 서버를 올리는 건 쉽지 않을 것 같습니다.</p>
+<p>정말 Debian을 올리려고 한다면 Armbian을 포팅하거나 debootstrap을 쓰는 방법도 있겠지만, 단순한 PoC를 위해 거기까지 손대는 건 좀 귀찮고, 다행히 Docker 패키지는 있어서 도커 컨테이너를 올리는 방향으로 가겠습니다.</p>
+<p>OpenWrt 이미지를 빌드할 때 도커에 필요한 커널 모듈을 같이 포함해줍시다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 만약 나중에 업스트림에서 A9004M을 공식 지원하게 된다면 이 과정은 필요없게 됩니다.</p>
+<img src="/2020/08/08/winxp-on-a9004m/003-diffconfig.png" class="">
+<p>한편 도커 패키지를 설치하고 이미지를 다운로드 받기에 128MB 내장 플래시는 너무나도 비좁습니다. extroot를 써서 루트 파일시스템을 외부 USB 메모리로 옮길 필요가 있습니다. <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLXVzZXIvYWRkaXRpb25hbC1zb2Z0d2FyZS9leHRyb290X2NvbmZpZ3VyYXRpb24=">가이드<i class="fa fa-external-link-alt"></i></span>를 따라가면 어렵지 않게 할 수 있습니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+<p>그리고 후술할 이유로 <code>/opt</code>에 마운트할 파티션이 따로 필요합니다.</p>
+<img src="/2020/08/08/winxp-on-a9004m/004-df.png" class="">
+<p>이제 도커를 설치할 준비가 되었습니다.</p>
+<h1 id="Docker-위에-VNC-서버">Docker 위에 VNC 서버<a class="header-anchor" href="#Docker-위에-VNC-서버"></a></h1>
+<p><code>opkg install docker-ce</code>로 패키지를 설치합니다. <abbr title="2020-08-08">현재</abbr> docker-ce 패키지는 arm, aarch64, x86_64 아키텍처에서만 지원됩니다. 아마 mipsel 기반인 MT7621에서도 가능할 것 같은데, 혹시 관심 있는 분이 계시다면 테스트 부탁드립니다.</p>
+<img src="/2020/08/08/winxp-on-a9004m/005-docker-info.png" class="">
+<p>도커의 기본 스토리지 드라이버는 overlay2이지만, <span class="exturl" data-url="aHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMTgvMS84Lzgx">커널 구현의 한계<i class="fa fa-external-link-alt"></i></span>로 OpenWrt의 overlay 루트 파일시스템 위에서는 작동하지 않습니다. 만약 위에서 <code>/opt</code>에 별도 파일시스템을 마운트하지 않았다면 overlay2보다 느리고 용량도 많이 차지하는 vfs를 사용하게 됐을 겁니다.</p>
+<p>VNC 서버 이미지를 다운받고 컨테이너를 실행합니다.</p>
+<img src="/2020/08/08/winxp-on-a9004m/006-docker-run.png" class="">
+<p>작업이 완료되면 이제 외부에서 VNC 클라이언트나 웹 브라우저를 통해 VNC 서버에 접속할 수 있습니다.</p>
+<img src="/2020/08/08/winxp-on-a9004m/007-novnc.png" class="">
+<p>생각보단 반응속도가 좋습니다. 자원도 그리 많이 잡아먹지 않고요. 하지만 브라우저 같이 무거운 걸 켜면 느려집니다.</p>
+<img src="/2020/08/08/winxp-on-a9004m/008-firefox.png" class="">
+<h1 id="QEMU-위에-Windows-XP">QEMU 위에 Windows XP<a class="header-anchor" href="#QEMU-위에-Windows-XP"></a></h1>
+<p>드디어 이 글의 제목을 실현할 차례입니다. 터미널에서 qemu를 설치하고 PC에서 미리 준비해온 디스크 이미지로 부팅하면…</p>
+<p>짠.</p>
+<img src="/2020/08/08/winxp-on-a9004m/009-winxp.png" class="">
+<hr>
+<p>덧: 이 글을 올리기 직전에 알게 된 건데, 이제 OpenWrt의 procd가 runc 역할을 할 수 있게 됐다고 합니다. (<span class="exturl" data-url="aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvcGlwZXJtYWlsL29wZW53cnQtZGV2ZWwvMjAyMC1BdWd1c3QvMDMwNzQwLmh0bWw=">원문<i class="fa fa-external-link-alt"></i></span>) 서드 파티 패키지 없이도 컨테이너를 돌릴 수 있다니 좀 신기하네요.</p>
+<img src="/2020/08/08/winxp-on-a9004m/010-uxc.png" class="">
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>도커를 본격적으로 사용할 거라면 <code>CONFIG_DOCKER_KERNEL_OPTIONS</code> 등도 켜주면 좋겠지만, 가상화에 꼭 필요한 커널 옵션은 이미 <span class="exturl" data-url="aHR0cDovL2dpdC5vcGVud3J0Lm9yZy9mY2I0MWRlY2Y2Yw==">켜져있어서<i class="fa fa-external-link-alt"></i></span> 그런지, 추가 옵션을 주지 않아도 제 목적에는 충분했습니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>좋은 <span class="exturl" data-url="aHR0cHM6Ly93d3cubmVtb25laW4ueHl6LzIwMjAvMDcvNDAxNC8=">정리글<i class="fa fa-external-link-alt"></i></span>이 있어서 링크를 달아둡니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+      <categories>
+        <category>자유시간 프로젝트</category>
+      </categories>
+      <tags>
+        <tag>OpenWrt</tag>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>국산 공유기에도 OpenWrt를 올릴 수 있을까</title>
     <url>/2020/08/18/korean-home-router-survey/</url>
     <content><![CDATA[<p>※ 2021-01-10: 정보 업데이트</p>
@@ -103,58 +211,6 @@
       </categories>
       <tags>
         <tag>OpenWrt</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>샤오미 WiFi 증폭기 Pro 열어보기</title>
-    <url>/2020/07/19/xiaomi-wifi-extender-pro/</url>
-    <content><![CDATA[<h1 id="발단">발단<a class="header-anchor" href="#발단"></a></h1>
-<p>사실 증폭기 Pro는 한참 전부터 눈독을 들이고 있던 모델이었습니다. 실사용하려는 목적은 전혀 아니었고, 생긴 게 앙증맞고 예쁘니 여기다 OpenWrt를 올리면 금상첨화겠다, 라는 생각이었습니다.</p>
-<p>제품을 구하기 전에 미리 하드웨어 정보를 알 수 있으면 좋을 텐데, 이 모델의 내부 사진을 찾기가 쉽지 않네요. 가끔씩 생각날 때마다 찾아보길 반복하다가 2019년 8월 말에 운좋게 <span class="exturl" data-url="aHR0cHM6Ly93d3cuem5qLmNvbS9uZXdzLzM3NDQuaHRtbA==">분해기<i class="fa fa-external-link-alt"></i></span>를 하나 발견했습니다.</p>
-<p>뒷면 스티커 아래에 나사구멍이 숨어있었군요. 게다가 보드엔 시리얼 포트까지 떡하니 나와있네요. 괜찮아 보이는데요? 마침 그때 알리에서 $11.5에 팔길래 만약 실패하더라도 큰 부담이 안 되겠다 싶어 바로 하나 주문했습니다.</p>
-<p>…</p>
-<p>지금 와서 보면 성급한 충동구매였는데… 정말 가격이라도 싸서 다행이었네요.</p>
-<a id="more"></a>
-<h1 id="분해">분해<a class="header-anchor" href="#분해"></a></h1>
-<p>외관은 이렇게 생겼습니다.<br>
-<img src="001.jpg" alt="외관"></p>
-<p>뒷면 스티커를 과감히 떼면 나사구멍 하나가 드러납니다.<br>
-<img src="002.jpg" alt="뒷면 스티커 뗌"></p>
-<p>걸쇠의 위치입니다.<br>
-<img src="003.jpg" alt="걸쇠 위치"></p>
-<p>보드의 뒷면.<br>
-<img src="004.jpg" alt="보드 뒷면"></p>
-<p>보드의 앞면.<br>
-<img src="005.jpg" alt="보드 앞면"></p>
-<p>일단 먼저 SoC부터 확인해봅시다. 방열패드를 들어내니 칩 마킹이 보입니다.<br>
-<img src="006.jpg" alt="SoC"></p>
-<p>MT7628KN.</p>
-<p><img src="007.png" alt="MT7628K"></p>
-<p><span class="exturl" data-url="aHR0cHM6Ly93d3cubWVkaWF0ZWsuY29tL3Byb2R1Y3RzL2hvbWVOZXR3b3JraW5nL210NzYyOGstbi1h">MediaTek 제품설명<i class="fa fa-external-link-alt"></i></span>을 보면 내장 DRAM이 8MB라고 합니다. 8메가아아? 8메가짜리에 어떻게 OpenWrt를 올려요… 망했네요.</p>
-<p>처음에 내부 사진을 봤을 때 별도의 RAM 칩이 보이지 않는다는 것에 주목했어야 했는데… 이제 와서 후회해봐야 늦었지만요.</p>
-<p>이미 여기서 모든 희망이 사라져 버렸지만, 그래도 이왕 산 건데 시리얼 접속까진 한번 해보죠.</p>
-<p><img src="008.jpg" alt="플래시"></p>
-<p>플래시는 <span class="exturl" data-url="aHR0cHM6Ly93d3cubWFjcm9uaXguY29tL0xpc3RzL0RhdGFzaGVldC9BdHRhY2htZW50cy83NDY1L01YMjVMMTYwNkUsJTIwM1YsJTIwMTZNYiwlMjB2MS45LnBkZg==">MX25L1606E<i class="fa fa-external-link-alt"></i></span>로 2MB. 메모리가 이렇게 쪼끄만할 줄이야… 이쯤 되면 펌웨어가 리눅스가 아닐 가능성도 있겠지요.</p>
-<h1 id="콘솔-접속">콘솔 접속<a class="header-anchor" href="#콘솔-접속"></a></h1>
-<p>보드에 적힌 대로 핀 연결을 하고 115200 보율로 접속하니 익숙한 U-Boot 로그가 우리를 반겨줍니다.<br>
-<img src="009.png" alt="콘솔1"></p>
-<p>부팅이 끝나고 엔터를 치니 쉘이 열립니다.<br>
-<img src="010.png" alt="콘솔2"></p>
-<p>분명 평범한 busybox 쉘은 아니네요.</p>
-<p><img src="011.png" alt="콘솔3"></p>
-<p>리눅스 대신 <span class="exturl" data-url="aHR0cHM6Ly9rby53aWtpcGVkaWEub3JnL3dpa2kvRUNvcw==">eCos<i class="fa fa-external-link-alt"></i></span>를 쓴 모양입니다. (참고로 ipTIME의 몇몇 기종도 eCos를 사용합니다.)<br>
-nvram에서 <code>bootdelay</code> 값을 조절하면 부트로더 쉘도 열 수 있겠죠?</p>
-<p><img src="012.png" alt="콘솔4"></p>
-<p>간단한 시스템 정보를 보거나,</p>
-<p><img src="013.png" alt="콘솔5"></p>
-<p>LED와 버튼을 테스트해볼 수 있습니다.</p>
-<p>이런 거 말고는 별로 할 수 있는 게 없는 것 같네요. Buildroot를 잘 쓰면 좁은 메모리 공간에 리눅스를 꾸겨넣을 수 있을 것 같기도 하지만, 그렇게까지 써보고 싶은 건 아니라 이쯤에서 마무리하겠습니다.</p>
-]]></content>
-      <categories>
-        <category>자유시간 프로젝트</category>
-      </categories>
-      <tags>
-        <tag>분해</tag>
       </tags>
   </entry>
   <entry>
@@ -584,65 +640,9 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
         <category>자유시간 프로젝트</category>
       </categories>
       <tags>
-        <tag>OpenWrt</tag>
         <tag>분해</tag>
-        <tag>포팅</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ipTIME A9004M 공유기에 Windows XP 올리기</title>
-    <url>/2020/08/08/winxp-on-a9004m/</url>
-    <content><![CDATA[<h1 id="계기">계기<a class="header-anchor" href="#계기"></a></h1>
-<p>작년에 우연히 이 트윗을 보게 되었습니다.</p>
-<img src="/2020/08/08/winxp-on-a9004m/001-tweet.png" class="">
-<p>그때까진 공유기에 OpenWrt 외의 일반 리눅스 배포판을 올려볼 생각을 해본 적이 없어서, 공유기에 VNC 서버를 올린다는 생각이 제겐 상당히 신선하게 다가왔습니다.</p>
-<p>만약 WRT1900ACS에서 VNC 서버를 돌릴 수 있다면 “저급하지 않은” ipTIME 기기에서도 가능할 것이라 생각했습니다. 예를 들어 NAS1dual의 경우 WRT1900ACS과 동일한 CPU(Marvell 88F6820)를 쓰는 데다 RAM이 512MB의 네 배인 2GB이므로 단순히 연산성능상으로만 봤을 땐 딱히 꿀릴 것이 없겠지요.</p>
-<p>그래도 똑같은 플랫폼에서 똑같은 걸 따라하는 건 재미가 덜할 것 같고, ipTIME 공유기 중에서 충분히 성능이 좋은 A9004M에서 시도해보기로 했습니다.</p>
-<a id="more"></a>
-<h1 id="A9004M-위에-OpenWrt">A9004M 위에 OpenWrt<a class="header-anchor" href="#A9004M-위에-OpenWrt"></a></h1>
-<p>일단 OpenWrt부터 올려봅시다.</p>
-<img src="/2020/08/08/winxp-on-a9004m/002-banner.png" class="">
-<p>OpenWrt에선 X11이나 VNC 같은 GUI 관련 패키지를 제공하고 있지 않기 때문에, OpenWrt 바로 위에 VNC 서버를 올리는 건 쉽지 않을 것 같습니다.</p>
-<p>정말 Debian을 올리려고 한다면 Armbian을 포팅하거나 debootstrap을 쓰는 방법도 있겠지만, 단순한 PoC를 위해 거기까지 손대는 건 좀 귀찮고, 다행히 Docker 패키지는 있어서 도커 컨테이너를 올리는 방향으로 가겠습니다.</p>
-<p>OpenWrt 이미지를 빌드할 때 도커에 필요한 커널 모듈을 같이 포함해줍시다.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 만약 나중에 업스트림에서 A9004M을 공식 지원하게 된다면 이 과정은 필요없게 됩니다.</p>
-<img src="/2020/08/08/winxp-on-a9004m/003-diffconfig.png" class="">
-<p>한편 도커 패키지를 설치하고 이미지를 다운로드 받기에 128MB 내장 플래시는 너무나도 비좁습니다. extroot를 써서 루트 파일시스템을 외부 USB 메모리로 옮길 필요가 있습니다. <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLXVzZXIvYWRkaXRpb25hbC1zb2Z0d2FyZS9leHRyb290X2NvbmZpZ3VyYXRpb24=">가이드<i class="fa fa-external-link-alt"></i></span>를 따라가면 어렵지 않게 할 수 있습니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
-<p>그리고 후술할 이유로 <code>/opt</code>에 마운트할 파티션이 따로 필요합니다.</p>
-<img src="/2020/08/08/winxp-on-a9004m/004-df.png" class="">
-<p>이제 도커를 설치할 준비가 되었습니다.</p>
-<h1 id="Docker-위에-VNC-서버">Docker 위에 VNC 서버<a class="header-anchor" href="#Docker-위에-VNC-서버"></a></h1>
-<p><code>opkg install docker-ce</code>로 패키지를 설치합니다. <abbr title="2020-08-08">현재</abbr> docker-ce 패키지는 arm, aarch64, x86_64 아키텍처에서만 지원됩니다. 아마 mipsel 기반인 MT7621에서도 가능할 것 같은데, 혹시 관심 있는 분이 계시다면 테스트 부탁드립니다.</p>
-<img src="/2020/08/08/winxp-on-a9004m/005-docker-info.png" class="">
-<p>도커의 기본 스토리지 드라이버는 overlay2이지만, <span class="exturl" data-url="aHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMTgvMS84Lzgx">커널 구현의 한계<i class="fa fa-external-link-alt"></i></span>로 OpenWrt의 overlay 루트 파일시스템 위에서는 작동하지 않습니다. 만약 위에서 <code>/opt</code>에 별도 파일시스템을 마운트하지 않았다면 overlay2보다 느리고 용량도 많이 차지하는 vfs를 사용하게 됐을 겁니다.</p>
-<p>VNC 서버 이미지를 다운받고 컨테이너를 실행합니다.</p>
-<img src="/2020/08/08/winxp-on-a9004m/006-docker-run.png" class="">
-<p>작업이 완료되면 이제 외부에서 VNC 클라이언트나 웹 브라우저를 통해 VNC 서버에 접속할 수 있습니다.</p>
-<img src="/2020/08/08/winxp-on-a9004m/007-novnc.png" class="">
-<p>생각보단 반응속도가 좋습니다. 자원도 그리 많이 잡아먹지 않고요. 하지만 브라우저 같이 무거운 걸 켜면 느려집니다.</p>
-<img src="/2020/08/08/winxp-on-a9004m/008-firefox.png" class="">
-<h1 id="QEMU-위에-Windows-XP">QEMU 위에 Windows XP<a class="header-anchor" href="#QEMU-위에-Windows-XP"></a></h1>
-<p>드디어 이 글의 제목을 실현할 차례입니다. 터미널에서 qemu를 설치하고 PC에서 미리 준비해온 디스크 이미지로 부팅하면…</p>
-<p>짠.</p>
-<img src="/2020/08/08/winxp-on-a9004m/009-winxp.png" class="">
-<hr>
-<p>덧: 이 글을 올리기 직전에 알게 된 건데, 이제 OpenWrt의 procd가 runc 역할을 할 수 있게 됐다고 합니다. (<span class="exturl" data-url="aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvcGlwZXJtYWlsL29wZW53cnQtZGV2ZWwvMjAyMC1BdWd1c3QvMDMwNzQwLmh0bWw=">원문<i class="fa fa-external-link-alt"></i></span>) 서드 파티 패키지 없이도 컨테이너를 돌릴 수 있다니 좀 신기하네요.</p>
-<img src="/2020/08/08/winxp-on-a9004m/010-uxc.png" class="">
-<hr class="footnotes-sep">
-<section class="footnotes">
-<ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>도커를 본격적으로 사용할 거라면 <code>CONFIG_DOCKER_KERNEL_OPTIONS</code> 등도 켜주면 좋겠지만, 가상화에 꼭 필요한 커널 옵션은 이미 <span class="exturl" data-url="aHR0cDovL2dpdC5vcGVud3J0Lm9yZy9mY2I0MWRlY2Y2Yw==">켜져있어서<i class="fa fa-external-link-alt"></i></span> 그런지, 추가 옵션을 주지 않아도 제 목적에는 충분했습니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
-</li>
-<li id="fn2" class="footnote-item"><p>좋은 <span class="exturl" data-url="aHR0cHM6Ly93d3cubmVtb25laW4ueHl6LzIwMjAvMDcvNDAxNC8=">정리글<i class="fa fa-external-link-alt"></i></span>이 있어서 링크를 달아둡니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
-</li>
-</ol>
-</section>
-]]></content>
-      <categories>
-        <category>자유시간 프로젝트</category>
-      </categories>
-      <tags>
         <tag>OpenWrt</tag>
-        <tag>Docker</tag>
+        <tag>포팅</tag>
       </tags>
   </entry>
 </search>
