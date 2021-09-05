@@ -2,26 +2,26 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.1">
+<meta name="generator" content="Hexo 5.4.0">
+
+
 
 <link rel="stylesheet" href="/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"mans0n.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
-  </script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-  <meta name="description" content="들어가기 전에 글의 목적 뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"mans0n.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.7.1","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="※ 2021-09-05: v21.02.0 기준으로 업데이트 들어가기 전에 글의 목적 뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서,">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenWrt에 새 기기 지원 추가하기">
 <meta property="og:url" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/index.html">
 <meta property="og:site_name" content="맨손잡이">
-<meta property="og:description" content="들어가기 전에 글의 목적 뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야">
+<meta property="og:description" content="※ 2021-09-05: v21.02.0 기준으로 업데이트 들어가기 전에 글의 목적 뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서,">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/001-lid.jpg">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/002-internal.jpg">
@@ -37,10 +37,8 @@
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/012-tftp-fail.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/013-uimage-name.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/014-tftp-success.png">
-<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/015-baudrate-fail.png">
-<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/016-baudrate-fix.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/017-boot-success.png">
-<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/018-grep-mir4a-100m.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/018-grep-wr1000.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/019-menuconfig-a604m.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/020-dts-esw.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/021-swconfig.png">
@@ -57,7 +55,8 @@
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/032-stock-eth-mac.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/033-flash-eth-mac.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/034-dts-ethernet.png">
-<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/035-setup_macs.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/035-setup-macs.png">
+<meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/036-mac-addr.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/037-dts-usb.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/038-pin-table.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/039-dts-pinctrl.png">
@@ -75,7 +74,7 @@
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/051-stock-mtd-write.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/052-image-makefile.png">
 <meta property="article:published_time" content="2020-08-22T10:32:37.000Z">
-<meta property="article:modified_time" content="2021-01-10T05:11:38.487Z">
+<meta property="article:modified_time" content="2021-09-05T03:09:52.000Z">
 <meta property="article:author" content="mans0n">
 <meta property="article:tag" content="분해">
 <meta property="article:tag" content="OpenWrt">
@@ -83,82 +82,49 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/001-lid.jpg">
 
+
 <link rel="canonical" href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/">
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'ko'
-  };
-</script>
 
-  <title>OpenWrt에 새 기기 지원 추가하기 | 맨손잡이</title>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"ko","comments":true,"permalink":"https://mans0n.github.io/2020/08/22/openwrt-add-new-device/","path":"2020/08/22/openwrt-add-new-device/","title":"OpenWrt에 새 기기 지원 추가하기"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>OpenWrt에 새 기기 지원 추가하기 | 맨손잡이</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173005416-1"></script>
-    <script>
-      if (CONFIG.hostname === location.hostname) {
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-173005416-1');
-      }
-    </script>
-
-
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-173005416-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
 
 
 
 
   <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
-
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
-
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
-
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
 <link rel="alternate" href="/atom.xml" title="맨손잡이" type="application/atom+xml">
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
 
+  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
-        <span class="toggle-line toggle-line-first"></span>
-        <span class="toggle-line toggle-line-middle"></span>
-        <span class="toggle-line toggle-line-last"></span>
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
+      <i class="logo-line"></i>
       <h1 class="site-title">맨손잡이</h1>
-      <span class="logo-line-after"><i></i></span>
+      <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">이것저것 만듭니다</p>
   </div>
@@ -173,27 +139,11 @@
 
 
 <nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>태그</a>
-
-  </li>
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>태그</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
         </a>
@@ -204,23 +154,22 @@
 
 
   <div class="search-pop-overlay">
-    <div class="popup search-popup">
-        <div class="search-header">
+    <div class="popup search-popup"><div class="search-header">
   <span class="search-icon">
     <i class="fa fa-search"></i>
   </span>
   <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off"
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
            placeholder="Searching..." spellcheck="false"
            type="search" class="search-input">
   </div>
-  <span class="popup-btn-close">
+  <span class="popup-btn-close" role="button">
     <i class="fa fa-times-circle"></i>
   </span>
 </div>
-<div id="search-result">
-  <div id="no-result">
-    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
   </div>
 </div>
 
@@ -228,23 +177,97 @@
   </div>
 
 </div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%93%A4%EC%96%B4%EA%B0%80%EA%B8%B0-%EC%A0%84%EC%97%90"><span class="nav-number">1.</span> <span class="nav-text">들어가기 전에</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B8%80%EC%9D%98-%EB%AA%A9%EC%A0%81"><span class="nav-number">1.1.</span> <span class="nav-text">글의 목적</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%99%9C-OpenWrt"><span class="nav-number">1.2.</span> <span class="nav-text">왜 OpenWrt?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B8%80%EC%9D%98-%EB%B0%A9%ED%96%A5"><span class="nav-number">1.3.</span> <span class="nav-text">글의 방향</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%82%AC%EC%A0%84%EC%A1%B0%EC%82%AC"><span class="nav-number">2.</span> <span class="nav-text">사전조사</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%ED%95%98%EB%93%9C%EC%9B%A8%EC%96%B4-%EB%B0%8F-%ED%8E%8C%EC%9B%A8%EC%96%B4-%EC%A1%B0%EC%82%AC"><span class="nav-number">3.</span> <span class="nav-text">하드웨어 및 펌웨어 조사</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%B9%8C%EB%93%9C-%EB%B0%8F-%EB%B6%80%ED%8C%85"><span class="nav-number">4.</span> <span class="nav-text">빌드 및 부팅</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EA%B8%B0%EB%8A%A5-%EC%82%B4%EB%A6%AC%EA%B8%B0"><span class="nav-number">5.</span> <span class="nav-text">기능 살리기</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9D%B4%EB%8D%94%EB%84%B7"><span class="nav-number">5.1.</span> <span class="nav-text">이더넷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%ED%94%8C%EB%9E%98%EC%8B%9C"><span class="nav-number">5.2.</span> <span class="nav-text">플래시</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WiFi"><span class="nav-number">5.3.</span> <span class="nav-text">WiFi</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9D%B4%EB%8D%94%EB%84%B7-MAC-%EC%A3%BC%EC%86%8C"><span class="nav-number">5.4.</span> <span class="nav-text">이더넷 MAC 주소</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USB"><span class="nav-number">5.5.</span> <span class="nav-text">USB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LED%EC%99%80-%EB%B2%84%ED%8A%BC"><span class="nav-number">5.6.</span> <span class="nav-text">LED와 버튼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Failsafe"><span class="nav-number">5.7.</span> <span class="nav-text">Failsafe</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%B6%80%ED%8A%B8%EB%A1%9C%EB%8D%94"><span class="nav-number">5.8.</span> <span class="nav-text">부트로더</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%84%A4%EC%B9%98%EB%B2%95"><span class="nav-number">6.</span> <span class="nav-text">설치법</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%A9%94%EC%9D%B8%EB%9D%BC%EC%9D%B4%EB%8B%9D"><span class="nav-number">7.</span> <span class="nav-text">메인라이닝</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">mans0n</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">태그</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_sa.svg" alt="Creative Commons"></span>
+  </div>
+
+
+
+          </div>
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
     </header>
 
     
 
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
 
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
 
-          <div class="content post posts-expand">
-            
+    <div class="main-inner post posts-expand">
 
-    
+
+  
+
+
+<div class="post-block">
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="ko">
     <link itemprop="mainEntityOfPage" href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -261,33 +284,35 @@
           OpenWrt에 새 기기 지원 추가하기
         </h1>
 
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">작성일</span>
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">작성일</span>
 
-              <time title="Post created: 2020-08-22 19:32:37" itemprop="dateCreated datePublished" datetime="2020-08-22T19:32:37+09:00">2020-08-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Updated at: 2021-01-10 14:11:38" itemprop="dateModified" datetime="2021-01-10T14:11:38+09:00">2021-01-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/" itemprop="url" rel="index"><span itemprop="name">자유시간 프로젝트</span></a>
-                </span>
-            </span>
+      <time title="Post created: 2020-08-22 19:32:37" itemprop="dateCreated datePublished" datetime="2020-08-22T19:32:37+09:00">2020-08-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Updated at: 2021-09-05 12:09:52" itemprop="dateModified" datetime="2021-09-05T12:09:52+09:00">2021-09-05</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/" itemprop="url" rel="index"><span itemprop="name">자유시간 프로젝트</span></a>
+        </span>
+    </span>
 
-          
+  
+</div>
 
         </div>
       </header>
@@ -296,12 +321,11 @@
     
     
     <div class="post-body" itemprop="articleBody">
-
-      
-        <h1 id="들어가기-전에">들어가기 전에<a class="header-anchor" href="#들어가기-전에"></a></h1>
+        <p>※ 2021-09-05: v21.02.0 기준으로 업데이트</p>
+<h1 id="들어가기-전에">들어가기 전에<a class="header-anchor" href="#들어가기-전에"></a></h1>
 <h2 id="글의-목적">글의 목적<a class="header-anchor" href="#글의-목적"></a></h2>
 <p>뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야에 숨은 고수의 유입을 유도함으로써 저도 편하게 버스타고 가고 싶다는 사적인 소망을 이루고자 이 글을 썼다는 얘기입니다.</p>
-<a id="more"></a>
+<span id="more"></span>
 <h2 id="왜-OpenWrt">왜 OpenWrt?<a class="header-anchor" href="#왜-OpenWrt"></a></h2>
 <p>OpenWrt는 유무선공유기, NAS, SBC와 같이 자원이 제약된 임베디드 시스템을 위한 리눅스 배포판입니다. 사용자마다 각각의 원하는 점이 있겠지만(무선 성능 개선, 원하는 패키지 설치, 보안 향상 등등) 개인적으로는 잘 정돈된 코드베이스와 개발 환경이라는 데에 큰 점수를 주고 싶습니다. 메인라인에 가까운 최신 버전 커널과 툴체인은 칩셋 제조사 SDK나 그에 의존하는 여타 커펌 프로젝트에선 기대하기 어려운 일이지요. 다른 오픈소스 프로젝트와 비교해봤을 때도 기능성과 복잡도 면에서 Buildroot와 Yocto 사이에 끼어있기에 적당한 타협안이 된다고 생각합니다.</p>
 <p>또한 <span class="exturl" data-url="aHR0cHM6Ly9wb3N0bWFya2V0b3Mub3JnLw==">스마트폰<i class="fa fa-external-link-alt"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly93d3cucm9ja2JveC5vcmcv">MP3<i class="fa fa-external-link-alt"></i></span>, <span class="exturl" data-url="aHR0cHM6Ly9xbWsuZm0v">키보드<i class="fa fa-external-link-alt"></i></span> 등과 마찬가지로, 제조사 펌웨어에 발묶여있는 공유기에 오픈소스 커펌을 포팅하는 작업은 코더의 소일거리로도 적당하다고 봅니다.</p>
@@ -312,7 +336,7 @@
 <p>이 글에선 OpenWrt에 새 기기 지원을 추가하는 전반적인 과정(하드웨어 정보를 얻는 것부터 시작해서 업스트림에 패치를 보내는 데까지)을 다루고자 합니다.</p>
 <p>이 글은 읽는 사람이 이미 리눅스에 익숙하고 기본적인 하드웨어 지식이 있다는 가정 하에 작성되었습니다.</p>
 <p>이 글에서 설명하는 방법과 절차는 최선이 아닐 수 있습니다. 처음에야 일단 따라해보면서 익혀야겠지만, 어느 정도 익숙해지면 여기선 왜 이렇게 했을까, 더 좋은 방법은 없을까, 하고 고민하면서 스스로 개선점을 찾아보길 바랍니다.</p>
-<p>예시로 사용할 기기는 제 첫 업스트림 모델이면서 하드웨어와 패치가 단순한 ipTIME A604M으로 선택했습니다.</p>
+<p>예시로 사용할 기기는 제 첫 메인라이닝 모델이면서 하드웨어와 패치가 단순한 ipTIME A604M으로 선택했습니다.</p>
 <h1 id="사전조사">사전조사<a class="header-anchor" href="#사전조사"></a></h1>
 <p>어떤 기기에 OpenWrt를 포팅해보자고 마음을 먹은 다음에 가장 먼저 해야할 일이 뭘까요? 그 기기에 OpenWrt를 올리는 것이 가능할지, 올린 다음에 실사용이 가능할지, 이미 포팅을 시도한 사례가 있는지 등을 먼저 확인하는 과정이 필요합니다. 이미 가지고 있는 기기라면 상관없지만, 덥썩 구매해놓고 나중 가서 올릴 수 없다는 걸 알게 되면 실망이 크잖아요.</p>
 <p>일단 A604M의 하드웨어 스펙을 조사해봅시다.</p>
@@ -336,8 +360,8 @@
 <li>ramips, mediatek: Ralink/MediaTek SoC를 사용합니다. 전자는 MIPS 아키텍처고 후자는 ARM 아키텍처입니다.</li>
 <li>kirkwood, mvebu: Marvell SoC를 사용합니다. 이 계열은 공유기뿐만 아니라 NAS 기기에도 많이 사용됩니다.</li>
 </ul>
-<p>Lexra 기반의 Realtek SoC는 지원되지 않습니다. 다만 MIPS 기반 RTL838x 계열은 OpenWrt에 초기 지원이 추가된 상태입니다.</p>
-<p>이 중 ramips 타겟은 지원이 잘 되고 있는 상태고, 지원하는 기종도 많은 걸 봤을 때, A604M 포팅에 SoC가 걸림돌이 되진 않을 것으로 보입니다. 또한 OpenWrt의 최소 요구 사양으로 여겨지는 4/32 조건(플래시 4MB, RAM 32MB)도 넘기고 있습니다.</p>
+<p>Lexra 기반의 Realtek SoC는 지원되지 않습니다. 다만 MIPS 기반 RTL838x 계열은 초기 지원이 추가된 상태입니다.</p>
+<p>이 중 ramips 타겟은 지원이 잘 되고 있는 상태고, 지원하는 기종도 많은 걸 봤을 때, A604M 포팅에 SoC가 걸림돌이 되진 않을 것으로 보입니다. 또한 OpenWrt의 최소 요구 사양으로 여겨지는 8/64 조건(플래시 8MB 이상, RAM 64MB 이상)도 만족하고 있습니다.</p>
 <p>위에 링크를 달아놓은 내부 사진을 잘 살펴보면 보드에 UART로 추측되는 4핀 핀헤더가 달려있는 게 보입니다. 시리얼 콘솔은 디바이스 정보를 얻고 디버깅을 하는 데 필수적이고, 이게 없으면 이후 진행이 매우 골치아파지기 때문에, UART 핀의 존재 여부 정도는 미리 확인해두는 게 좋습니다.</p>
 <h1 id="하드웨어-및-펌웨어-조사">하드웨어 및 펌웨어 조사<a class="header-anchor" href="#하드웨어-및-펌웨어-조사"></a></h1>
 <p>사전조사에서 OpenWrt를 올릴 수 있을 것 같다는 희망이 보였다면 이제 본격적인 조사 작업에 들어가봅시다.</p>
@@ -377,11 +401,10 @@
 <p>일단 기능 테스트를 위해 정펌을 올려봤는데 잘 되네요.</p>
 <p>처음 써보는 기기라면 관리자 웹페이지도 둘러보고 LED는 언제 불이 들어오는지도 살펴보고 하면서 기능을 더 탐색해야겠지만, ipTIME 공유기 기능은 다들 아시리라 믿고 넘어가겠습니다.</p>
 <h1 id="빌드-및-부팅">빌드 및 부팅<a class="header-anchor" href="#빌드-및-부팅"></a></h1>
-<p>이제 OpenWrt 펌웨어를 빌드해봅시다. 처음엔 19.07 릴리즈를 사용할까도 했는데, 그 이후로 master 브랜치에서 많은 변화가 있었기 때문에 옛 버전보다는 최신 snapshot 기준으로 설명하는 게 낫겠다고 판단했습니다.</p>
-<p>이 글에선 2020-08-11 시점에서 가장 최근 커밋인 <span class="exturl" data-url="aHR0cHM6Ly9naXQub3BlbndydC5vcmcvYjU5YTk4YjAwOWI5">b59a98b009b9<i class="fa fa-external-link-alt"></i></span> 버전을 사용하겠습니다. 최신 snapshot엔 제가 이미 업스트림시킨 A604M 지원 패치가 들어가 있지만, 여기선 없다고 가정하고 진행하겠습니다.</p>
+<p>이제 OpenWrt 펌웨어를 빌드해봅시다. 이 글에선 2021-09-04 시점에서 최신 안정 버전인 <span class="exturl" data-url="aHR0cHM6Ly9naXQub3BlbndydC5vcmcvYjJhZTQyMzMxNDlk">v21.02.0<i class="fa fa-external-link-alt"></i></span>을 사용하겠습니다. 여기엔 제가 이미 메인라이닝한 A604M 지원 패치가 들어가 있는데, 이 글에선 없다고 가정하고 진행하겠습니다.</p>
 <p>빌드 환경으론 Ubuntu 20.04를 사용하겠습니다. RAM은 4GB, 여유 저장공간은 10GB 이상 있어야 빌드가 수월할 겁니다.</p>
-<p>일단 OpenWrt에서 이미 지원하는 mt76x8 디바이스 중 A604M과 사양이 대략 비슷해보이는 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy90b2gvaHdkYXRhL3hpYW9taS94aWFvbWlfbWlfcm91dGVyXzRhXzEwMG0=">Mi Router 4A<i class="fa fa-external-link-alt"></i></span>의 펌웨어 이미지를 빌드하겠습니다. 이는 디바이스에서 OpenWrt 이미지를 정상적으로 부팅하는 것이 가능한지 테스트해보려는 목적이고, 나중에 제대로 전용 이미지를 만들 겁니다.</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 패키지 설치 및 저장소 클론</span></span><br><span class="line">sudo apt-get install build-essential libncurses-dev gawk unzip wget python3 git file rsync</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/openwrt/openwrt.git</span><br><span class="line"><span class="built_in">cd</span> openwrt</span><br><span class="line"><span class="comment">## 기존 패치 삭제</span></span><br><span class="line">git switch -c dev-a604m b59a98b009b9</span><br><span class="line">wget https://mans0n.github.io/2020/08/18/openwrt-add-device/b59a98b009b9-pre-a604m.patch</span><br><span class="line">git am b59a98b009b9-pre-a604m.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">## 외부 패키지 가져오기, 한 번만 하면 됨</span></span><br><span class="line">./scripts/feeds update -a</span><br><span class="line">./scripts/feeds install -a</span><br><span class="line"><span class="comment">## 빌드 타겟 설정</span></span><br><span class="line">make menuconfig</span><br><span class="line"><span class="comment">## "Target System" -&gt; "MediaTek Ralink MIPS"</span></span><br><span class="line"><span class="comment">## "Subtarget" -&gt; "MT76x8 based boards"</span></span><br><span class="line"><span class="comment">## "Target Profile" -&gt; "Xiaomi Mi Router 4A 100M Edition"</span></span><br><span class="line"><span class="comment">## 빌드 중간에 실패할 때를 대비해 CONFIG_BUILD_LOG도 활성화시켜두면 좋음</span></span><br><span class="line"><span class="comment">## "Advanced configuration options (for developers)" -&gt; "Enable log files during build process"</span></span><br><span class="line">make defconfig</span><br><span class="line"><span class="comment"># ./scripts/diffconfig.sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 소스파일 다운로드, 한 번만 하면 됨</span></span><br><span class="line">make download -j3</span><br><span class="line"><span class="comment">## 빌드 시작, (CPU 스레드 수 + 1)개의 프로세스로 병렬처리</span></span><br><span class="line">make -j$((`nproc` + 1))</span><br></pre></td></tr></table></figure>
+<p>일단 OpenWrt에서 이미 지원하는 mt76x8 디바이스 중 A604M과 사양이 대략 비슷해보이는 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy90b2gvaHdkYXRhL2N1ZHkvY3VkeV93cjEwMDBfdjE=">Cudy WR1000<i class="fa fa-external-link-alt"></i></span>의 펌웨어 이미지를 빌드하겠습니다. 이는 디바이스에서 OpenWrt 이미지를 정상적으로 부팅하는 것이 가능한지 테스트해보려는 목적이고, 나중에 제대로 전용 이미지를 만들 겁니다.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 패키지 설치 및 저장소 클론</span></span><br><span class="line">sudo apt-get install build-essential libncurses-dev gawk unzip wget python3 git file rsync</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/openwrt/openwrt.git</span><br><span class="line"><span class="built_in">cd</span> openwrt</span><br><span class="line"><span class="comment">## 기존 패치 삭제</span></span><br><span class="line">git switch -c dev-a604m v21.02.0</span><br><span class="line">wget https://mans0n.github.io/2020/08/18/openwrt-add-device/v21.02.0-pre-a604m.patch</span><br><span class="line">git am v21.02.0-pre-a604m.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">## 외부 패키지 가져오기, 한 번만 하면 됨</span></span><br><span class="line">./scripts/feeds update -a</span><br><span class="line">./scripts/feeds install -a</span><br><span class="line"><span class="comment">## 빌드 타겟 설정</span></span><br><span class="line">make menuconfig</span><br><span class="line"><span class="comment">## &quot;Target System&quot; -&gt; &quot;MediaTek Ralink MIPS&quot;</span></span><br><span class="line"><span class="comment">## &quot;Subtarget&quot; -&gt; &quot;MT76x8 based boards&quot;</span></span><br><span class="line"><span class="comment">## &quot;Target Profile&quot; -&gt; &quot;Cudy WR1000&quot;</span></span><br><span class="line"><span class="comment">## 빌드 중간에 실패할 때를 대비해 CONFIG_BUILD_LOG도 활성화시켜두면 좋음</span></span><br><span class="line"><span class="comment">## &quot;Advanced configuration options (for developers)&quot; -&gt; &quot;Enable log files during build process&quot;</span></span><br><span class="line">make defconfig</span><br><span class="line"><span class="comment"># ./scripts/diffconfig.sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 소스파일 다운로드, 한 번만 하면 됨</span></span><br><span class="line">make download -j3</span><br><span class="line"><span class="comment">## 빌드 시작, (CPU 스레드 수 + 1)개의 프로세스로 병렬처리</span></span><br><span class="line">make -j$((`nproc` + <span class="number">1</span>))</span><br></pre></td></tr></table></figure>
 <img src="/2020/08/22/openwrt-add-new-device/008-menuconfig.png" class="">
 <p>처음 빌드할 땐 툴체인까지 빌드해야 하기 때문에 시간이 좀 많이 걸립니다. 컴퓨터 성능이 좋다면 30분만에 끝날 수도 있고, 별로라면 한두 시간 걸릴 수도 있습니다.</p>
 <div class="note info"><p>참고문서:</p>
@@ -392,10 +415,10 @@
 </div>
 <p>빌드 후 새로 생기는 디렉토리 몇 개를 살펴보면 다음과 같습니다.</p>
 <ul>
-<li>bin: 빌드 결과물인 펌웨어 이미지와 패키지가 저장되는 장소</li>
-<li>build_dir: 소스코드가 빌드되는 장소 (만약 저장공간이 부족해진다면 <code>build_dir/toolchain-*</code>부터 삭제하세요)</li>
-<li>dl: 다운로드 받은 소스 압축 파일이 저장되는 장소</li>
-<li>staging_dir: 빌드한 툴체인 바이너리나 라이브러리 헤더 등이 저장되는 장소</li>
+<li><code>bin</code>: 빌드 결과물인 펌웨어 이미지와 패키지가 저장되는 장소</li>
+<li><code>build_dir</code>: 소스코드가 빌드되는 장소 (만약 저장공간이 부족해진다면 <code>build_dir/toolchain-*</code>부터 삭제하세요)</li>
+<li><code>dl</code>: 다운로드 받은 소스 압축 파일이 저장되는 장소</li>
+<li><code>staging_dir</code>: 빌드한 툴체인 바이너리나 라이브러리 헤더 등이 저장되는 장소</li>
 </ul>
 <p>설치에 사용할 이미지는 <code>bin/targets/ramips/mt76x8/</code> 아래에 있습니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/009-openwrt-image.png" class="">
@@ -415,35 +438,31 @@
 <p>우선 정펌 포맷을 살펴보겠습니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/010-binwalk-stock.png" class="">
 <p>uImage 헤더가 앞에 달려있고, 커널과 rootfs가 뒤따라오는 구조입니다. <code>hexdump</code>로 살펴봐도 제조사 헤더나 꼬리가 붙어있는 것 같진 않네요.</p>
-<p>이걸 아까 빌드한 <code>openwrt-ramips-mt76x8-xiaomi_mir4a-100m-initramfs-kernel.bin</code> 이미지 포맷과 비교해봅니다.</p>
+<p>이걸 아까 빌드한 <code>openwrt-ramips-mt76x8-cudy_wr1000-initramfs-kernel.bin</code> 이미지 포맷과 비교해봅니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/011-binwalk-initramfs.png" class="">
 <p>똑같이 uImage 헤더로 시작하고, 뒤에는 커널만 따라옵니다. squashfs가 빠지긴 했지만 구조는 대충 비슷하니 이 정도면 복구모드도 만족해하지 않을까요.</p>
 <p>이 initramfs 이미지를 TFTP로 올려보겠습니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/012-tftp-fail.png" class="">
-<p>이미지를 거부하네요? 정펌 이미지엔 <code>a604m</code>이라 적혀있는 부분이 initramfs 이미지엔 <code>MIPS OpenWrt Linux-5.4.52</code>이라 적혀있어서 안 된다는 것 같습니다. 아까 <code>binwalk</code> 결과에서 uImage 헤더의 이미지 이름란에 이런 문자열이 들어가 있었죠.</p>
+<p>이미지를 거부하네요? 정펌 이미지엔 <code>a604m</code>이라 적혀있는 부분이 initramfs 이미지엔 <code>MIPS OpenWrt Linux-5.4.143</code>이라 적혀있어서 안 된다는 것 같습니다. 아까 <code>binwalk</code> 결과에서 uImage 헤더의 이미지 이름란에 이런 문자열이 들어가 있었죠.</p>
 <p>다행히 이건 이미지 Makefile에 한 줄만 추가해주면 해결됩니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/013-uimage-name.png" class="">
 <p>다시 이미지를 빌드하고 TFTP로 올리면 이번엔 이미지를 정상적으로 접수합니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/014-tftp-success.png" class="">
-<p>근데 잘 부팅하다가 도중에 콘솔 글자가 깨져버리네요.</p>
-<img src="/2020/08/22/openwrt-add-new-device/015-baudrate-fail.png" class="">
-<p>글자가 깨진다는 건 보율이 안 맞는다는 거죠. 샤오미 공유기는 보율로 115200을 써서 그렇습니다. 이건 dts에서 수정해주면 됩니다.</p>
-<img src="/2020/08/22/openwrt-add-new-device/016-baudrate-fix.png" class="">
 <p>부팅이 끝나고 쉘이 뜨면 성공한 겁니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/017-boot-success.png" class="">
 <p>Q: 근데 아직 플래시 덤프도 안 했는데 너무 무작정 설치해버린 거 아닌가요?<br>
-A: 네 맞습니다… 경험상 ipTIME ramips 기기에서 부트로더 복구모드를 믿어도 괜찮고, 덤프는 나중에 남은 부분만 해도 충분하다는 걸 알기 때문에 이렇게 간 거고, 다른 디바이스 작업할 땐 꼭 덤프부터 하세요.</p>
+A: 네 맞습니다… 경험상 ipTIME ramips 기기에서 부트로더 복구모드를 믿어도 괜찮고, 덤프는 나중에 남은 부분만 해도 충분하다는 걸 알기 때문에 이렇게 간 거고, 다른 디바이스 작업할 땐 꼭 덤프부터 하세요.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
 <h1 id="기능-살리기">기능 살리기<a class="header-anchor" href="#기능-살리기"></a></h1>
 <p>OpenWrt 부팅에 성공했으니, 이제 본격적으로 디바이스 지원 패치를 작성해봅시다.</p>
-<p>일단 A604M 이미지를 만드는 것부터 시작하겠습니다. Mi Router 4A 지원 패치를 복사해 A604M으로 이름만 바꿔줍니다. <code>mir4a-100m</code>로 검색하면 금방 찾을 수 있습니다.</p>
-<img src="/2020/08/22/openwrt-add-new-device/018-grep-mir4a-100m.png" class="">
+<p>일단 A604M 이미지를 만드는 것부터 시작하겠습니다. WR1000 지원 패치를 복사해 A604M으로 이름만 바꿔줍니다. <code>wr1000</code>로 검색하면 금방 찾을 수 있습니다.</p>
+<img src="/2020/08/22/openwrt-add-new-device/018-grep-wr1000.png" class="">
 <p>대충 이 정도? 별로 안 많죠? dts는 파일을 새로 만들어야 합니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/019-menuconfig-a604m.png" class="">
 <p>이 다음에 <code>make menuconfig</code>를 다시 하면 모델 목록에 A604M이 뜹니다. 새로 빌드한 <code>openwrt-ramips-mt76x8-iptime_a604m-initramfs-kernel.bin</code> 이미지로 재설치하면 이전처럼 잘 부팅되어야 합니다.</p>
 <p>다음으로 넘어가기 전에 잠깐 DTS가 무엇인지에 대해 짧게 설명하겠습니다.</p>
 <p>예전엔 (그리고 지금도 일부는) 각 기기 모델마다 존재하는 <code>mach-*.c</code> 또는 <code>board-*.c</code>에서 주변장치 초기화 및 설정 작업을 진행했지만, 현재는 이 목적을 위해 DTS(Device Tree Source)라는 별개 형식의 파일을 사용하는 추세입니다. dtc라는 별도의 컴파일러를 써서 DTS 소스파일을 DTB 바이너리로 만들고, 이걸 커널 이미지 옆에 덧붙이거나 저장장치 어딘가에 저장해놨다가 부팅 시 불러와서 사용합니다. DT는 실행 코드가 아니라 단순히 하드웨어를 기술하는 역할만 하고, 드라이버는 DTB를 읽어들여 기기에 어떤 장치가 달려있고 각각을 어떻게 사용해야 하는지 파악합니다.</p>
 <p>참고로 모든 기기가 디바이스 트리를 쓰는 건 아니고, 이외에도 여러 하드웨어 정보 관리 방법이 있습니다. 브로드컴 공유기는 nvram을 사용하기도 하고, x86 컴퓨터에선 ACPI(특히 DSDT)를 사용합니다.</p>
-<p>ramips는 아직 커널 업스트림이 덜 됐기 때문에 아직도 많은 부분이 OpenWrt 다운스트림 패치로 남아있고, dts도 커널 소스트리에 들어간 걸 쓰지 않고 <code>target/linux/ramips/dts/</code>에 있는 로컬 파일을 사용합니다. 내용을 보면 SoC의 전반적인 기능을 dtsi 파일에서 정의하고, 이걸 디바이스 dts에서 불러와 필요한 기능만 활성화시켜 사용하는 구조로 되어있습니다.</p>
+<p>ramips는 아직 커널 메인라이닝이 덜 됐기 때문에 아직도 많은 부분이 OpenWrt 다운스트림 패치로 남아있고, dts도 커널 소스트리에 들어간 걸 쓰지 않고 <code>target/linux/ramips/dts/</code>에 있는 로컬 파일을 사용합니다. 내용을 보면 SoC의 전반적인 기능을 dtsi 파일에서 정의하고, 이걸 디바이스 dts에서 불러와 필요한 기능만 활성화시켜 사용하는 구조로 되어있습니다.</p>
 <div class="note info"><p>참고문서:</p>
 <ul>
 <li><span class="exturl" data-url="aHR0cHM6Ly9lbGludXgub3JnL2ltYWdlcy9mL2Y5L1BldGF6em9uaS1kZXZpY2UtdHJlZS1kdW1taWVzXzAucGRm">Device Tree for Dummies<i class="fa fa-external-link-alt"></i></span></li>
@@ -460,7 +479,7 @@ A: 네 맞습니다… 경험상 ipTIME ramips 기기에서 부트로더 복구�
 <h2 id="이더넷">이더넷<a class="header-anchor" href="#이더넷"></a></h2>
 <p>일단 이더넷이 돼야 이후 작업이 편해집니다. 이더넷 설정은 dts와 <code>02_network</code>에 담겨있습니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/020-dts-esw.png" class="">
-<p><code>&amp;esw</code> 노드는 그냥 날려버립니다. 스위치 LAN/WAN 설정과 안 쓰는 포트 비활성화하는 역할인데, 전자는 어차피 <code>02_network</code>에서 할 거고, 후자는 A604M은 포트 5개 모두 사용하니 해당사항이 없습니다. <code>&amp;ethernet</code> 노드는 지금은 그대로 둬도 됩니다.</p>
+<p><code>&amp;esw</code> 노드는 그냥 날려버립니다. <code>mediatek,portmap</code> 속성은 스위치 LAN/WAN 설정하는 역할인데, 이건 잠시 후에 <code>02_network</code>에서 할 거라 여기선 빼도 됩니다. <code>&amp;ethernet</code> 노드는 지금은 그대로 둡니다.</p>
 <p>LAN/WAN 설정을 하기 위해선 각 포트가 MT7628A에 내장된 이더넷 스위치의 몇 번 포트에 해당하는지를 알아야 합니다. 이건 <code>swconfig</code>를 쓰면 쉽게 알아낼 수 있습니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/021-swconfig.png" class="">
 <p>처음에 외부 포트에 아무 선도 꽂지 않으면 6번 포트만 연결된 것으로 나옵니다. 6번 포트는 스위치와 CPU를 연결하는 내부포트이겠지요. 그리고 WAN 포트에 선을 꽂으니 0번 포트가 연결된 것으로 뜹니다.</p>
@@ -539,7 +558,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <p>보드에 WiFi 칩셋이 두 개 있었죠. MT7628A는 2.4GHz 대역을 담당하고, PCIe로 연결된 MT7612E는 5GHz 대역을 담당합니다. 각각은 factory 파티션에 저장된 캘값을 필요로 하고, dts에는 이 캘값의 위치를 적어주어야 합니다.</p>
 <p>factory 파티션 내용을 쭉 훓어보면 알겠지만, 대부분의 공간은 텅 비어있고 0x0 부분과 0x8000 부분에 약간의 데이터가 저장되어 있습니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/028-factory-entropy.png" class="">
-<p>이 중에 어떤 게 누구 건지 어떻게 알 수 있을까요? 가장 간단한 방법은 둘 다 시도해보는 겁니다. 캘값엔 칩셋 정보도 들어가있기 때문에 잘못 넣으면 못 받아먹고 토해냅니다.</p>
+<p>이 중에 어떤 게 누구 건지 어떻게 알 수 있을까요? 가장 간단한 방법은 둘 다 시도해보는 겁니다. 캘값엔 칩셋 정보도 들어가있기 때문에 잘못 넣으면 못 받아먹고 토해냅니다.<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></p>
 <p>또 다른 방법은 MAC 주소를 비교해보는 겁니다. 보통 WiFi 칩셋마다 서로 다른 MAC 주소를 할당하기 때문에, 정펌 상태에서 어떤 주소를 쓰는지 확인하고 캘값에 적힌 주소와 비교해보면 되겠습니다. WiFi AP의 MAC 주소는 관리자 웹페이지에서 확인할 수도 있고, WiFi 스캔 앱이나 <code>iw</code> 명령어로 확인할 수도 있습니다.</p>
 <p>제 기기의 MAC 주소는 이렇습니다.</p>
 <ul>
@@ -554,8 +573,8 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <li><code>&amp;wmac</code>은 MT7628A의 내장 WiFi 모듈입니다. <code>0x0</code>은 SoC dtsi에 이미 들어가있으니 다시 안 써줘도 됩니다.</li>
 <li>MT7628A는 PCIe 포트가 하나밖에 없어서 별로 상관없지만, 포트가 여러 개인 기기에서 작업할 땐 <code>lspci -nn</code>으로 어떤 게 어디에 물려있는지 확인해야 합니다.</li>
 <li><code>ieee80211-freq-limit</code>는 WiFi 칩셋이 사용할 주파수 대역을 제한하기 위해 사용합니다. 원래 MT7612E는 2.4GHz와 5GHz를 둘 다 지원하는데, A604M에선 5GHz 안테나 선만 연결해서 사용하고 있습니다. 하지만 커널은 그걸 모르니 수동으로 알려줘야 합니다.</li>
+<li><code>wifi@0,0</code> 안에 <code>led</code> 노드는 MT7612E의 LED 핀을 위한 설정인데, 뒤에서 보겠지만 A604M에선 사용되지 않으므로 지웁니다.</li>
 </ul>
-<p>Mi Router 4A의 설정과 똑같아서 따로 수정할 게 없군요.</p>
 <p>WiFi 커널 모듈도 추가해줘야 하는데, <code>kmod-mt7603</code>과 <code>kmod-mt76x2</code>가 이미 이미지에 포함되어 있어서 더 건들 게 없습니다.</p>
 <p>WiFi 작동확인을 하려면 <code>/etc/config/wireless</code>에서 장치를 켜면 됩니다. 자세한 방법은 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLXVzZXIvbmV0d29yay93aWZpL2Jhc2lj">위키 문서<i class="fa fa-external-link-alt"></i></span>를 참조하세요.</p>
 <img src="/2020/08/22/openwrt-add-new-device/031-iwinfo.png" class="">
@@ -567,9 +586,9 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <img src="/2020/08/22/openwrt-add-new-device/033-flash-eth-mac.png" class="">
 <p>LAN 주소는 dts에, WAN 주소는 <code>02_network</code>에 적어줍니다. 둘 다 <code>02_network</code>에 넣어도 되긴 하지만, 커널한테도 귀띔해줘서 나쁠 거 없으니까요.</p>
 <img src="/2020/08/22/openwrt-add-new-device/034-dts-ethernet.png" class="">
-<img src="/2020/08/22/openwrt-add-new-device/035-setup_macs.png" class="">
+<img src="/2020/08/22/openwrt-add-new-device/035-setup-macs.png" class="">
 <p>이제 MAC 주소가 다 맞게 되었네요.</p>
-
+<img src="/2020/08/22/openwrt-add-new-device/036-mac-addr.png" class="">
 <ul>
 <li>만약 플래시에 정확하게 일치하는 MAC 주소가 없으면 비슷한 주소에다 차이값을 더해서 쓸 수 있습니다.</li>
 <li>기기 어딘가에 대표 MAC 주소가 적혀 있으면 <code>label-mac</code>에 넣을 수 있지만, ipTIME은 더 이상 보드에 MAC 주소 스티커를 붙이지 않는 모양입니다.</li>
@@ -584,7 +603,11 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <p>A604M엔 외부 USB 포트가 없습니다. 보드에 USB 포트 흔적이 남아있긴 한데, 굳이 납땜해서 달고 싶은 마음은 안 드네요.</p>
 <p>왠진 모르겠지만 SoC dtsi에서 USB를 기본적으로 활성화해둔 상태이므로 dts에서 비활성화해둡니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/037-dts-usb.png" class="">
-<p>참고로 ohci는 USB 1.x, ehci는 USB 2.x, xhci는 USB 3.x에 해당합니다.</p>
+<ul>
+<li>ohci는 USB 1.1, ehci는 USB 2.0, xhci는 USB 3.0에 해당합니다.</li>
+<li>USB 포트의 전원핀(VBUS)을 GPIO로 제어하는 경우도 있습니다. 전원 LED가 달려있는 USB 장치가 있으면 드라이버 문제인지 VBUS 문제인지 판별할 수 있겠죠.</li>
+<li>USB 포트가 여러 개인 경우 <code>lsusb -t</code> 명령어를 쓰면 어떤 게 어느 건지 구별할 때 도움이 됩니다.</li>
+</ul>
 <h2 id="LED와-버튼">LED와 버튼<a class="header-anchor" href="#LED와-버튼"></a></h2>
 <p>A604M에 달린 LED와 버튼 목록은 다음과 같습니다.</p>
 <ul>
@@ -593,7 +616,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 </ul>
 <p>LED 중에서 소프트웨어로 제어해야 하는 건 CPU와 WiFi 정도네요. 전원 LED는 VCC에 직결되어 있고, LAN/WAN LED는 스위치에서 자동제어 해주는데 굳이 건들 필요 없겠죠.</p>
 <p>보통 이런 LED는 SoC의 GPIO 핀에 연결되어 있습니다. 어떤 LED가 몇 번 핀에 달려있는지 확인하기 위해선 GPIO 핀을 차례로 올렸다 내렸다 하면서 반응하는 LED를 찾는게 일반적인 방법이지만, 지금 보니 커널 버전이 5.4로 올라가면서 gpio 드라이버가 바뀌고 핀 순서가 뒤죽박죽 되어버렸네요. 에휴… 그냥 바로 지름길로 가겠습니다.</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2lwdGltZS1ncGwvdXNlcmFwcHNfYTYwNG0vYmxvYi9tYXN0ZXIvZnMvbXQ3NjIxL2Nsb25lcy9hNjA0bS9zaS9odw==">정펌 소스<i class="fa fa-external-link-alt"></i></span>를 보면 LED/버튼의 핀 번호가 나와있습니다.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> 예를 들어 WiFi 5G LED는 5번 핀이라고 하네요.</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2lwdGltZS1ncGwvdXNlcmFwcHNfYTYwNG0vYmxvYi9tYXN0ZXIvZnMvbXQ3NjIxL2Nsb25lcy9hNjA0bS9zaS9odw==">정펌 소스<i class="fa fa-external-link-alt"></i></span>를 보면 LED/버튼의 핀 번호가 나와있습니다.<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup> 예를 들어 WiFi 5G LED는 5번 핀이라고 하네요.</p>
 <ul>
 <li>CPU LED: GPIO #11</li>
 <li>WiFi 2.4G LED: GPIO #46</li>
@@ -607,16 +630,18 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <img src="/2020/08/22/openwrt-add-new-device/039-dts-pinctrl.png" class="">
 <p>콘솔에서 GPIO 제어 한번 안 해보고 이대로 지나가버리는 건 좀 섭섭하니 핀 테스트도 해봅시다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/040-sysfs-gpio.png" class="">
-<p>5번 핀은 리눅스에서 gpio485에 해당합니다. 이미 export된 gpio는 아직 삭제 안한 Mi Router 4A의 LED/버튼입니다.<br>
-<code>value</code>에 0을 넣으면 LED가 켜지고, 1을 넣으면 LED가 꺼질 겁니다. LED가 켜질 때/버튼이 눌릴 때(active) GPIO가 1(high)이면 active high, GPIO가 0(low)이면 active low라고 합니다.</p>
+<p>5번 핀은 리눅스에서 gpio485에 해당합니다. 이미 export된 gpio는 아직 삭제 안한 WR1000의 LED와 버튼입니다.<br>
+<code>value</code>에 0을 넣으면 LED가 켜지고, 1을 넣으면 LED가 꺼질 겁니다. LED가 켜질 때 또는 버튼이 눌릴 때(active) GPIO가 1(high)이면 active high, GPIO가 0(low)이면 active low라고 합니다.</p>
 <p>이 정보를 바탕으로 dts 노드를 작성합니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/041-dts-led-key.png" class="">
 <img src="/2020/08/22/openwrt-add-new-device/042-dts-status-led.png" class="">
 <ul>
-<li><code>linux,default-trigger</code>는 해당 LED가 사용할 트리거를 지정합니다. <code>phy0tpt</code>는 WiFi phy0 장치에 트래픽이 발생할 때 깜박이는 트리거입니다.<br>
-예전엔 <code>01_leds</code>에서 트리거 지정을 했는데, 요즘은 이것도 dts로 넘기고 있는 추세입니다. DT는 사용자가 수정할 수 없지만 부팅 중에 빠르게 설정이 적용된다는 장점이 있고, <code>01_leds</code>는 UCI 설정이므로 부팅이 다 된 후에야 로딩되지만 LuCI에서 사용자가 수정할 수 있다는 장점이 있습니다.</li>
 <li><code>linux,code</code>는 해당 버튼이 눌릴 때 입력될 신호를 지정합니다.</li>
+<li><code>linux,default-trigger</code>는 해당 LED가 사용할 트리거를 지정합니다. <code>phy0tpt</code>는 WiFi phy0 장치에 트래픽이 발생할 때 깜박이는 트리거입니다.<br>
+예전엔 <code>01_leds</code>에서 트리거 지정을 했는데, 요즘은 이것도 가급적 dts로 넘기고 있는 추세입니다. DT는 사용자가 수정할 수 없지만 부팅 중에 빠르게 설정이 적용된다는 장점이 있고, <code>01_leds</code>는 UCI 설정이므로 부팅이 다 된 후에야 로딩되지만 LuCI에서 사용자가 수정할 수 있다는 장점이 있습니다.<br>
+dts에서 지정하지 못하는 트리거는 여전히 <code>01_leds</code>에서 처리하는데, A604M은 dts에서 모든 LED 설정을 마쳤으므로 <code>01_leds</code> 설정은 빼버립니다.</li>
 <li><code>led-boot</code> alias는 OpenWrt가 부팅하는 동안 깜박일 상태 LED를 지정합니다.</li>
+<li>SoC GPIO가 아닌 외부 WiFi 칩셋이나 GPIO expander 등에 LED가 연결된 경우도 있습니다. 이런 LED를 찾아서 제어하려면 먼저 해당 칩셋 드라이버를 켜고 dts에서 추가 작업을 해야 합니다.</li>
 </ul>
 <p>이제 LED와 버튼이 모두 작동할 것입니다. 참고로 OpenWrt에서는 버튼이 눌리면 <code>/etc/rc.button/</code>에 있는 스크립트가 실행됩니다.</p>
 <div class="note info"><p>참고문서:</p>
@@ -642,7 +667,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <blockquote>
 <p>으… 매번 &quot;이미지&quot;를 반복하는 것도 슬슬 귀찮아지니 앞으로 initramfs, factory, sysupgrade 이미지를 각각 I펌, F펌, S펌으로 줄여서 부르겠습니다.</p>
 </blockquote>
-<p>일단 S펌부터 살펴보겠습니다. 따로 이미지 생성방법을 지정하지 않으면 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iL2I1OWE5OGIwMDliOWMyNDUzZjEyMWJjYmQyOTI1MmFkMjExMjhhOWMvdGFyZ2V0L2xpbnV4L3JhbWlwcy9pbWFnZS9NYWtlZmlsZSNMMTc2">기본 레시피<i class="fa fa-external-link-alt"></i></span>에 따라 S펌이 빌드됩니다.</p>
+<p>일단 S펌부터 살펴보겠습니다. 따로 이미지 생성방법을 지정하지 않으면 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iL2IyYWU0MjMzMTQ5ZGZkNzhmMmFjMDBiYjUzMjc2OTViY2FjZGMyNTUvdGFyZ2V0L2xpbnV4L3JhbWlwcy9pbWFnZS9NYWtlZmlsZSNMMTY5">기본 레시피<i class="fa fa-external-link-alt"></i></span>에 따라 S펌이 빌드됩니다.</p>
 <p>빌드 이미지 디렉토리에 있는 S펌 포맷을 확인합니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/044-binwalk-sysupgrade.png" class="">
 <p>uImage 헤더로 시작하고, 커널과 rootfs가 뒤따라오는 건 정펌과 매우 유사해 보입니다. 오…? 그러면 복구모드에서 S펌을 받아들일지도 모르겠네요.</p>
@@ -659,16 +684,16 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <p>개인이 혼자 사용할 거라면 이걸로 포팅이 끝났다고 볼 수 있지만, 만약 지원 패치를 업스트림에 머지시킬 생각이라면 보다 손쉬운 설치법을 찾는 게 좋을 겁니다. 모든 사람이 시리얼 어댑터를 가지고 있는 건 아니니까요.</p>
 <p>가장 좋은 방법은 정펌 관리자 웹페이지의 펌업 메뉴를 이용하는 것입니다. 이것만큼 쉬운 방법도 없겠죠.</p>
 <img src="/2020/08/22/openwrt-add-new-device/049-stock-web-sysupgrade.png" class="">
-<p>이미지를 접수하고 플래싱하고 OpenWrt로 부팅하는 데까진 잘 되는데, 중간에 커널 패닉이 나면서 부팅에 실패합니다.</p>
+<p>S펌을 업로드하고 플래싱하고 OpenWrt로 부팅하는 데까진 잘 되는데, 중간에 커널 패닉이 나면서 부팅에 실패합니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/050-no-rootfs.png" class="">
 <p>요지는 rootfs를 못 찾겠다는 얘깁니다. 대체 왜? <code>tftpboot</code>를 쓸 수 있다면 플래시 덤프라도 해보겠지만, 방법이 없으니 펌업 로그라도 읽어봐야죠.</p>
 <img src="/2020/08/22/openwrt-add-new-device/051-stock-mtd-write.png" class="">
-<p>정펌에서 플래싱을 할 때 1941972 바이트만큼 기록하겠다고 하네요. 1.9MB는 너무 적은데요. 이 값은 어디서 온 걸까요?</p>
-<p>아까 S펌 <code>binwalk</code> 결과에서 uImage 헤더의 이미지 크기란에 1941908 바이트라고 적혀있었습니다. 1941908는 커널만 포함하는 크기고, rootfs는 딱 1941972(= 1941908 + 64) 바이트 지점에서 시작합니다. 이 말인즉슨, 정펌은 헤더의 이미지 크기란을 기준으로 플래싱을 하고, S펌의 uImage는 딱 커널까지만 포함하기 때문에, 그 이후 부분이 플래싱이 되지 않아 커널이 rootfs를 못 찾는 겁니다.</p>
+<p>정펌에서 플래싱을 할 때 2000536 바이트만큼 기록하겠다고 하네요. 1.9MB는 너무 적은데요. 이 값은 어디서 온 걸까요?</p>
+<p>아까 S펌 <code>binwalk</code> 결과에서 uImage 헤더의 이미지 크기란에 2000472 바이트라고 적혀있었습니다. 2000472는 커널만 포함하는 크기고, rootfs는 딱 2000536(= 2000472 + 64) 바이트 지점에서 시작합니다. 이 말인즉슨, 정펌은 헤더의 이미지 크기란을 기준으로 플래싱을 하고, S펌의 uImage는 딱 커널까지만 포함하기 때문에, 그 이후 부분이 플래싱이 되지 않아 커널이 rootfs를 못 찾는 겁니다.</p>
 <p>두 이미지의 포맷 차이를 그림으로 대충 그려보면 이렇습니다.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 정펌</span><br><span class="line">┌────┬────┬─────┐</span><br><span class="line">│ header │ kernel │ squashfs │</span><br><span class="line">└────┴────┴─────┘</span><br><span class="line"></span><br><span class="line"># S펌</span><br><span class="line">┌────┬────┐┌─────┐┌───────┐┌─────┐</span><br><span class="line">│ header │ kernel ││ squashfs ││ jffs2 marker ││ metadata │</span><br><span class="line">└────┴────┘└─────┘└───────┘└─────┘</span><br></pre></td></tr></table></figure>
-<p>만약 uImage가 커널 이후 범위도 포함하게 한다면 어떨까요? 제가 알아본 바로는, OpenWrt의 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iL2I1OWE5OGIwMDliOWMyNDUzZjEyMWJjYmQyOTI1MmFkMjExMjhhOWMvdGFyZ2V0L2xpbnV4L2dlbmVyaWMvZmlsZXMvZHJpdmVycy9tdGQvbXRkc3BsaXQvbXRkc3BsaXRfdWltYWdlLmMjTDE1Ng==">mtdsplit 코드<i class="fa fa-external-link-alt"></i></span>는 uImage가 커널만 포함하는 걸 전제로 짜여있기 때문에, 헤더를 수정하면 아마 커널이 rootfs를 못 찾을 겁니다.</p>
-<p>S펌을 정펌 포맷에 맞추는 것보다 더 쉬운 방법이 있습니다. I펌은 정펌 포맷에 들어맞기 때문에 웹페이지에서도 펌업이 잘 됩니다. 그럼 I펌을 F펌으로 쓰면 되겠죠. 다만 위에서 말했듯 I펌은 파일 변경사항이 저장이 안 되기 때문에 다시 S펌으로 재설치할 필요는 있을 겁니다.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 정펌</span><br><span class="line">  ┌─────uImage─────┐  </span><br><span class="line">┌────┬────┬─────┐</span><br><span class="line">│ header │ kernel │ squashfs │</span><br><span class="line">└────┴────┴─────┘</span><br><span class="line"></span><br><span class="line"># S펌</span><br><span class="line">  ┌──uImage──┐                                          </span><br><span class="line">┌────┬────┬─────┬───────┬─────┐</span><br><span class="line">│ header │ kernel │ squashfs │ jffs2 marker │ metadata │</span><br><span class="line">└────┴────┴─────┴───────┴─────┘</span><br></pre></td></tr></table></figure>
+<p>만약 uImage가 커널 이후 범위도 포함하게 한다면 어떨까요? 제가 알아본 바로는, OpenWrt의 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iL2IyYWU0MjMzMTQ5ZGZkNzhmMmFjMDBiYjUzMjc2OTViY2FjZGMyNTUvdGFyZ2V0L2xpbnV4L2dlbmVyaWMvZmlsZXMvZHJpdmVycy9tdGQvbXRkc3BsaXQvbXRkc3BsaXRfdWltYWdlLmMjTDIwMA==">mtdsplit 코드<i class="fa fa-external-link-alt"></i></span>는 uImage가 커널만 포함하는 걸 전제로 짜여있기 때문에, 헤더를 수정하면 아마 커널이 rootfs를 못 찾을 겁니다.</p>
+<p>이렇게 된 이상 정펌 포맷에 맞는 F펌을 따로 만들어야겠지만, 사실 그럴 필요가 없습니다. I펌이 이미 정펌 포맷에 들어맞기 때문에 웹페이지에서도 펌업이 잘 됩니다. 그럼 I펌을 F펌으로 쓰면 되겠죠. 다만 위에서 말했듯 I펌은 파일 변경사항이 저장이 안 되기 때문에 다시 S펌으로 재설치할 필요는 있을 겁니다.</p>
 <p>여기서 스샷을 따로 첨부하진 않겠지만 I펌-&gt;S펌, S펌-&gt;정펌 설치도 잘 됩니다. 모두 <code>sysupgrade</code> 명령어로 처리 가능합니다.(다만 후자의 경우 정펌엔 OpenWrt 메타데이터가 없기 때문에 <code>-F</code> 옵션을 추가해주어야 합니다.) OpenWrt에선 config 파티션에 손대지 않기 때문에 정펌으로 돌아가도 기존 설정은 그대로 유지될 것입니다.</p>
 <p>참고로, 리셋 버튼을 누른 상태에서 전원을 넣어도 TFTP 복구모드에 들어가지진 않는 것으로 보입니다. 강제로 복구모드에 진입하기 위해 정펌 업데이트 중간에 전원을 끄는 방법도 있긴 하지만 이건 남한테 추천은 못 하겠네요.</p>
 <p>마지막으로 이미지 Makefile을 한번 보고 가도록 하겠습니다. dts가 하드웨어 정보를 모아놓은 곳이라면, <code>image/Makefile</code>은 이미지 생성방법이 적힌 곳입니다.</p>
@@ -676,19 +701,20 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <ul>
 <li><code>IMAGE_SIZE</code>는 펌웨어의 최대 크기를 지정합니다. 그냥 firmware 파티션 크기를 적어주면 됩니다.</li>
 <li><code>DEVICE_PACKAGES</code>는 이미지에 포함될 기본 패키지를 지정합니다. 플래시 공간을 절약하기 위해선 단순히 있으면 좋은 정도가 아니라 기본 작동에 필수적인 것들만 포함시켜야 합니다.</li>
-<li>이미지 종류나 생성방법을 바꾸려면 <code>IMAGES</code>나 <code>IMAGE/&lt;image&gt;</code>를 설정하면 되는데, A604M의 경우엔 기본 S펌만으로도 충분하므로 따로 설정하지 않습니다.</li>
+<li>이미지 종류나 생성방법을 바꾸려면 <code>IMAGES</code>나 <code>IMAGE/&lt;image&gt;</code>를 설정하면 되는데, A604M의 경우엔 기본 I펌과 S펌만으로도 충분하므로 <code>factory.bin</code> 관련 설정은 지웁니다.</li>
+<li><code>SUPPORTED_DEVICES</code>는 특수한 사정이 없으면 기본값을 쓰면 되므로 뺍니다.</li>
 </ul>
-<h1 id="업스트림">업스트림<a class="header-anchor" href="#업스트림"></a></h1>
-<p>여태까지의 코드를 하나의 패치로 만들면 이렇게 됩니다. <a href="/2020/08/22/openwrt-add-new-device/b59a98b009b9-a604m.diff" title="b59a98b009b9-a604m.diff">b59a98b009b9-a604m.diff</a></p>
+<h1 id="메인라이닝">메인라이닝<a class="header-anchor" href="#메인라이닝"></a></h1>
+<p>여태까지의 코드를 하나의 패치로 만들면 이렇게 됩니다. <a href="/2020/08/22/openwrt-add-new-device/v21.02.0-a604m.diff" title="v21.02.0-a604m.diff">v21.02.0-a604m.diff</a></p>
 <p>이 패치를 혼자 사용하거나 개인 리포지토리에 올리고 끝내는 것도 방법이지만, 만약 OpenWrt 공식 저장소에 넣을 수 있다면 더 많은 사람들이 지원 패치의 혜택을 볼 수 있겠죠.</p>
 <p>업스트림 저장소에 패치를 머지했을 때 좋은 점을 몇 가지 들어보자면,</p>
 <ul>
-<li><span class="exturl" data-url="aHR0cDovL2J1aWxkYm90Lm9wZW53cnQub3JnL21hc3Rlci9pbWFnZXMvZ3JpZA==">공식 빌드봇<i class="fa fa-external-link-alt"></i></span>이 이미지를 자동으로 빌드해주므로 직접 빌드할 필요가 없습니다.</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9idWlsZGJvdC5vcGVud3J0Lm9yZy8=">공식 빌드봇<i class="fa fa-external-link-alt"></i></span>이 이미지를 자동으로 빌드해주므로 직접 빌드할 필요가 없습니다.</li>
 <li>만약 직접 빌드한 이미지를 쓴다면, 일반 패키지는 opkg로 다운로드받아 설치할 수 있지만, 커널 모듈만큼은 다운로드받아 쓸 수 없고 다시 빌드해 넣어야합니다. 이는 커널 빌드 옵션이 달라서 생기는 일으로, 공식 빌드봇과 같은 옵션을 줘서 빌드하면 해결되긴 하지만 이는 시간이 꽤 오래 걸리는 일입니다. 만약 패치에 커널 옵션 변경사항이 있다면 그마저도 불가능하고요.</li>
 <li>공식 저장소에 머지되고 나면 로컬에서 업스트림 버전 업데이트를 따라갈 필요가 없다는 건 당연하겠죠.</li>
 </ul>
 <p>다만 패치가 &quot;hack&quot;에 가깝거나, 다른 모델에 부작용을 끼치거나, 코드 관리 부담이 큰 경우엔 머지가 거부될 수 있습니다.</p>
-<p>현재 OpenWrt는 패치를 <span class="exturl" data-url="aHR0cHM6Ly9saXN0cy5vcGVud3J0Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL29wZW53cnQtZGV2ZWw=">메일링 리스트<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9wdWxscw==">GitHub<i class="fa fa-external-link-alt"></i></span>에서 받고 있습니다.<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> OpenWrt 메인테이너 중에는 커널 개발자도 많아서 패치 처리 절차도 비슷하게 따라가는 것 같습니다.</p>
+<p>현재 OpenWrt는 패치를 <span class="exturl" data-url="aHR0cHM6Ly9saXN0cy5vcGVud3J0Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL29wZW53cnQtZGV2ZWw=">메일링 리스트<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9wdWxscw==">GitHub<i class="fa fa-external-link-alt"></i></span>에서 받고 있습니다.<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup> OpenWrt 메인테이너 중에는 커널 개발자도 많아서 패치 처리 절차도 비슷하게 따라가는 것 같습니다.</p>
 <p>이 글에서 GitHub PR 여는 법을 설명하진 않겠지만, 대신 몇 가지 주의사항을 언급하자면,</p>
 <ul>
 <li>많은 오픈소스 프로젝트에서 패치를 어떻게 작성해야 하는지 가이드라인을 제시합니다. OpenWrt의 경우에도 마찬가지로 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9zdWJtaXR0aW5nLXBhdGNoZXM=">공식 가이드<i class="fa fa-external-link-alt"></i></span>에 따라 패치의 형식을 맞춰주어야 합니다.</li>
@@ -702,6 +728,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <ul>
 <li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9zdWJtaXR0aW5nLXBhdGNoZXM=">[OpenWrt wiki] Submitting patches<i class="fa fa-external-link-alt"></i></span></li>
 <li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9kZXZpY2Utc3VwcG9ydC1wb2xpY2llcw==">[OpenWrt wiki] Device support policies / best practices<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy9kb2NzL2d1aWRlLWRldmVsb3Blci9mcmVxdWVudC1wci1taXN0YWtlcw==">[OpenWrt wiki] Frequent PR mistakes or “How to prevent my PR from getting delayed for sure”<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 </div>
 <hr class="footnotes-sep">
@@ -711,9 +738,13 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 </li>
 <li id="fn2" class="footnote-item"><p>NOR 플래시 이미지에 해당하는 얘기고, NAND 플래시나 SD카드 이미지는 구조가 조금 다릅니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn3" class="footnote-item"><p>그 외에도 메모리 크기, 주변장치 종류, 스위치 포트 순서도 알려주는 아주 좋은 자료입니다. <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+<li id="fn3" class="footnote-item"><p>A604M에서 SOIC 클립으로 온보드 플래시 덤프가 가능한 걸 확인했습니다. 여기까지 시도하실 분이라면 제가 뭐라 덧붙이지 않아도 알아서들 잘 하시겠죠. <a href="#fnref3" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn4" class="footnote-item"><p>나중에 자체운영 GitLab으로 넘어갈 거라곤 하는데 아직은 별다른 소식이 없네요. <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+<li id="fn4" class="footnote-item"><p>그럼 만약 동일한 칩셋이 두 개라면요? 그런 경우라도 보통 2.4GHz용 하나, 5GHz용 하나, 이런 식이기 때문에 캘값을 바꿔 넣으면 일단 인식은 되는데 정작 WiFi 신호가 안 잡힐 겁니다. 그럼 세 개라면요? …그만합시다. <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>그 외에도 메모리 크기, 주변장치 종류, 스위치 포트 순서도 알려주는 아주 좋은 자료입니다. <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p>나중에 자체운영 GitLab으로 넘어갈 거라곤 하는데 아직은 별다른 소식이 없네요. <a href="#fnref6" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
@@ -723,16 +754,18 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
     
     
     
-        
 
-<div>
-<ul class="post-copyright">
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
   <li class="post-copyright-author">
-    <strong>Post author:  </strong>mans0n
+      <strong>Post author:  </strong>mans0n
   </li>
   <li class="post-copyright-link">
-    <strong>Post link: </strong>
-    <a href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/" title="OpenWrt에 새 기기 지원 추가하기">https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</a>
+      <strong>Post link: </strong>
+      <a href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/" title="OpenWrt에 새 기기 지원 추가하기">https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-SA</span> unless stating additionally.
@@ -740,8 +773,6 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 </ul>
 </div>
 
-
-      <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%EB%B6%84%ED%95%B4/" rel="tag"><i class="fa fa-tag"></i> 분해</a>
               <a href="/tags/openwrt/" rel="tag"><i class="fa fa-tag"></i> OpenWrt</a>
@@ -750,132 +781,32 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 
         
 
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2020/08/18/korean-home-router-survey/" rel="prev" title="국산 공유기에도 OpenWrt를 올릴 수 있을까">
-      <i class="fa fa-chevron-left"></i> 국산 공유기에도 OpenWrt를 올릴 수 있을까
-    </a></div>
-      <div class="post-nav-item"></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/18/korean-home-router-survey/" rel="prev" title="국산 공유기에도 OpenWrt를 올릴 수 있을까">
+                  <i class="fa fa-chevron-left"></i> 국산 공유기에도 OpenWrt를 올릴 수 있을까
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
           </div>
-          
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
-        </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          목차
-        </li>
-        <li class="sidebar-nav-overview">
-          흝어보기
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#들어가기-전에"><span class="nav-number">1.</span> <span class="nav-text">들어가기 전에</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#글의-목적"><span class="nav-number">1.1.</span> <span class="nav-text">글의 목적</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#왜-OpenWrt"><span class="nav-number">1.2.</span> <span class="nav-text">왜 OpenWrt?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#글의-방향"><span class="nav-number">1.3.</span> <span class="nav-text">글의 방향</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#사전조사"><span class="nav-number">2.</span> <span class="nav-text">사전조사</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#하드웨어-및-펌웨어-조사"><span class="nav-number">3.</span> <span class="nav-text">하드웨어 및 펌웨어 조사</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#빌드-및-부팅"><span class="nav-number">4.</span> <span class="nav-text">빌드 및 부팅</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#기능-살리기"><span class="nav-number">5.</span> <span class="nav-text">기능 살리기</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#이더넷"><span class="nav-number">5.1.</span> <span class="nav-text">이더넷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#플래시"><span class="nav-number">5.2.</span> <span class="nav-text">플래시</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WiFi"><span class="nav-number">5.3.</span> <span class="nav-text">WiFi</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#이더넷-MAC-주소"><span class="nav-number">5.4.</span> <span class="nav-text">이더넷 MAC 주소</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USB"><span class="nav-number">5.5.</span> <span class="nav-text">USB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LED와-버튼"><span class="nav-number">5.6.</span> <span class="nav-text">LED와 버튼</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Failsafe"><span class="nav-number">5.7.</span> <span class="nav-text">Failsafe</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#부트로더"><span class="nav-number">5.8.</span> <span class="nav-text">부트로더</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#설치법"><span class="nav-number">6.</span> <span class="nav-text">설치법</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#업스트림"><span class="nav-number">7.</span> <span class="nav-text">업스트림</span></a></li></ol></div>
-      </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">mans0n</p>
-  <div class="site-description" itemprop="description"></div>
+    </footer>
+  </article>
 </div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">4</span>
-          <span class="site-state-item-name">포스트</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">카테고리</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">4</span>
-        <span class="site-state-item-name">태그</span></a>
-      </div>
-  </nav>
+
+
+
+
+
+
 </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><img src="/images/cc-by-sa.svg" alt="Creative Commons"></span>
-  </div>
+  </main>
 
+  <footer class="footer">
+    <div class="footer-inner">
 
-
-      </div>
-        <div class="back-to-top motion-element">
-          <i class="fa fa-arrow-up"></i>
-          <span>0%</span>
-        </div>
-
-    </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
 
 <div class="copyright">
-  
   &copy; 
   <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
@@ -883,36 +814,20 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
   </span>
   <span class="author" itemprop="copyrightHolder">mans0n</span>
 </div>
-  <div class="powered-by">Powered by <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span>
+  <div class="powered-by">Powered by <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span>
   </div>
 
-        
-
-
-
-
-
-
-
-
-      </div>
-    </footer>
-  </div>
+    </div>
+  </footer>
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
+  
+<script src="/js/third-party/search/local-search.js"></script>
 
 
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
 
 
   
@@ -920,24 +835,6 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 
 
 
-  
-<script src="/js/local-search.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
 
 </body>
 </html>

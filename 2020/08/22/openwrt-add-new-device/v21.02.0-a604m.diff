@@ -1,0 +1,186 @@
+diff --git a/target/linux/ramips/dts/mt7628an_iptime_a604m.dts b/target/linux/ramips/dts/mt7628an_iptime_a604m.dts
+new file mode 100644
+index 0000000000..fd0ff58d5b
+--- /dev/null
++++ b/target/linux/ramips/dts/mt7628an_iptime_a604m.dts
+@@ -0,0 +1,135 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++
++#include "mt7628an.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	compatible = "iptime,a604m", "mediatek,mt7628an-soc";
++	model = "ipTIME A604M";
++
++	aliases {
++		led-boot = &led_cpu;
++		led-failsafe = &led_cpu;
++		led-running = &led_cpu;
++		led-upgrade = &led_cpu;
++	};
++
++	keys {
++		compatible = "gpio-keys";
++
++		reset {
++			label = "reset";
++			gpios = <&gpio 38 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_RESTART>;
++		};
++
++		wps {
++			label = "wps";
++			gpios = <&gpio 45 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_WPS_BUTTON>;
++		};
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		wlan5g {
++			label = "blue:wlan5g";
++			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "phy1tpt";
++		};
++
++		led_cpu: cpu {
++			label = "blue:cpu";
++			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
++		};
++
++		wlan2g {
++			label = "blue:wlan2g";
++			gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "phy0tpt";
++		};
++	};
++};
++
++&spi0 {
++	status = "okay";
++
++	flash@0 {
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <50000000>;
++
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			bootloader: partition@0 {
++				label = "bootloader";
++				reg = <0x0 0x20000>;
++				read-only;
++			};
++
++			partition@20000 {
++				label = "config";
++				reg = <0x20000 0x10000>;
++				read-only;
++			};
++
++			factory: partition@30000 {
++				label = "factory";
++				reg = <0x30000 0x10000>;
++				read-only;
++			};
++
++			partition@40000 {
++				compatible = "denx,uimage";
++				label = "firmware";
++				reg = <0x40000 0x7c0000>;
++			};
++		};
++	};
++};
++
++&state_default {
++	gpio {
++		groups = "i2c", "uart1", "wdt";
++		function = "gpio";
++	};
++};
++
++&pcie {
++	status = "okay";
++};
++
++&pcie0 {
++	wifi@0,0 {
++		compatible = "mediatek,mt76";
++		reg = <0x0000 0 0 0 0>;
++		mediatek,mtd-eeprom = <&factory 0x8000>;
++		ieee80211-freq-limit = <5000000 6000000>;
++	};
++};
++
++&wmac {
++	status = "okay";
++};
++
++&ethernet {
++	mtd-mac-address = <&bootloader 0x1fc20>;
++};
++
++&usbphy {
++	status = "disabled";
++};
++
++&ehci {
++	status = "disabled";
++};
++
++&ohci {
++	status = "disabled";
++};
+diff --git a/target/linux/ramips/image/mt76x8.mk b/target/linux/ramips/image/mt76x8.mk
+index 1c2c037a6a..7c4f9766a1 100644
+--- a/target/linux/ramips/image/mt76x8.mk
++++ b/target/linux/ramips/image/mt76x8.mk
+@@ -195,6 +195,15 @@ define Device/hiwifi_hc5861b
+ endef
+ TARGET_DEVICES += hiwifi_hc5861b
+ 
++define Device/iptime_a604m
++  IMAGE_SIZE := 7936k
++  UIMAGE_NAME := a604m
++  DEVICE_VENDOR := ipTIME
++  DEVICE_MODEL := A604M
++  DEVICE_PACKAGES := kmod-mt76x2
++endef
++TARGET_DEVICES += iptime_a604m
++
+ define Device/jotale_js76x8
+   DEVICE_VENDOR := Jotale
+   DEVICE_MODEL := JS76x8
+diff --git a/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network b/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
+index 02bc86b8f7..21bc7c6627 100755
+--- a/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
++++ b/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
+@@ -89,6 +89,10 @@ ramips_setup_interfaces()
+ 		ucidef_add_switch "switch0" \
+ 			"0:lan" "1:lan" "4:wan" "6@eth0"
+ 		;;
++	iptime,a604m)
++		ucidef_add_switch "switch0" \
++			"1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "0:wan" "6@eth0"
++		;;
+ 	jotale,js76x8-8m|\
+ 	jotale,js76x8-16m|\
+ 	jotale,js76x8-32m)
+@@ -186,6 +190,9 @@ ramips_setup_macs()
+ 		[ -n "$lan_mac" ] || lan_mac=$(cat /sys/class/net/eth0/address)
+ 		wan_mac=$(macaddr_add "$lan_mac" 1)
+ 		;;
++	iptime,a604m)
++		wan_mac=$(mtd_get_mac_binary bootloader 0x1fc40)
++		;;
+ 	jotale,js76x8-8m|\
+ 	jotale,js76x8-16m|\
+ 	jotale,js76x8-32m|\

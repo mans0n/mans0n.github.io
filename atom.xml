@@ -6,7 +6,7 @@
   <link href="https://mans0n.github.io/atom.xml" rel="self"/>
   
   <link href="https://mans0n.github.io/"/>
-  <updated>2021-01-10T05:11:38.487Z</updated>
+  <updated>2021-09-05T03:09:52.000Z</updated>
   <id>https://mans0n.github.io/</id>
   
   <author>
@@ -21,10 +21,11 @@
     <link href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/"/>
     <id>https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</id>
     <published>2020-08-22T10:32:37.000Z</published>
-    <updated>2021-01-10T05:11:38.487Z</updated>
+    <updated>2021-09-05T03:09:52.000Z</updated>
     
     
-    <summary type="html">&lt;h1 id=&quot;들어가기-전에&quot;&gt;들어가기 전에&lt;a class=&quot;header-anchor&quot; href=&quot;#들어가기-전에&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
+    <summary type="html">&lt;p&gt;※ 2021-09-05: v21.02.0 기준으로 업데이트&lt;/p&gt;
+&lt;h1 id=&quot;들어가기-전에&quot;&gt;들어가기 전에&lt;a class=&quot;header-anchor&quot; href=&quot;#들어가기-전에&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
 &lt;h2 id=&quot;글의-목적&quot;&gt;글의 목적&lt;a class=&quot;header-anchor&quot; href=&quot;#글의-목적&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야에 숨은 고수의 유입을 유도함으로써 저도 편하게 버스타고 가고 싶다는 사적인 소망을 이루고자 이 글을 썼다는 얘기입니다.&lt;/p&gt;</summary>
     

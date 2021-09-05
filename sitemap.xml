@@ -2,16 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://mans0n.github.io/2020/08/08/winxp-on-a9004m/</loc>
+    <loc>https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</loc>
     
-    <lastmod>2021-01-18</lastmod>
+    <lastmod>2021-09-05</lastmod>
     
   </url>
   
   <url>
-    <loc>https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</loc>
+    <loc>https://mans0n.github.io/2020/08/08/winxp-on-a9004m/</loc>
     
-    <lastmod>2021-01-10</lastmod>
+    <lastmod>2021-01-18</lastmod>
     
   </url>
   
@@ -46,7 +46,7 @@
 
   <url>
     <loc>https://mans0n.github.io/</loc>
-    <lastmod>2021-01-18</lastmod>
+    <lastmod>2021-09-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
