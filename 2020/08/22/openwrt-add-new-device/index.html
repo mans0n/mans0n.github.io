@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"mans0n.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.7.1","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"mans0n.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.7.1","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 <meta name="description" content="※ 2021-09-05: v21.02.0 기준으로 업데이트 들어가기 전에 글의 목적 뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서,">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenWrt에 새 기기 지원 추가하기">
@@ -74,7 +74,7 @@
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/051-stock-mtd-write.png">
 <meta property="og:image" content="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/052-image-makefile.png">
 <meta property="article:published_time" content="2020-08-22T10:32:37.000Z">
-<meta property="article:modified_time" content="2021-09-05T13:35:55.048Z">
+<meta property="article:modified_time" content="2021-09-12T12:14:03.544Z">
 <meta property="article:author" content="mans0n">
 <meta property="article:tag" content="분해">
 <meta property="article:tag" content="OpenWrt">
@@ -205,8 +205,7 @@
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-overview">
-            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">mans0n</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -236,7 +235,6 @@
 
 
 
-          </div>
         </div>
       </div>
         <div class="back-to-top animated" role="button" aria-label="Back to top">
@@ -299,7 +297,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Updated at: 2021-09-05 22:35:55" itemprop="dateModified" datetime="2021-09-05T22:35:55+09:00">2021-09-05</time>
+        <time title="Updated at: 2021-09-12 21:14:03" itemprop="dateModified" datetime="2021-09-12T21:14:03+09:00">2021-09-12</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -336,7 +334,8 @@
 <p>이 글에선 OpenWrt에 새 기기 지원을 추가하는 전반적인 과정(하드웨어 정보를 얻는 것부터 시작해서 업스트림에 패치를 보내는 데까지)을 다루고자 합니다.</p>
 <p>이 글은 읽는 사람이 이미 리눅스에 익숙하고 기본적인 하드웨어 지식이 있다는 가정 하에 작성되었습니다.</p>
 <p>이 글에서 설명하는 방법과 절차는 최선이 아닐 수 있습니다. 처음에야 일단 따라해보면서 익혀야겠지만, 어느 정도 익숙해지면 여기선 왜 이렇게 했을까, 더 좋은 방법은 없을까, 하고 고민하면서 스스로 개선점을 찾아보길 바랍니다.</p>
-<p>예시로 사용할 기기는 제 첫 메인라이닝 모델이면서 하드웨어와 패치가 단순한 ipTIME A604M으로 선택했습니다.</p>
+<p>예시로 사용할 기기는 제 첫 메인라이닝 모델이면서 하드웨어와 패치가 단순한 ipTIME A604M으로 선택했습니다.<br>
+OpenWrt 버전은 2021-09-04 시점에서 최신 안정 버전인 <span class="exturl" data-url="aHR0cHM6Ly9naXQub3BlbndydC5vcmcvYjJhZTQyMzMxNDlk">v21.02.0<i class="fa fa-external-link-alt"></i></span>을 사용하겠습니다. 21.02 이후로 master 브랜치에서 많은 변화가 있었기 때문에 (DSA, nvmem-cells 등) 추후에 기기 지원을 넣으실 분들은 이 글은 참고만 하고 최신 버전에 맞게 작업하셔야 합니다.</p>
 <h1 id="사전조사">사전조사<a class="header-anchor" href="#사전조사"></a></h1>
 <p>어떤 기기에 OpenWrt를 포팅해보자고 마음을 먹은 다음에 가장 먼저 해야할 일이 뭘까요? 그 기기에 OpenWrt를 올리는 것이 가능할지, 올린 다음에 실사용이 가능할지, 이미 포팅을 시도한 사례가 있는지 등을 먼저 확인하는 과정이 필요합니다. 이미 가지고 있는 기기라면 상관없지만, 덥썩 구매해놓고 나중 가서 올릴 수 없다는 걸 알게 되면 실망이 크잖아요.</p>
 <p>일단 A604M의 하드웨어 스펙을 조사해봅시다.</p>
@@ -347,10 +346,10 @@
 <li>이더넷 포트: 100Mbps WAN x1, 100Mbps LAN x4</li>
 <li>WiFi: 2.4GHz 2x2, 5GHz 2x2</li>
 </ul>
-<p><span class="exturl" data-url="aHR0cDovL2lwdGltZS5jb20vaXB0aW1lLz9wYWdlX2lkPTExJmFtcDtwZj0zJmFtcDtwYWdlPSZhbXA7cHQ9MzQ2JmFtcDtwZD0z">제품소개<i class="fa fa-external-link-alt"></i></span>에선 WiFi 칩셋으로 뭘 쓰는지까진 안 나오는데, 사실 이 정도만 해도 감지덕지고, 제조사에서 어떤 CPU를 쓰는지조차 알려주지 않는 경우도 흔합니다.</p>
+<p><span class="exturl" data-url="aHR0cDovL2lwdGltZS5jb20vaXB0aW1lLz9wYWdlX2lkPTExJnBmPTMmcGFnZT0mcHQ9MzQ2JnBkPTM=">제품소개<i class="fa fa-external-link-alt"></i></span>에선 WiFi 칩셋으로 뭘 쓰는지까진 안 나오는데, 사실 이 정도만 해도 감지덕지고, 제조사에서 어떤 CPU를 쓰는지조차 알려주지 않는 경우도 흔합니다.</p>
 <p>만약 기기의 <span class="exturl" data-url="aHR0cDovL3d3dy5uZXdzdGFwLmNvLmtyL25ld3MvcGhvdG8vMjAxNzEwLzYwMjA0XzkzMjExXzEyMzQuSlBH">내부 사진<i class="fa fa-external-link-alt"></i></span>을 얻을 수 있다면 정보 수집에 큰 도움이 됩니다. 공유기 리뷰어 분들은 겉모습만 찍고 넘기지 말고 분해도 해서 내부 칩이 보이는 사진도 올려주시면 좋겠습니다…</p>
 <p>해외/국제 모델의 경우엔 <span class="exturl" data-url="aHR0cDovL3dpa2lkZXZpLndpLWNhdC5ydS8=">WikiDevi<i class="fa fa-external-link-alt"></i></span>와 <span class="exturl" data-url="aHR0cHM6Ly9mY2NpZC5pby8=">fccid.io<i class="fa fa-external-link-alt"></i></span>의 힘을 빌리는 것이 가능합니다. WikiDevi에는 공유기 디바이스 및 칩셋 정보가 모여있고, fccid.io에서는 FCC ID가 있는 제품의 내부 사진을 열람할 수 있습니다.</p>
-<p>또한 펌웨어 <span class="exturl" data-url="aHR0cHM6Ly9pcHRpbWUuY29tL2lwdGltZS8/cGFnZV9pZD0xMjYmYW1wO2Rmc2lkPTMmYW1wO2RmdGlkPTM3NyZhbXA7dWlkPTE5NzQwJmFtcDttb2Q9ZG9jdW1lbnQ=">바이너리<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cDovL2dwbC5pcHRpbWUub3JnL2dwbC9IREQxL0dQTC8=">소스코드<i class="fa fa-external-link-alt"></i></span>도 좋은 정보원이 됩니다.</p>
+<p>또한 펌웨어 <span class="exturl" data-url="aHR0cHM6Ly9pcHRpbWUuY29tL2lwdGltZS8/cGFnZV9pZD0xMjYmZGZzaWQ9MyZkZnRpZD0zNzcmdWlkPTE5NzQwJm1vZD1kb2N1bWVudA==">바이너리<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cDovL2dwbC5pcHRpbWUub3JnL2dwbC9IREQxL0dQTC8=">소스코드<i class="fa fa-external-link-alt"></i></span>도 좋은 정보원이 됩니다.</p>
 <p>다시 본론으로 돌아가면, MT7628A는 OpenWrt에서 지원하는 SoC이고 ramips/mt76x8 타겟에 해당합니다.<br>
 현재 OpenWrt가 지원하는 플랫폼 중 인기 있는 몇 개를 살펴보자면 다음과 같습니다.</p>
 <ul>
@@ -395,13 +394,13 @@
 <p>부팅 로그 첫 부분을 보면 부트로더에서 선택지가 뜨는 것을 볼 수 있습니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/006-bootloader.png" class="">
 <p>WeVO나 netis 공유기에선 부트로더 쉘도 열 수 있는데 ipTIME ramips 기기에선 TFTP 복구모드밖에 쓸 수 없습니다.</p>
-<p>이 복구모드는 원래 펌웨어 업데이트에 실패했을 때 부트로더에서 자동으로 진입하는 모드입니다. 딱히 숨겨진 기능이 아니기 때문에 ipTIME 홈페이지에 사용법 <span class="exturl" data-url="aHR0cDovL2lwdGltZS5jb20vaXB0aW1lLz9wYWdlPTImYW1wO3BhZ2VfaWQ9NjcmYW1wO3VpZD03MzYwJmFtcDttb2Q9ZG9jdW1lbnQ=">설명글<i class="fa fa-external-link-alt"></i></span>도 올라와 있습니다.</p>
+<p>이 복구모드는 원래 펌웨어 업데이트에 실패했을 때 부트로더에서 자동으로 진입하는 모드입니다. 딱히 숨겨진 기능이 아니기 때문에 ipTIME 홈페이지에 사용법 <span class="exturl" data-url="aHR0cDovL2lwdGltZS5jb20vaXB0aW1lLz9wYWdlPTImcGFnZV9pZD02NyZ1aWQ9NzM2MCZtb2Q9ZG9jdW1lbnQ=">설명글<i class="fa fa-external-link-alt"></i></span>도 올라와 있습니다.</p>
 <p><code>t</code>를 눌러 복구 모드에 들어가면 공유기는 TFTP 서버를 열어줍니다. 컴퓨터에서 고정 IP로 이더넷 연결 후(LAN 포트에 꽂아야 합니다) TFTP 클라이언트를 실행합니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/007-tftp-put.png" class="">
 <p>일단 기능 테스트를 위해 정펌을 올려봤는데 잘 되네요.</p>
 <p>처음 써보는 기기라면 관리자 웹페이지도 둘러보고 LED는 언제 불이 들어오는지도 살펴보고 하면서 기능을 더 탐색해야겠지만, ipTIME 공유기 기능은 다들 아시리라 믿고 넘어가겠습니다.</p>
 <h1 id="빌드-및-부팅">빌드 및 부팅<a class="header-anchor" href="#빌드-및-부팅"></a></h1>
-<p>이제 OpenWrt 펌웨어를 빌드해봅시다. 이 글에선 2021-09-04 시점에서 최신 안정 버전인 <span class="exturl" data-url="aHR0cHM6Ly9naXQub3BlbndydC5vcmcvYjJhZTQyMzMxNDlk">v21.02.0<i class="fa fa-external-link-alt"></i></span>을 사용하겠습니다. 여기엔 제가 이미 메인라이닝한 A604M 지원 패치가 들어가 있는데, 이 글에선 없다고 가정하고 진행하겠습니다.</p>
+<p>이제 OpenWrt 펌웨어를 빌드해봅시다. v21.02.0엔 제가 이미 메인라이닝한 A604M 지원 패치가 들어가 있는데, 이 글에선 없다고 가정하고 진행하겠습니다.</p>
 <p>빌드 환경으론 Ubuntu 20.04를 사용하겠습니다. RAM은 4GB, 여유 저장공간은 10GB 이상 있어야 빌드가 수월할 겁니다.</p>
 <p>일단 OpenWrt에서 이미 지원하는 mt76x8 디바이스 중 A604M과 사양이 대략 비슷해보이는 <span class="exturl" data-url="aHR0cHM6Ly9vcGVud3J0Lm9yZy90b2gvaHdkYXRhL2N1ZHkvY3VkeV93cjEwMDBfdjE=">Cudy WR1000<i class="fa fa-external-link-alt"></i></span>의 펌웨어 이미지를 빌드하겠습니다. 이는 디바이스에서 OpenWrt 이미지를 정상적으로 부팅하는 것이 가능한지 테스트해보려는 목적이고, 나중에 제대로 전용 이미지를 만들 겁니다.</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 패키지 설치 및 저장소 클론</span></span><br><span class="line">sudo apt-get install build-essential libncurses-dev gawk unzip wget python3 git file rsync</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/openwrt/openwrt.git</span><br><span class="line"><span class="built_in">cd</span> openwrt</span><br><span class="line"><span class="comment">## 기존 패치 삭제</span></span><br><span class="line">git switch -c dev-a604m v21.02.0</span><br><span class="line">wget https://mans0n.github.io/2020/08/22/openwrt-add-new-device/v21.02.0-pre-a604m.patch</span><br><span class="line">git am v21.02.0-pre-a604m.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">## 외부 패키지 가져오기, 한 번만 하면 됨</span></span><br><span class="line">./scripts/feeds update -a</span><br><span class="line">./scripts/feeds install -a</span><br><span class="line"><span class="comment">## 빌드 타겟 설정</span></span><br><span class="line">make menuconfig</span><br><span class="line"><span class="comment">## &quot;Target System&quot; -&gt; &quot;MediaTek Ralink MIPS&quot;</span></span><br><span class="line"><span class="comment">## &quot;Subtarget&quot; -&gt; &quot;MT76x8 based boards&quot;</span></span><br><span class="line"><span class="comment">## &quot;Target Profile&quot; -&gt; &quot;Cudy WR1000&quot;</span></span><br><span class="line"><span class="comment">## 빌드 중간에 실패할 때를 대비해 CONFIG_BUILD_LOG도 활성화시켜두면 좋음</span></span><br><span class="line"><span class="comment">## &quot;Advanced configuration options (for developers)&quot; -&gt; &quot;Enable log files during build process&quot;</span></span><br><span class="line">make defconfig</span><br><span class="line"><span class="comment"># ./scripts/diffconfig.sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 소스파일 다운로드, 한 번만 하면 됨</span></span><br><span class="line">make download -j3</span><br><span class="line"><span class="comment">## 빌드 시작, (CPU 스레드 수 + 1)개의 프로세스로 병렬처리</span></span><br><span class="line">make -j$((`nproc` + <span class="number">1</span>))</span><br></pre></td></tr></table></figure>
@@ -497,7 +496,6 @@ A: 네 맞습니다… 경험상 ipTIME ramips 기기에서 부트로더 복구�
 <p><code>2:lan:3</code>의 의미는 스위치 2번 포트가 LAN 3 포트와 연결되어 있다는 뜻입니다.</p>
 <p>이제 이더넷 LAN/WAN이 모두 잘 될 겁니다. 컴퓨터와 외부 인터넷 선을 꽂아서 확인해보세요.</p>
 <img src="/2020/08/22/openwrt-add-new-device/023-ethernet-test.png" class="">
-<p>참고로, 그동안 OpenWrt에선 스위치 설정을 위해 swconfig 시스템을 자체 제작하여 써왔지만, 업스트림 커널에선 DSA 시스템을 채택하였고 이에 따라 OpenWrt도 DSA로 점차 넘어가고 있는 상황입니다. 아직까진 문서화 작업도 더디고 유틸리티도 미완성 상태라 사용하기 조금 불편하지만…점차 나아지겠죠.</p>
 <h2 id="플래시">플래시<a class="header-anchor" href="#플래시"></a></h2>
 <p>A604M은 저장장치로 SPI NOR 플래시를 사용합니다. 리눅스에서는 이러한 FTL이 없는 플래시 칩을 MTD 장치로 나타냅니다. MTD 저장공간을 파티션으로 분할하려면 하드 디스크처럼 파티션 테이블을 쓰는 게 아니라, 파티션 정보를 커널 또는 dts에 직접 적어줘야 합니다.</p>
 <p>정펌 부팅 로그를 보면 mtd 파티션을 어떻게 나눠놨는지가 뜹니다.</p>
@@ -593,7 +591,6 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <ul>
 <li>만약 플래시에 정확하게 일치하는 MAC 주소가 없으면 비슷한 주소에다 차이값을 더해서 쓸 수 있습니다.</li>
 <li>기기 어딘가에 대표 MAC 주소가 적혀 있으면 <code>label-mac</code>에 넣을 수 있지만, ipTIME은 더 이상 보드에 MAC 주소 스티커를 붙이지 않는 모양입니다.</li>
-<li>ipTIME 이지메시 지원 펌웨어 버전 이후로 MAC 주소가 조금 변한 것 같습니다.</li>
 </ul>
 <div class="note info"><p>참고문서:</p>
 <ul>
@@ -606,8 +603,8 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <img src="/2020/08/22/openwrt-add-new-device/037-dts-usb.png" class="">
 <ul>
 <li>ohci는 USB 1.1, ehci는 USB 2.0, xhci는 USB 3.0에 해당합니다.</li>
-<li>USB 포트의 전원핀(VBUS)을 GPIO로 제어하는 경우도 있습니다. 전원 LED가 달려있는 USB 장치가 있으면 드라이버 문제인지 VBUS 문제인지 판별할 수 있겠죠.</li>
 <li>USB 포트가 여러 개인 경우 <code>lsusb -t</code> 명령어를 쓰면 어떤 게 어느 건지 구별할 때 도움이 됩니다.</li>
+<li>USB 포트의 전원핀(VBUS)을 GPIO로 제어하는 경우도 있습니다. 전원 LED가 달려있는 USB 장치가 있으면 드라이버 문제인지 VBUS 문제인지 판별할 수 있겠죠.</li>
 </ul>
 <h2 id="LED와-버튼">LED와 버튼<a class="header-anchor" href="#LED와-버튼"></a></h2>
 <p>A604M에 달린 LED와 버튼 목록은 다음과 같습니다.</p>
@@ -638,9 +635,8 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <img src="/2020/08/22/openwrt-add-new-device/042-dts-status-led.png" class="">
 <ul>
 <li><code>linux,code</code>는 해당 버튼이 눌릴 때 입력될 신호를 지정합니다.</li>
-<li><code>linux,default-trigger</code>는 해당 LED가 사용할 트리거를 지정합니다. <code>phy0tpt</code>는 WiFi phy0 장치에 트래픽이 발생할 때 깜박이는 트리거입니다.<br>
-예전엔 <code>01_leds</code>에서 트리거 지정을 했는데, 요즘은 이것도 가급적 dts로 넘기고 있는 추세입니다. DT는 사용자가 수정할 수 없지만 부팅 중에 빠르게 설정이 적용된다는 장점이 있고, <code>01_leds</code>는 UCI 설정이므로 부팅이 다 된 후에야 로딩되지만 LuCI에서 사용자가 수정할 수 있다는 장점이 있습니다.<br>
-dts에서 지정하지 못하는 트리거는 여전히 <code>01_leds</code>에서 처리하는데, A604M은 dts에서 모든 LED 설정을 마쳤으므로 <code>01_leds</code> 설정은 빼버립니다.</li>
+<li><code>linux,default-trigger</code>는 해당 LED가 사용할 트리거를 지정합니다. <code>phy0tpt</code>는 WiFi phy0 장치에 트래픽이 발생할 때 깜박이는 트리거입니다.</li>
+<li>dts에서 지정하지 못하는 트리거는 <code>01_leds</code>에서 처리하는데, A604M은 dts에서 모든 LED 설정을 마쳤으므로 <code>01_leds</code> 설정은 빼버립니다.</li>
 <li><code>led-boot</code> alias는 OpenWrt가 부팅하는 동안 깜박일 상태 LED를 지정합니다.</li>
 <li>SoC GPIO가 아닌 외부 WiFi 칩셋이나 GPIO expander 등에 LED가 연결된 경우도 있습니다. 이런 LED를 찾아서 제어하려면 먼저 해당 칩셋 드라이버를 켜고 dts에서 추가 작업을 해야 합니다.</li>
 </ul>
@@ -694,9 +690,9 @@ dts에서 지정하지 못하는 트리거는 여전히 <code>01_leds</code>에�
 <p>두 이미지의 포맷 차이를 그림으로 대충 그려보면 이렇습니다.</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 정펌</span><br><span class="line">  ┌─────uImage─────┐  </span><br><span class="line">┌────┬────┬─────┐</span><br><span class="line">│ header │ kernel │ squashfs │</span><br><span class="line">└────┴────┴─────┘</span><br><span class="line"></span><br><span class="line"># S펌</span><br><span class="line">  ┌──uImage──┐                                          </span><br><span class="line">┌────┬────┬─────┬───────┬─────┐</span><br><span class="line">│ header │ kernel │ squashfs │ jffs2 marker │ metadata │</span><br><span class="line">└────┴────┴─────┴───────┴─────┘</span><br></pre></td></tr></table></figure>
 <p>만약 uImage가 커널 이후 범위도 포함하게 한다면 어떨까요? 제가 알아본 바로는, OpenWrt의 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iL2IyYWU0MjMzMTQ5ZGZkNzhmMmFjMDBiYjUzMjc2OTViY2FjZGMyNTUvdGFyZ2V0L2xpbnV4L2dlbmVyaWMvZmlsZXMvZHJpdmVycy9tdGQvbXRkc3BsaXQvbXRkc3BsaXRfdWltYWdlLmMjTDIwMA==">mtdsplit 코드<i class="fa fa-external-link-alt"></i></span>는 uImage가 커널만 포함하는 걸 전제로 짜여있기 때문에, 헤더를 수정하면 아마 커널이 rootfs를 못 찾을 겁니다.</p>
-<p>이렇게 된 이상 정펌 포맷에 맞는 F펌을 따로 만들어야겠지만, 사실 그럴 필요가 없습니다. I펌이 이미 정펌 포맷에 들어맞기 때문에 웹페이지에서도 펌업이 잘 됩니다. 그럼 I펌을 F펌으로 쓰면 되겠죠. 다만 위에서 말했듯 I펌은 파일 변경사항이 저장이 안 되기 때문에 다시 S펌으로 재설치할 필요는 있을 겁니다.</p>
-<p>여기서 스샷을 따로 첨부하진 않겠지만 I펌-&gt;S펌, S펌-&gt;정펌 설치도 잘 됩니다. 모두 <code>sysupgrade</code> 명령어로 처리 가능합니다.(다만 후자의 경우 정펌엔 OpenWrt 메타데이터가 없기 때문에 <code>-F</code> 옵션을 추가해주어야 합니다.) OpenWrt에선 config 파티션에 손대지 않기 때문에 정펌으로 돌아가도 기존 설정은 그대로 유지될 것입니다.</p>
-<p>참고로, 리셋 버튼을 누른 상태에서 전원을 넣어도 TFTP 복구모드에 들어가지진 않는 것으로 보입니다. 강제로 복구모드에 진입하기 위해 정펌 업데이트 중간에 전원을 끄는 방법도 있긴 하지만 이건 남한테 추천은 못 하겠네요.</p>
+<p>그러면 정펌 관리자 웹페이지를 통해선 OpenWrt 설치가 불가능한 걸까요? 다행히도 방법이 남아있습니다. I펌은 이미 정펌 포맷에 들어맞기 때문에 웹페이지에서도 펌업이 잘 됩니다. 그럼 I펌을 F펌으로 쓰면 되겠죠. 다만 위에서 말했듯 I펌은 파일 변경사항이 저장이 안 되기 때문에 다시 S펌으로 재설치할 필요는 있을 겁니다.</p>
+<p>여기서 스샷을 따로 첨부하진 않겠지만 I펌→S펌, S펌→정펌 설치도 잘 됩니다. 모두 <code>sysupgrade</code> 명령어로 처리 가능합니다.(다만 후자의 경우 정펌엔 OpenWrt 메타데이터가 없기 때문에 <code>-F</code> 옵션을 추가해주어야 합니다.) OpenWrt에선 config 파티션에 손대지 않기 때문에 정펌으로 돌아가도 기존 설정은 그대로 유지될 것입니다.</p>
+<p>아쉽게도 A604M은 리셋 버튼을 누른 상태에서 전원을 넣어도 TFTP 복구모드에 들어가지 않습니다. 강제로 복구모드에 진입하기 위해 정펌 업데이트 중간에 전원을 끄는 방법도 있긴 하지만 이건 남한테 추천은 못 하겠네요.</p>
 <p>마지막으로 이미지 Makefile을 한번 보고 가도록 하겠습니다. dts가 하드웨어 정보를 모아놓은 곳이라면, <code>image/Makefile</code>은 이미지 생성방법이 적힌 곳입니다.</p>
 <img src="/2020/08/22/openwrt-add-new-device/052-image-makefile.png" class="">
 <ul>
@@ -723,7 +719,7 @@ dts에서 지정하지 못하는 트리거는 여전히 <code>01_leds</code>에�
 <li>대부분의 오픈소스 프로젝트가 그렇듯이, PR은 <span class="exturl" data-url="aHR0cHM6Ly9lZHlraW0uY29tL2tvL3Bvc3Qvb3Blbi1zb3VyY2UtbWFpbnRhaW5lcnMtb3dlLXlvdS1ub3RoaW5nLw==">관리자의 선의<i class="fa fa-external-link-alt"></i></span>로 머지됩니다. 특히 기기 지원 패치는 머지되기까지 몇 주 걸리는 게 보통입니다. PR에 아무런 반응이 달리지 않고 시간만 지나가는 데에 실망감이 드는 건 전혀 이상한 일이 아닙니다. 그렇지만 인내심을 갖고 기다리면서 가끔씩 관련자를 호출하는 것 외에 달리 할 수 있는 게 있는 것도 아닙니다.</li>
 </ul>
 <p>당연하다면 당연한 얘기지만 이것도 지키지 못해 거부되는 PR을 몇 번 봤기 때문에 노파심에 언급해둡니다…</p>
-<p>운이 좋아 PR이 머지가 된다면 축하드립니다! 하루이틀 지나면 <span class="exturl" data-url="aHR0cHM6Ly9kb3dubG9hZHMub3BlbndydC5vcmcv">공식 다운로드 서버<i class="fa fa-external-link-alt"></i></span>에서 이미지를 다운받을 수 있을 겁니다.</p>
+<p>운이 좋아 PR이 머지가 된다면 축하드립니다! 하루이틀 지나면 <span class="exturl" data-url="aHR0cHM6Ly9kb3dubG9hZHMub3BlbndydC5vcmcv">공식 다운로드 서버<i class="fa fa-external-link-alt"></i></span>나 <span class="exturl" data-url="aHR0cHM6Ly9maXJtd2FyZS1zZWxlY3Rvci5vcGVud3J0Lm9yZy8=">OFS<i class="fa fa-external-link-alt"></i></span>에서 이미지를 다운받을 수 있을 겁니다.</p>
 <p>이 또한 의무는 아니지만(패치는 기여자의 선의로 작성됩니다), 머지 이후에도 당분간 기기를 처분하지 말고 혹시 들어올지 모르는 버그 제보에 대비하면 더욱 좋을 것 같습니다.</p>
 <div class="note info"><p>참고문서:</p>
 <ul>
