@@ -6,14 +6,6 @@ HTMLElement.prototype.wrap = function(wrapper) {
   wrapper.appendChild(this);
 };
 
-// https://caniuse.com/mdn-api_element_classlist_replace
-if (typeof DOMTokenList.prototype.replace !== 'function') {
-  DOMTokenList.prototype.replace = function(remove, add) {
-    this.remove(remove);
-    this.add(add);
-  };
-}
-
 (function() {
   const onPageLoaded = () => document.dispatchEvent(
     new Event('page:loaded', {
@@ -59,8 +51,10 @@ NexT.utils = {
           span.classList.replace(name, `hljs-${name}`);
         });
       });
-      if (!CONFIG.copycode) return;
-      element.insertAdjacentHTML('beforeend', '<div class="copy-btn"><i class="fa fa-copy fa-fw"></i></div>');
+      if (!CONFIG.copycode.enable) return;
+      let target = element;
+      if (CONFIG.copycode.style !== 'mac') target = element.querySelector('.table-container') || element;
+      target.insertAdjacentHTML('beforeend', '<div class="copy-btn"><i class="fa fa-copy fa-fw"></i></div>');
       const button = element.querySelector('.copy-btn');
       button.addEventListener('click', () => {
         const lines = element.querySelector('.code') || element.querySelector('code');

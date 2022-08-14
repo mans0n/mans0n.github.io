@@ -6,7 +6,7 @@
   <link href="https://mans0n.github.io/atom.xml" rel="self"/>
   
   <link href="https://mans0n.github.io/"/>
-  <updated>2021-09-12T12:14:03.544Z</updated>
+  <updated>2022-08-14T08:17:14.298Z</updated>
   <id>https://mans0n.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DW02-412H 작업기: eth1 살리기</title>
+    <link href="https://mans0n.github.io/2022/08/14/dw02-412h-enable-eth1/"/>
+    <id>https://mans0n.github.io/2022/08/14/dw02-412h-enable-eth1/</id>
+    <published>2022-08-14T07:43:38.000Z</published>
+    <updated>2022-08-14T08:17:14.298Z</updated>
+    
+    
+    <summary type="html">&lt;div class=&quot;note &quot;&gt;&lt;p&gt;DW02-412H 작업기 시리즈&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;OpenWrt 포팅 따라하기&lt;/li&gt;
+&lt;li&gt;ath79로 재포팅&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;eth1 살리기&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;qca8k로 넘어가기&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</summary>
+    
+    
+    
+    <category term="자유시간 프로젝트" scheme="https://mans0n.github.io/categories/%EC%9E%90%EC%9C%A0%EC%8B%9C%EA%B0%84-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/"/>
+    
+    
+    <category term="OpenWrt" scheme="https://mans0n.github.io/tags/openwrt/"/>
+    
+  </entry>
   
   <entry>
     <title>OpenWrt에 새 기기 지원 추가하기</title>
