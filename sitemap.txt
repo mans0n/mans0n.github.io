@@ -1,3 +1,4 @@
+https://mans0n.github.io/2023/01/24/diy-6ghz-ap/
 https://mans0n.github.io/2022/08/14/dw02-412h-enable-eth1/
 https://mans0n.github.io/2020/08/22/openwrt-add-new-device/
 https://mans0n.github.io/2020/08/08/winxp-on-a9004m/

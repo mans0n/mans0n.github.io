@@ -6,7 +6,7 @@
   <link href="https://mans0n.github.io/atom.xml" rel="self"/>
   
   <link href="https://mans0n.github.io/"/>
-  <updated>2022-08-14T08:17:14.298Z</updated>
+  <updated>2023-01-24T12:50:58.413Z</updated>
   <id>https://mans0n.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DIY Wi-Fi 6E AP</title>
+    <link href="https://mans0n.github.io/2023/01/24/diy-6ghz-ap/"/>
+    <id>https://mans0n.github.io/2023/01/24/diy-6ghz-ap/</id>
+    <published>2023-01-24T10:36:38.000Z</published>
+    <updated>2023-01-24T12:50:58.413Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;서론&quot;&gt;서론&lt;a class=&quot;header-anchor&quot; href=&quot;#서론&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Wi-Fi 6E가 &lt;span class=&quot;exturl&quot; data-url=&quot;aHR0cHM6Ly93d3cud2ktZmkub3JnL25ld3MtZXZlbnRzL25ld3Nyb29tL3dpLWZpLWFsbGlhbmNlLWJyaW5ncy13aS1maS02LWludG8tNi1naHo=&quot;&gt;발표&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;&lt;/span&gt;된 지도 어언 3년.&lt;/p&gt;
+&lt;p&gt;그냥 6GHz 대역을 한번 써보고 싶었습니다. 실사용 목적이라기보단 호기심에 가까운 편이라 가급적 저렴하게 Wi-Fi 6E 네트워크를 구성해보려고 했습니다.&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="삽질" scheme="https://mans0n.github.io/categories/%EC%82%BD%EC%A7%88/"/>
+    
+    
+    <category term="OpenWrt" scheme="https://mans0n.github.io/tags/openwrt/"/>
+    
+  </entry>
   
   <entry>
     <title>DW02-412H 작업기: eth1 살리기</title>
