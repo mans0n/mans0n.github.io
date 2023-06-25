@@ -214,183 +214,6 @@ nvram에서 <code>bootdelay</code> 값을 조절하면 부트로더 쉘도 열 �
       </tags>
   </entry>
   <entry>
-    <title>DW02-412H 작업기: eth1 살리기</title>
-    <url>/2022/08/14/dw02-412h-enable-eth1/</url>
-    <content><![CDATA[<div class="note "><p>DW02-412H 작업기 시리즈</p>
-<ol>
-<li>OpenWrt 포팅 따라하기</li>
-<li>ath79로 재포팅</li>
-<li><strong>eth1 살리기</strong></li>
-<li>qca8k로 넘어가기</li>
-</ol>
-</div>
-<span id="more"></span>
-<p>※ 이 글은 2020년 7월에 작업했던 내용을 당시의 기록과 기억에 기반해 정리한 것이고, 포스팅 내의 모든 이미지는 글을 작성하는 시점에서 새로 생성하였습니다.</p>
-<h2 id="포팅-후-남은-찜찜함">포팅 후 남은 찜찜함<a class="header-anchor" href="#포팅-후-남은-찜찜함"></a></h2>
-<p>OpenWrt 포팅 작업은 끝났고 웬만한 기능은 다 살린 것 같지만… 찜찜함이 하나 남습니다.</p>
-<p><img src="001-swconfig-link.png" alt="swconfig link"></p>
-<p>저 port 6은 대체 뭘까요? 왜 10Mbps로 연결되어 있다고 하죠? (물론 이더넷 케이블은 하나도 꽂지 않은 상태입니다)</p>
-<p>DW02의 내부 네트워크 토폴로지를 복습해봅시다. (VLAN이나 브리지는 잠시 무시합니다)</p>
-<p><img src="002-network-diagram.png" alt="DW02 내부 구성도"></p>
-<p>QCA9557 SoC는 두 개의 이더넷 인터페이스(eth0과 eth1)를 지원하고 QCA8337N 스위치는 7개의 이더넷 포트(5개는 랜선과 연결되는 포트, 2개는 CPU와 연결되는 포트)를 지원합니다. DW02에 달린 RJ45 포트는 5개뿐이니 port 6이 외부와 연결됐을 리는 없고, 상식적으로 CPU의 eth1 인터페이스와 연결되었다고 추측하는 게 가장 그럴듯하겠죠?</p>
-<p>하지만 ar71xx에서도 ath79에서도 이더넷/스위치 설정을 이리저리 바꿔봤었지만 링크를 활성화시키는 데는 결국 실패했고, 정말 eth1이 port 6에 연결된 게 맞는지조차 알쏭달쏭한 상태에서 포기했었습니다. 어쨌든 이거 없어도 유선랜은 잘 되니까요.</p>
-<p>그러다가 DW03-608H 포팅을 하면서 스위치에 대한 이해도가 조금 더 올라가고 나니 이 미제에 다시 도전해볼 용기가 생겼습니다. DW03에서 QCA8337<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 스위치에 eth0과 eth1이 모두 연결된 걸 확인하고 둘 다 활성화하는 데 성공했는데, DW02에도 같은 방법을 적용하면 마찬가지로 eth1이 뚫릴 거라는 기대가 생긴 거죠.</p>
-<h2 id="링크-존재-확인">링크 존재 확인<a class="header-anchor" href="#링크-존재-확인"></a></h2>
-<p>먼저 CPU와 스위치 사이에 회로상 연결이 존재하는지부터 확인해볼까요. QCA8337N의 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Rlb3B0aW0vYXRoZXJvcy9ibG9iL21hc3Rlci9RQ0E4MzM3Tl9EYXRhX1NoZWV0X01LRy0xNzc5M192MS4wLnBkZg==">데이터시트<i class="fa fa-external-link-alt"></i></span>에서 핀아웃 그림을 봅시다.</p>
-<p><img src="003-qca8337n-pinout.png" alt="스위치 핀아웃"></p>
-<p>QCA8337N에는 CPU 포트를 위한 인터페이스로 RGMII 두 개와 SGMII 한 개가 있습니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> 빨갛게 표시한 핀이 RGMII #0, 녹색으로 표시한 핀이 RGMII #1, 파랗게 표시한 핀이 SGMII입니다.</p>
-<p>이걸 실제 보드의 PCB 패턴과 비교해보겠습니다.</p>
-<p><img src="004-qca8337n-trace.jpg" alt="스위치 트레이스"></p>
-<p>트레이스가 뻗어나온 핀은 RGMII #0와 SGMII입니다. 보드 앞면만 봐선 이게 정말 SoC까지 이어져 있는지 알 수 없지만 (여기선 생략한) 뒷면도 보면 대략 짐작할 수 있습니다. 짐작만으로 끝내는 이유는… SoC가 BGA라서요.</p>
-<h2 id="스위치-설정">스위치 설정<a class="header-anchor" href="#스위치-설정"></a></h2>
-<p>자, 그럼 회로 연결은 됐다고 치고, 이제 SGMII 설정 작업에 들어가보겠습니다.</p>
-<p>일단 확인 차원에서 부팅 중 ar8xxx 스위치 드라이버에서 스위치 레지스터를 덤프해봤는데 특별히 눈에 띄는 건 없네요.</p>
-<p><img src="005-qca8337n-dump.png" alt="스위치 레지스터 덤프"></p>
-<p>저번에 DW03에서 SGMII를 켜기 위해 건드려줬던 스위치 레지스터는 다음과 같습니다.</p>
-<ul>
-<li>PORT6_PAD_CTRL</li>
-<li>PWS_REG (특히 SERDES_AEN 비트)</li>
-<li>PORT6_STATUS</li>
-<li>SGMII_CTRL</li>
-</ul>
-<p>여기서도 똑같이 설정해주면 되겠죠.</p>
-<figure class="highlight dts"><figcaption><span>qca9557_dongwon_dw02-412h.dts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="variable">&amp;mdio0</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"></span><br><span class="line">	<span class="title class_">switch@0</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">reg</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x0</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">		qca,ar8327-<span class="attr">initvals</span> <span class="operator">=</span> <span class="params">&lt;</span></span><br><span class="line"><span class="params">			<span class="number">0x0004</span> <span class="number">0x07600000</span>  /* PORT0_PAD_CTRL */</span></span><br><span class="line"><span class="params">			<span class="number">0x000c</span> <span class="number">0x00000080</span>  /* PORT6_PAD_CTRL */</span></span><br><span class="line"><span class="params">			/* PWS_REG는 DW02에서 초깃값과 설정값이 동일하여 생략 */</span></span><br><span class="line"><span class="params">			<span class="number">0x007c</span> <span class="number">0x0000007e</span>  /* PORT0_STATUS */</span></span><br><span class="line"><span class="params">			<span class="number">0x0094</span> <span class="number">0x0000007e</span>  /* PORT6_STATUS */</span></span><br><span class="line"><span class="params">			<span class="number">0x00e0</span> <span class="number">0xc74164de</span>  /* SGMII_CTRL */</span></span><br><span class="line"><span class="params">		&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="punctuation">&#125;;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
-<p>eth1도 켜주고요.</p>
-<figure class="highlight dts"><figcaption><span>qca9557_dongwon_dw02-412h.dts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="variable">&amp;eth1</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"></span><br><span class="line">	<span class="attr">pll-data</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x03000101</span> <span class="number">0x00000101</span> <span class="number">0x00001616</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	qca955<span class="attr">x-sgmii-fixup</span><span class="punctuation">;</span>     <span class="comment">// SGMII 링크 재시작</span></span><br><span class="line">	<span class="attr">mtd-mac-address</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;art</span> <span class="number">0x6</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line"></span><br><span class="line">	<span class="title class_">gmac-config</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">device</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;gmac</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">		ge0-<span class="attr">sgmii</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0</span>&gt;</span><span class="punctuation">;</span> <span class="comment">// eth0이 RGMII, eth1이 SGMII</span></span><br><span class="line">	<span class="punctuation">&#125;;</span></span><br><span class="line"></span><br><span class="line">	<span class="title class_">fixed-link</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">speed</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">1000</span>&gt;</span><span class="punctuation">;</span>  <span class="comment">// CPU와 스위치를 잇는 포트는 고정 속도로 두는 것이 관례</span></span><br><span class="line">		<span class="attr">full-duplex</span><span class="punctuation">;</span></span><br><span class="line">	<span class="punctuation">&#125;;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
-<p>eth1으로 패킷이 잘 오가는지 확인하기 위해 잠시 eth0을 VLAN에서 빼고 eth1으로만 트래픽을 몰아줍니다.</p>
-<figure class="highlight sh"><figcaption><span>02_network</span></figcaption><table><tr><td class="code"><pre><span class="line">dongwon,dw02-412h)</span><br><span class="line">	ucidef_add_switch <span class="string">&quot;switch0&quot;</span> \</span><br><span class="line">		<span class="string">&quot;2:lan:4&quot;</span> <span class="string">&quot;3:lan:3&quot;</span> <span class="string">&quot;4:lan:2&quot;</span> <span class="string">&quot;5:lan:1&quot;</span> <span class="string">&quot;1:wan&quot;</span> <span class="string">&quot;6@eth1&quot;</span> <span class="comment"># &quot;0@eth0&quot;</span></span><br><span class="line">	;;</span><br></pre></td></tr></table></figure>
-<p>DW03에선 이쯤에서 성공했었는데…</p>
-<p><img src="006-eth1-ping-fail.png" alt="여전히 막힌 eth1"></p>
-<p>ping도 안 가네요. 아직 뭔가 빼먹은 게 있나 봅니다.</p>
-<h2 id="SoC-설정">SoC 설정<a class="header-anchor" href="#SoC-설정"></a></h2>
-<p>스위치에서 눈을 돌려 SoC 쪽을 살펴봅시다. SoC에도 SGMII 설정에 관여하는 레지스터가 몇 있습니다.</p>
-<p><img src="007-sgmii-config-reg.png" alt="SGMII_CONFIG 레지스터"></p>
-<p>QCA9558 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Rlb3B0aW0vYXRoZXJvcy9ibG9iL21hc3Rlci9RQ0E5NTU4X25vd2F0ZXJtYXJrLnBkZg==">데이터시트<i class="fa fa-external-link-alt"></i></span><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>를 보면 SGMII_CONFIG란 레지스터가 있는데요. 이름만 들어봐도 중요할 것 같죠?</p>
-<p><img src="008-sgmii-config-read.png" alt="SGMII_CONFIG 값 읽어보기"></p>
-<p>근데 해당 레지스터 값을 읽어보니 텅 비어있네요. 데이터시트와 비트 필드를 비교해봤을 때 0x00000000이 제대로 된 세팅값은 아닐 것 같은데요.</p>
-<p>그러면 드라이버에서 SGMII_CONFIG 레지스터 설정을 해줘야 할 텐데, 검색해보니 해당 주소 매크로만이 정의되어 있을 뿐, 이 레지스터에 접근하는 코드는 아예 존재하지 않습니다.<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></p>
-<p><img src="009-sgmii-config-grep.png" alt="SGMII_CONFIG 관련 코드"></p>
-<p>흠… 보통은 부트로더가 알아서 설정해줘서 드라이버에서 따로 건드릴 필요를 못 느꼈던 걸까요? 하여간 여기선 제가 수동으로 켜줘야겠죠. 이럴 때 레퍼런스 코드가 있으면 참 도움이 될 텐데, DW02 소스코드는 제게 없으니 대신 하드웨어가 적당히 비슷한 다른 모델의 GPL 소스를 참고해봐야겠네요.</p>
-<p>TP-Link <span class="exturl" data-url="aHR0cHM6Ly93aWtpZGV2aS53aS1jYXQucnUvVFAtTElOS19BcmNoZXJfQzdfdjEueA==">Archer C7 v1<i class="fa fa-external-link-alt"></i></span>의 U-Boot <span class="exturl" data-url="aHR0cHM6Ly93d3cudHAtbGluay5jb20vdXMvc3VwcG9ydC9kb3dubG9hZC9hcmNoZXItYzcvdjEvI0dQTC1Db2Rl">소스<i class="fa fa-external-link-alt"></i></span>에서 SGMII_CONFIG 레지스터를 설정하는 코드를 발견했습니다. (좀 길어서 적당히 간추려서 발췌했습니다.)</p>
-<figure class="highlight c"><figcaption><span>qca-eth-955x.c</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">athr_gmac_sgmii_setup</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ATH_SGMII_FORCED_MODE</span></span><br><span class="line">	REG_WRITE(MR_AN_CONTROL, <span class="number">0x8140</span>);</span><br><span class="line">	REG_WRITE(SGMII_CONFIG, <span class="number">0xa2</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">	REG_WRITE(SGMII_CONFIG, <span class="number">0x02</span>);</span><br><span class="line">	REG_WRITE(MR_AN_CONTROL, <span class="number">0x9000</span>);</span><br><span class="line">	REG_WRITE(MR_AN_CONTROL, <span class="number">0x1000</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* SGMII reset sequence */</span></span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x00</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x10</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x14</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x1c</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x1d</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x1f</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Check SGMII link status */</span></span><br><span class="line">	REG_CLEAR(MR_AN_CONTROL, <span class="number">0x8000</span>);</span><br><span class="line">	status = (REG_READ(SGMII_DEBUG) &amp; <span class="number">0xff</span>);</span><br><span class="line">	<span class="keyword">while</span> (!(status == <span class="number">0xf</span> || status == <span class="number">0x10</span>)) &#123;</span><br><span class="line">		REG_SET(MR_AN_CONTROL, <span class="number">0x8000</span>);</span><br><span class="line">		REG_CLEAR(MR_AN_CONTROL, <span class="number">0x8000</span>);</span><br><span class="line">		<span class="keyword">if</span> (count++ == MAX_TRY)</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		status = (REG_READ(SGMII_DEBUG) &amp; <span class="number">0xff</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>이걸 쉘에서 따라해보니… 드디어 ping이 가네요!</p>
-<p><img src="010-sgmii-config-write.png" alt="SGMII_CONFIG 설정"></p>
-<p>코드에 따르면 SGMII_DEBUG 레지스터 값이 0xf 또는 0x10이어야 한다는데 저는 0x8이 뜨네요. SGMII_DEBUG는 데이터시트에도 안 나와있는 숨겨진 레지스터라 무슨 뜻인지도 모르겠고…</p>
-<p>암튼 이제 이걸 ag71xx 이더넷 드라이버에 집어넣어봅시다. SGMII_RESET과 SGMII_DEBUG 레지스터에 접근하는 코드는 ag71xx 드라이버에도 이미 있는데, 처음에 MR_AN_CONTROL와 SGMII_CONFIG 레지스터를 설정하는 코드는 드라이버에 없으니 이 부분만 끼워넣어주면 되겠죠.</p>
-<figure class="highlight diff"><figcaption><span>ag71xx_main.c</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@@ -605,6 +605,20 @@</span> static void ag71xx_sgmii_init_qca955x(struct device_node *np)</span><br><span class="line"> 	if (!(mr_an_status &amp; QCA955X_MR_AN_STATUS_AN_ABILITY))</span><br><span class="line"> 		goto sgmii_out;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+	__raw_writel(QCA955X_MR_AN_CONTROL_PHY_RESET |</span></span><br><span class="line"><span class="addition">+			 QCA955X_MR_AN_CONTROL_DUPLEX_MODE |</span></span><br><span class="line"><span class="addition">+			 QCA955X_MR_AN_CONTROL_SPEED_SEL1,</span></span><br><span class="line"><span class="addition">+		     gmac_base + QCA955X_GMAC_REG_MR_AN_CONTROL);</span></span><br><span class="line"><span class="addition">+	__raw_readl(gmac_base + QCA955X_GMAC_REG_MR_AN_CONTROL);</span></span><br><span class="line"><span class="addition">+	udelay(10);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+	__raw_writel(2 &lt;&lt; QCA955X_SGMII_CONFIG_SPEED_SHIFT |</span></span><br><span class="line"><span class="addition">+			 QCA955X_SGMII_CONFIG_FORCE_SPEED |</span></span><br><span class="line"><span class="addition">+			 2 &lt;&lt; QCA955X_SGMII_CONFIG_MODE_CTRL_SHIFT,</span></span><br><span class="line"><span class="addition">+		     gmac_base + QCA955X_GMAC_REG_SGMII_CONFIG);</span></span><br><span class="line"><span class="addition">+	__raw_readl(gmac_base + QCA955X_GMAC_REG_SGMII_CONFIG);</span></span><br><span class="line"><span class="addition">+	udelay(10);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> 	/* SGMII reset sequence */</span><br><span class="line"> 	__raw_writel(QCA955X_SGMII_RESET_RX_CLK_N_RESET,</span><br><span class="line"> 		     gmac_base + QCA955X_GMAC_REG_SGMII_RESET);</span><br><span class="line"><span class="meta">@@ -655,7 +669,7 @@</span> static void ag71xx_sgmii_init_qca955x(struct device_node *np)</span><br><span class="line"> 			pr_err(&quot;ag71xx: max retries for SGMII fixup exceeded\n&quot;);</span><br><span class="line"> 			break;</span><br><span class="line"> 		&#125;</span><br><span class="line"><span class="deletion">-	&#125; while (!(sgmii_status == 0xf || sgmii_status == 0x10));</span></span><br><span class="line"><span class="addition">+	&#125; while (!(sgmii_status == 0x8 || sgmii_status == 0xf || sgmii_status == 0x10));</span></span><br><span class="line"> </span><br><span class="line"> sgmii_out:</span><br><span class="line"> 	iounmap(gmac_base);</span><br></pre></td></tr></table></figure>
-<div class="note info"><p>◈ 나중에 더 테스트해보고 알게 된 건데, 위의 변경사항 중에서 핵심은 SGMII_CONFIG에서의 고정 속도 설정입니다. 나머지는 빼도 잘 작동하네요.<br>
-만약 스위치에서 SGMII 자동 속도 기능을 켜면(<code>SERDES_AEN := 0</code>) 이마저도 필요없게 되더라고요. 괜히 고생한 건가 싶기도 하고…</p>
-</div>
-<h2 id="성능-테스트">성능 테스트<a class="header-anchor" href="#성능-테스트"></a></h2>
-<p>자, 이제 eth1이 살아났으니 두 CPU 포트를 동시에 쓸 수 있게 되었습니다.<br>
-이게 무슨 의미냐면, LAN은 eth0, WAN은 eth1으로 연결해서 트래픽을 분산시킬 수 있다는 얘깁니다.</p>
-<p><img src="011-uci-vlan.png" alt="VLAN 설정 확인"></p>
-<p>스위치와 CPU 사이의 총 대역폭이 2Gbps로 늘어났으니 유선랜 속도가 더 빨라지겠죠?</p>
-<p>먼저 iperf로 테스트해보는데… 어라? 예상만큼 속도가 안 나오네요.</p>
-<div class="note info"><p>◈ 당시에 테스트했을 땐 eth1를 켜면 오히려 flow offloading 효과가 저하되는 걸로 나와 못 써먹겠다고 판단했었는데, 이 글을 쓰는 지금 다시 테스트해보니 조금 다른 결과가 나왔습니다.</p>
-<p>아래는 iperf3로 DL(WAN-&gt;LAN)/UL(LAN-&gt;WAN) 속도 테스트를 한 결과입니다. (SW flow offloading 켬)</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th style="text-align:right">TCP DL</th>
-<th style="text-align:right">TCP UL</th>
-<th style="text-align:right">UDP DL</th>
-<th style="text-align:right">UDP UL</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>eth0 LAN/WAN</td>
-<td style="text-align:right">928 Mbps</td>
-<td style="text-align:right">931 Mbps</td>
-<td style="text-align:right">950 Mbps</td>
-<td style="text-align:right">952 Mbps</td>
-</tr>
-<tr>
-<td>eth1 LAN/WAN</td>
-<td style="text-align:right">926 Mbps</td>
-<td style="text-align:right">930 Mbps</td>
-<td style="text-align:right">952 Mbps</td>
-<td style="text-align:right">952 Mbps</td>
-</tr>
-<tr>
-<td>eth0 LAN, eth1 WAN</td>
-<td style="text-align:right">921 Mbps</td>
-<td style="text-align:right">935 Mbps</td>
-<td style="text-align:right">953 Mbps</td>
-<td style="text-align:right">952 Mbps</td>
-</tr>
-<tr>
-<td>eth1 LAN, eth0 WAN</td>
-<td style="text-align:right">918 Mbps</td>
-<td style="text-align:right">936 Mbps</td>
-<td style="text-align:right">953 Mbps</td>
-<td style="text-align:right">950 Mbps</td>
-</tr>
-</tbody>
-</table>
-<p>별로 차이가 없어 보이는데, 하긴 단방향 트래픽으론 병목이 안 생길 테니 이걸로 보면 안 되겠죠. <code>--bidir</code> 옵션을 걸고 다시 해보면,</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th style="text-align:right">TCP (=DL+UL)</th>
-<th style="text-align:right">UDP (=DL+UL)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>eth0 LAN/WAN</td>
-<td style="text-align:right">889 Mbps (=442+447)</td>
-<td style="text-align:right">950 Mbps (=475+475)</td>
-</tr>
-<tr>
-<td>eth1 LAN/WAN</td>
-<td style="text-align:right">897 Mbps (=454+443)</td>
-<td style="text-align:right">948 Mbps (=474+474)</td>
-</tr>
-<tr>
-<td>eth0 LAN, eth1 WAN</td>
-<td style="text-align:right">926 Mbps (=485+441)</td>
-<td style="text-align:right">1047 Mbps (=524+523)</td>
-</tr>
-<tr>
-<td>eth1 LAN, eth0 WAN</td>
-<td style="text-align:right">922 Mbps (=463+459)</td>
-<td style="text-align:right">1055 Mbps (=528+527)</td>
-</tr>
-</tbody>
-</table>
-<p>이번엔 살짝 효과가 있는 것 같긴 한데, 그래도 전체 가용 대역폭에 비하면 여전히 한참 낮습니다.</p>
-</div>
-<p>혹시 <span class="exturl" data-url="aHR0cHM6Ly93aWtpLmxpbnV4Zm91bmRhdGlvbi5vcmcvbmV0d29ya2luZy9ib25kaW5n">bonding<i class="fa fa-external-link-alt"></i></span>을 쓰면 속도를 더 내주려나 하고 써봤는데,</p>
-<p><img src="012-iperf-over-bond0.png" alt="eth0/eth1을 bond0로 묶고 iperf"></p>
-<p>eth1을 켜니 오히려 느려지네요. 에라이.</p>
-<p>이거 아무래도 병목이 IO가 아니라 CPU에 있나본데요. 애초에 CPU가 느린 거라면 대역폭을 늘려도 제대로 활용하기 어려울 것 같네요. DW02에서도 HW NAT를 쓸 수 있게 되는 날이 어서 오기를 기원해봅시다.</p>
-<hr class="footnotes-sep">
-<section class="footnotes">
-<ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>뒤에 N이 붙고 안 붙고 차이는 HW NAT 기능 여부뿐이라고 합니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
-</li>
-<li id="fn2" class="footnote-item"><p>RGMII와 SGMII란 걸 처음 들어보셨다면 <span class="exturl" data-url="aHR0cHM6Ly9kb2trb2RhaS50aXN0b3J5LmNvbS8xNzY=">여기<i class="fa fa-external-link-alt"></i></span>에 나오는 그림을 참고하시면 이해에 도움이 될 듯 합니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
-</li>
-<li id="fn3" class="footnote-item"><p>QCA9557 데이터시트를 못 찾겠어서 대신 WLAN이 3x3이라는 것만 빼면 동일할 것으로 추측되는 QCA9558 데이터시트를 보겠습니다. <a href="#fnref3" class="footnote-backref">↩︎</a></p>
-</li>
-<li id="fn4" class="footnote-item"><p><div class="note info"><p>◈ 참고로 나중에 SGMII_CONFIG 레지스터를 설정하는 코드가 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9jb21taXQvZmJiYWQ5YTlhNjI5YjM4ODYyNmI0NzdlNmNkNjkyYzE2MGY2M2ZiMw==">한번<i class="fa fa-external-link-alt"></i></span> 추가되긴 했지만, 이건 qca956x가 대상일뿐더러 MODE_CTRL 외의 필드엔 접근하지 않습니다.</p>
-</div> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
-</li>
-</ol>
-</section>
-]]></content>
-      <categories>
-        <category>자유시간 프로젝트</category>
-      </categories>
-      <tags>
-        <tag>OpenWrt</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>OpenWrt에 새 기기 지원 추가하기</title>
     <url>/2020/08/22/openwrt-add-new-device/</url>
     <content><![CDATA[<p>※ 2021-09-05: v21.02.0 기준으로 업데이트</p>
@@ -827,6 +650,183 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
         <tag>분해</tag>
         <tag>OpenWrt</tag>
         <tag>포팅</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DW02-412H 작업기: eth1 살리기</title>
+    <url>/2022/08/14/dw02-412h-enable-eth1/</url>
+    <content><![CDATA[<div class="note "><p>DW02-412H 작업기 시리즈</p>
+<ol>
+<li>OpenWrt 포팅 따라하기</li>
+<li>ath79로 재포팅</li>
+<li><strong>eth1 살리기</strong></li>
+<li>qca8k로 넘어가기</li>
+</ol>
+</div>
+<span id="more"></span>
+<p>※ 이 글은 2020년 7월에 작업했던 내용을 당시의 기록과 기억에 기반해 정리한 것이고, 포스팅 내의 모든 이미지는 글을 작성하는 시점에서 새로 생성하였습니다.</p>
+<h2 id="포팅-후-남은-찜찜함">포팅 후 남은 찜찜함<a class="header-anchor" href="#포팅-후-남은-찜찜함"></a></h2>
+<p>OpenWrt 포팅 작업은 끝났고 웬만한 기능은 다 살린 것 같지만… 찜찜함이 하나 남습니다.</p>
+<p><img src="001-swconfig-link.png" alt="swconfig link"></p>
+<p>저 port 6은 대체 뭘까요? 왜 10Mbps로 연결되어 있다고 하죠? (물론 이더넷 케이블은 하나도 꽂지 않은 상태입니다)</p>
+<p>DW02의 내부 네트워크 토폴로지를 복습해봅시다. (VLAN이나 브리지는 잠시 무시합니다)</p>
+<p><img src="002-network-diagram.png" alt="DW02 내부 구성도"></p>
+<p>QCA9557 SoC는 두 개의 이더넷 인터페이스(eth0과 eth1)를 지원하고 QCA8337N 스위치는 7개의 이더넷 포트(5개는 랜선과 연결되는 포트, 2개는 CPU와 연결되는 포트)를 지원합니다. DW02에 달린 RJ45 포트는 5개뿐이니 port 6이 외부와 연결됐을 리는 없고, 상식적으로 CPU의 eth1 인터페이스와 연결되었다고 추측하는 게 가장 그럴듯하겠죠?</p>
+<p>하지만 ar71xx에서도 ath79에서도 이더넷/스위치 설정을 이리저리 바꿔봤었지만 링크를 활성화시키는 데는 결국 실패했고, 정말 eth1이 port 6에 연결된 게 맞는지조차 알쏭달쏭한 상태에서 포기했었습니다. 어쨌든 이거 없어도 유선랜은 잘 되니까요.</p>
+<p>그러다가 DW03-608H 포팅을 하면서 스위치에 대한 이해도가 조금 더 올라가고 나니 이 미제에 다시 도전해볼 용기가 생겼습니다. DW03에서 QCA8337<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 스위치에 eth0과 eth1이 모두 연결된 걸 확인하고 둘 다 활성화하는 데 성공했는데, DW02에도 같은 방법을 적용하면 마찬가지로 eth1이 뚫릴 거라는 기대가 생긴 거죠.</p>
+<h2 id="링크-존재-확인">링크 존재 확인<a class="header-anchor" href="#링크-존재-확인"></a></h2>
+<p>먼저 CPU와 스위치 사이에 회로상 연결이 존재하는지부터 확인해볼까요. QCA8337N의 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Rlb3B0aW0vYXRoZXJvcy9ibG9iL21hc3Rlci9RQ0E4MzM3Tl9EYXRhX1NoZWV0X01LRy0xNzc5M192MS4wLnBkZg==">데이터시트<i class="fa fa-external-link-alt"></i></span>에서 핀아웃 그림을 봅시다.</p>
+<p><img src="003-qca8337n-pinout.png" alt="스위치 핀아웃"></p>
+<p>QCA8337N에는 CPU 포트를 위한 인터페이스로 RGMII 두 개와 SGMII 한 개가 있습니다.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> 빨갛게 표시한 핀이 RGMII #0, 녹색으로 표시한 핀이 RGMII #1, 파랗게 표시한 핀이 SGMII입니다.</p>
+<p>이걸 실제 보드의 PCB 패턴과 비교해보겠습니다.</p>
+<p><img src="004-qca8337n-trace.jpg" alt="스위치 트레이스"></p>
+<p>트레이스가 뻗어나온 핀은 RGMII #0와 SGMII입니다. 보드 앞면만 봐선 이게 정말 SoC까지 이어져 있는지 알 수 없지만 (여기선 생략한) 뒷면도 보면 대략 짐작할 수 있습니다. 짐작만으로 끝내는 이유는… SoC가 BGA라서요.</p>
+<h2 id="스위치-설정">스위치 설정<a class="header-anchor" href="#스위치-설정"></a></h2>
+<p>자, 그럼 회로 연결은 됐다고 치고, 이제 SGMII 설정 작업에 들어가보겠습니다.</p>
+<p>일단 확인 차원에서 부팅 중 ar8xxx 스위치 드라이버에서 스위치 레지스터를 덤프해봤는데 특별히 눈에 띄는 건 없네요.</p>
+<p><img src="005-qca8337n-dump.png" alt="스위치 레지스터 덤프"></p>
+<p>저번에 DW03에서 SGMII를 켜기 위해 건드려줬던 스위치 레지스터는 다음과 같습니다.</p>
+<ul>
+<li>PORT6_PAD_CTRL</li>
+<li>PWS_REG (특히 SERDES_AEN 비트)</li>
+<li>PORT6_STATUS</li>
+<li>SGMII_CTRL</li>
+</ul>
+<p>여기서도 똑같이 설정해주면 되겠죠.</p>
+<figure class="highlight dts"><figcaption><span>qca9557_dongwon_dw02-412h.dts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="variable">&amp;mdio0</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"></span><br><span class="line">	<span class="title class_">switch@0</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">reg</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x0</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">		qca,ar8327-<span class="attr">initvals</span> <span class="operator">=</span> <span class="params">&lt;</span></span><br><span class="line"><span class="params">			<span class="number">0x0004</span> <span class="number">0x07600000</span>  /* PORT0_PAD_CTRL */</span></span><br><span class="line"><span class="params">			<span class="number">0x000c</span> <span class="number">0x00000080</span>  /* PORT6_PAD_CTRL */</span></span><br><span class="line"><span class="params">			/* PWS_REG는 DW02에서 초깃값과 설정값이 동일하여 생략 */</span></span><br><span class="line"><span class="params">			<span class="number">0x007c</span> <span class="number">0x0000007e</span>  /* PORT0_STATUS */</span></span><br><span class="line"><span class="params">			<span class="number">0x0094</span> <span class="number">0x0000007e</span>  /* PORT6_STATUS */</span></span><br><span class="line"><span class="params">			<span class="number">0x00e0</span> <span class="number">0xc74164de</span>  /* SGMII_CTRL */</span></span><br><span class="line"><span class="params">		&gt;</span><span class="punctuation">;</span></span><br><span class="line">	<span class="punctuation">&#125;;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
+<p>eth1도 켜주고요.</p>
+<figure class="highlight dts"><figcaption><span>qca9557_dongwon_dw02-412h.dts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="variable">&amp;eth1</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">status</span> <span class="operator">=</span> <span class="string">&quot;okay&quot;</span><span class="punctuation">;</span></span><br><span class="line"></span><br><span class="line">	<span class="attr">pll-data</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0x03000101</span> <span class="number">0x00000101</span> <span class="number">0x00001616</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">	qca955<span class="attr">x-sgmii-fixup</span><span class="punctuation">;</span>     <span class="comment">// SGMII 링크 재시작</span></span><br><span class="line">	<span class="attr">mtd-mac-address</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;art</span> <span class="number">0x6</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line"></span><br><span class="line">	<span class="title class_">gmac-config</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">device</span> <span class="operator">=</span> <span class="params">&lt;<span class="variable">&amp;gmac</span>&gt;</span><span class="punctuation">;</span></span><br><span class="line">		ge0-<span class="attr">sgmii</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">0</span>&gt;</span><span class="punctuation">;</span> <span class="comment">// eth0이 RGMII, eth1이 SGMII</span></span><br><span class="line">	<span class="punctuation">&#125;;</span></span><br><span class="line"></span><br><span class="line">	<span class="title class_">fixed-link</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">speed</span> <span class="operator">=</span> <span class="params">&lt;<span class="number">1000</span>&gt;</span><span class="punctuation">;</span>  <span class="comment">// CPU와 스위치를 잇는 포트는 고정 속도로 두는 것이 관례</span></span><br><span class="line">		<span class="attr">full-duplex</span><span class="punctuation">;</span></span><br><span class="line">	<span class="punctuation">&#125;;</span></span><br><span class="line"><span class="punctuation">&#125;;</span></span><br></pre></td></tr></table></figure>
+<p>eth1으로 패킷이 잘 오가는지 확인하기 위해 잠시 eth0을 VLAN에서 빼고 eth1으로만 트래픽을 몰아줍니다.</p>
+<figure class="highlight sh"><figcaption><span>02_network</span></figcaption><table><tr><td class="code"><pre><span class="line">dongwon,dw02-412h)</span><br><span class="line">	ucidef_add_switch <span class="string">&quot;switch0&quot;</span> \</span><br><span class="line">		<span class="string">&quot;2:lan:4&quot;</span> <span class="string">&quot;3:lan:3&quot;</span> <span class="string">&quot;4:lan:2&quot;</span> <span class="string">&quot;5:lan:1&quot;</span> <span class="string">&quot;1:wan&quot;</span> <span class="string">&quot;6@eth1&quot;</span> <span class="comment"># &quot;0@eth0&quot;</span></span><br><span class="line">	;;</span><br></pre></td></tr></table></figure>
+<p>DW03에선 이쯤에서 성공했었는데…</p>
+<p><img src="006-eth1-ping-fail.png" alt="여전히 막힌 eth1"></p>
+<p>ping도 안 가네요. 아직 뭔가 빼먹은 게 있나 봅니다.</p>
+<h2 id="SoC-설정">SoC 설정<a class="header-anchor" href="#SoC-설정"></a></h2>
+<p>스위치에서 눈을 돌려 SoC 쪽을 살펴봅시다. SoC에도 SGMII 설정에 관여하는 레지스터가 몇 있습니다.</p>
+<p><img src="007-sgmii-config-reg.png" alt="SGMII_CONFIG 레지스터"></p>
+<p>QCA9558 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Rlb3B0aW0vYXRoZXJvcy9ibG9iL21hc3Rlci9RQ0E5NTU4X25vd2F0ZXJtYXJrLnBkZg==">데이터시트<i class="fa fa-external-link-alt"></i></span><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>를 보면 SGMII_CONFIG란 레지스터가 있는데요. 이름만 들어봐도 중요할 것 같죠?</p>
+<p><img src="008-sgmii-config-read.png" alt="SGMII_CONFIG 값 읽어보기"></p>
+<p>근데 해당 레지스터 값을 읽어보니 텅 비어있네요. 데이터시트와 비트 필드를 비교해봤을 때 0x00000000이 제대로 된 세팅값은 아닐 것 같은데요.</p>
+<p>그러면 드라이버에서 SGMII_CONFIG 레지스터 설정을 해줘야 할 텐데, 검색해보니 해당 주소 매크로만이 정의되어 있을 뿐, 이 레지스터에 접근하는 코드는 아예 존재하지 않습니다.<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></p>
+<p><img src="009-sgmii-config-grep.png" alt="SGMII_CONFIG 관련 코드"></p>
+<p>흠… 보통은 부트로더가 알아서 설정해줘서 드라이버에서 따로 건드릴 필요를 못 느꼈던 걸까요? 하여간 여기선 제가 수동으로 켜줘야겠죠. 이럴 때 레퍼런스 코드가 있으면 참 도움이 될 텐데, DW02 소스코드는 제게 없으니 대신 하드웨어가 적당히 비슷한 다른 모델의 GPL 소스를 참고해봐야겠네요.</p>
+<p>TP-Link <span class="exturl" data-url="aHR0cHM6Ly93aWtpZGV2aS53aS1jYXQucnUvVFAtTElOS19BcmNoZXJfQzdfdjEueA==">Archer C7 v1<i class="fa fa-external-link-alt"></i></span>의 U-Boot <span class="exturl" data-url="aHR0cHM6Ly93d3cudHAtbGluay5jb20vdXMvc3VwcG9ydC9kb3dubG9hZC9hcmNoZXItYzcvdjEvI0dQTC1Db2Rl">소스<i class="fa fa-external-link-alt"></i></span>에서 SGMII_CONFIG 레지스터를 설정하는 코드를 발견했습니다. (좀 길어서 적당히 간추려서 발췌했습니다.)</p>
+<figure class="highlight c"><figcaption><span>qca-eth-955x.c</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">athr_gmac_sgmii_setup</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> ATH_SGMII_FORCED_MODE</span></span><br><span class="line">	REG_WRITE(MR_AN_CONTROL, <span class="number">0x8140</span>);</span><br><span class="line">	REG_WRITE(SGMII_CONFIG, <span class="number">0xa2</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">	REG_WRITE(SGMII_CONFIG, <span class="number">0x02</span>);</span><br><span class="line">	REG_WRITE(MR_AN_CONTROL, <span class="number">0x9000</span>);</span><br><span class="line">	REG_WRITE(MR_AN_CONTROL, <span class="number">0x1000</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* SGMII reset sequence */</span></span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x00</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x10</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x14</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x1c</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x1d</span>);</span><br><span class="line">	REG_WRITE(SGMII_RESET, <span class="number">0x1f</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Check SGMII link status */</span></span><br><span class="line">	REG_CLEAR(MR_AN_CONTROL, <span class="number">0x8000</span>);</span><br><span class="line">	status = (REG_READ(SGMII_DEBUG) &amp; <span class="number">0xff</span>);</span><br><span class="line">	<span class="keyword">while</span> (!(status == <span class="number">0xf</span> || status == <span class="number">0x10</span>)) &#123;</span><br><span class="line">		REG_SET(MR_AN_CONTROL, <span class="number">0x8000</span>);</span><br><span class="line">		REG_CLEAR(MR_AN_CONTROL, <span class="number">0x8000</span>);</span><br><span class="line">		<span class="keyword">if</span> (count++ == MAX_TRY)</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		status = (REG_READ(SGMII_DEBUG) &amp; <span class="number">0xff</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이걸 쉘에서 따라해보니… 드디어 ping이 가네요!</p>
+<p><img src="010-sgmii-config-write.png" alt="SGMII_CONFIG 설정"></p>
+<p>코드에 따르면 SGMII_DEBUG 레지스터 값이 0xf 또는 0x10이어야 한다는데 저는 0x8이 뜨네요. SGMII_DEBUG는 데이터시트에도 안 나와있는 숨겨진 레지스터라 무슨 뜻인지도 모르겠고…</p>
+<p>암튼 이제 이걸 ag71xx 이더넷 드라이버에 집어넣어봅시다. SGMII_RESET과 SGMII_DEBUG 레지스터에 접근하는 코드는 ag71xx 드라이버에도 이미 있는데, 처음에 MR_AN_CONTROL와 SGMII_CONFIG 레지스터를 설정하는 코드는 드라이버에 없으니 이 부분만 끼워넣어주면 되겠죠.</p>
+<figure class="highlight diff"><figcaption><span>ag71xx_main.c</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@@ -605,6 +605,20 @@</span> static void ag71xx_sgmii_init_qca955x(struct device_node *np)</span><br><span class="line"> 	if (!(mr_an_status &amp; QCA955X_MR_AN_STATUS_AN_ABILITY))</span><br><span class="line"> 		goto sgmii_out;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+	__raw_writel(QCA955X_MR_AN_CONTROL_PHY_RESET |</span></span><br><span class="line"><span class="addition">+			 QCA955X_MR_AN_CONTROL_DUPLEX_MODE |</span></span><br><span class="line"><span class="addition">+			 QCA955X_MR_AN_CONTROL_SPEED_SEL1,</span></span><br><span class="line"><span class="addition">+		     gmac_base + QCA955X_GMAC_REG_MR_AN_CONTROL);</span></span><br><span class="line"><span class="addition">+	__raw_readl(gmac_base + QCA955X_GMAC_REG_MR_AN_CONTROL);</span></span><br><span class="line"><span class="addition">+	udelay(10);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+	__raw_writel(2 &lt;&lt; QCA955X_SGMII_CONFIG_SPEED_SHIFT |</span></span><br><span class="line"><span class="addition">+			 QCA955X_SGMII_CONFIG_FORCE_SPEED |</span></span><br><span class="line"><span class="addition">+			 2 &lt;&lt; QCA955X_SGMII_CONFIG_MODE_CTRL_SHIFT,</span></span><br><span class="line"><span class="addition">+		     gmac_base + QCA955X_GMAC_REG_SGMII_CONFIG);</span></span><br><span class="line"><span class="addition">+	__raw_readl(gmac_base + QCA955X_GMAC_REG_SGMII_CONFIG);</span></span><br><span class="line"><span class="addition">+	udelay(10);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> 	/* SGMII reset sequence */</span><br><span class="line"> 	__raw_writel(QCA955X_SGMII_RESET_RX_CLK_N_RESET,</span><br><span class="line"> 		     gmac_base + QCA955X_GMAC_REG_SGMII_RESET);</span><br><span class="line"><span class="meta">@@ -655,7 +669,7 @@</span> static void ag71xx_sgmii_init_qca955x(struct device_node *np)</span><br><span class="line"> 			pr_err(&quot;ag71xx: max retries for SGMII fixup exceeded\n&quot;);</span><br><span class="line"> 			break;</span><br><span class="line"> 		&#125;</span><br><span class="line"><span class="deletion">-	&#125; while (!(sgmii_status == 0xf || sgmii_status == 0x10));</span></span><br><span class="line"><span class="addition">+	&#125; while (!(sgmii_status == 0x8 || sgmii_status == 0xf || sgmii_status == 0x10));</span></span><br><span class="line"> </span><br><span class="line"> sgmii_out:</span><br><span class="line"> 	iounmap(gmac_base);</span><br></pre></td></tr></table></figure>
+<div class="note info"><p>◈ 나중에 더 테스트해보고 알게 된 건데, 위의 변경사항 중에서 핵심은 SGMII_CONFIG에서의 고정 속도 설정입니다. 나머지는 빼도 잘 작동하네요.<br>
+만약 스위치에서 SGMII 자동 속도 기능을 켜면(<code>SERDES_AEN := 0</code>) 이마저도 필요없게 되더라고요. 괜히 고생한 건가 싶기도 하고…</p>
+</div>
+<h2 id="성능-테스트">성능 테스트<a class="header-anchor" href="#성능-테스트"></a></h2>
+<p>자, 이제 eth1이 살아났으니 두 CPU 포트를 동시에 쓸 수 있게 되었습니다.<br>
+이게 무슨 의미냐면, LAN은 eth0, WAN은 eth1으로 연결해서 트래픽을 분산시킬 수 있다는 얘깁니다.</p>
+<p><img src="011-uci-vlan.png" alt="VLAN 설정 확인"></p>
+<p>스위치와 CPU 사이의 총 대역폭이 2Gbps로 늘어났으니 유선랜 속도가 더 빨라지겠죠?</p>
+<p>먼저 iperf로 테스트해보는데… 어라? 예상만큼 속도가 안 나오네요.</p>
+<div class="note info"><p>◈ 당시에 테스트했을 땐 eth1를 켜면 오히려 flow offloading 효과가 저하되는 걸로 나와 못 써먹겠다고 판단했었는데, 이 글을 쓰는 지금 다시 테스트해보니 조금 다른 결과가 나왔습니다.</p>
+<p>아래는 iperf3로 DL(WAN-&gt;LAN)/UL(LAN-&gt;WAN) 속도 테스트를 한 결과입니다. (SW flow offloading 켬)</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">TCP DL</th>
+<th style="text-align:right">TCP UL</th>
+<th style="text-align:right">UDP DL</th>
+<th style="text-align:right">UDP UL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eth0 LAN/WAN</td>
+<td style="text-align:right">928 Mbps</td>
+<td style="text-align:right">931 Mbps</td>
+<td style="text-align:right">950 Mbps</td>
+<td style="text-align:right">952 Mbps</td>
+</tr>
+<tr>
+<td>eth1 LAN/WAN</td>
+<td style="text-align:right">926 Mbps</td>
+<td style="text-align:right">930 Mbps</td>
+<td style="text-align:right">952 Mbps</td>
+<td style="text-align:right">952 Mbps</td>
+</tr>
+<tr>
+<td>eth0 LAN, eth1 WAN</td>
+<td style="text-align:right">921 Mbps</td>
+<td style="text-align:right">935 Mbps</td>
+<td style="text-align:right">953 Mbps</td>
+<td style="text-align:right">952 Mbps</td>
+</tr>
+<tr>
+<td>eth1 LAN, eth0 WAN</td>
+<td style="text-align:right">918 Mbps</td>
+<td style="text-align:right">936 Mbps</td>
+<td style="text-align:right">953 Mbps</td>
+<td style="text-align:right">950 Mbps</td>
+</tr>
+</tbody>
+</table>
+<p>별로 차이가 없어 보이는데, 하긴 단방향 트래픽으론 병목이 안 생길 테니 이걸로 보면 안 되겠죠. <code>--bidir</code> 옵션을 걸고 다시 해보면,</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">TCP (=DL+UL)</th>
+<th style="text-align:right">UDP (=DL+UL)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eth0 LAN/WAN</td>
+<td style="text-align:right">889 Mbps (=442+447)</td>
+<td style="text-align:right">950 Mbps (=475+475)</td>
+</tr>
+<tr>
+<td>eth1 LAN/WAN</td>
+<td style="text-align:right">897 Mbps (=454+443)</td>
+<td style="text-align:right">948 Mbps (=474+474)</td>
+</tr>
+<tr>
+<td>eth0 LAN, eth1 WAN</td>
+<td style="text-align:right">926 Mbps (=485+441)</td>
+<td style="text-align:right">1047 Mbps (=524+523)</td>
+</tr>
+<tr>
+<td>eth1 LAN, eth0 WAN</td>
+<td style="text-align:right">922 Mbps (=463+459)</td>
+<td style="text-align:right">1055 Mbps (=528+527)</td>
+</tr>
+</tbody>
+</table>
+<p>이번엔 살짝 효과가 있는 것 같긴 한데, 그래도 전체 가용 대역폭에 비하면 여전히 한참 낮습니다.</p>
+</div>
+<p>혹시 <span class="exturl" data-url="aHR0cHM6Ly93aWtpLmxpbnV4Zm91bmRhdGlvbi5vcmcvbmV0d29ya2luZy9ib25kaW5n">bonding<i class="fa fa-external-link-alt"></i></span>을 쓰면 속도를 더 내주려나 하고 써봤는데,</p>
+<p><img src="012-iperf-over-bond0.png" alt="eth0/eth1을 bond0로 묶고 iperf"></p>
+<p>eth1을 켜니 오히려 느려지네요. 에라이.</p>
+<p>이거 아무래도 병목이 IO가 아니라 CPU에 있나본데요. 애초에 CPU가 느린 거라면 대역폭을 늘려도 제대로 활용하기 어려울 것 같네요. DW02에서도 HW NAT를 쓸 수 있게 되는 날이 어서 오기를 기원해봅시다.</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>뒤에 N이 붙고 안 붙고 차이는 HW NAT 기능 여부뿐이라고 합니다. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>RGMII와 SGMII란 걸 처음 들어보셨다면 <span class="exturl" data-url="aHR0cHM6Ly9kb2trb2RhaS50aXN0b3J5LmNvbS8xNzY=">여기<i class="fa fa-external-link-alt"></i></span>에 나오는 그림을 참고하시면 이해에 도움이 될 듯 합니다. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>QCA9557 데이터시트를 못 찾겠어서 대신 WLAN이 3x3이라는 것만 빼면 동일할 것으로 추측되는 QCA9558 데이터시트를 보겠습니다. <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><div class="note info"><p>◈ 참고로 나중에 SGMII_CONFIG 레지스터를 설정하는 코드가 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9jb21taXQvZmJiYWQ5YTlhNjI5YjM4ODYyNmI0NzdlNmNkNjkyYzE2MGY2M2ZiMw==">한번<i class="fa fa-external-link-alt"></i></span> 추가되긴 했지만, 이건 qca956x가 대상일뿐더러 MODE_CTRL 외의 필드엔 접근하지 않습니다.</p>
+</div> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+      <categories>
+        <category>자유시간 프로젝트</category>
+      </categories>
+      <tags>
+        <tag>OpenWrt</tag>
       </tags>
   </entry>
   <entry>

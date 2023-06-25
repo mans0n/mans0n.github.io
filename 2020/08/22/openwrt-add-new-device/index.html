@@ -11,10 +11,10 @@
 
 
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"mans0n.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.14.1","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat","show_result":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"mans0n.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat","show_result":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="※ 2021-09-05: v21.02.0 기준으로 업데이트 들어가기 전에 글의 목적 뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서,">
 <meta property="og:type" content="article">
@@ -92,8 +92,8 @@
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>OpenWrt에 새 기기 지원 추가하기 | 맨손잡이</title>
   
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173005416-1"></script>
-  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-173005416-1","only_pageview":false}</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXDL4QHFEJ"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-HXDL4QHFEJ","only_pageview":false}</script>
   <script src="/js/third-party/analytics/google-analytics.js"></script>
 
 
@@ -101,9 +101,7 @@
 
 
 
-  <script async defer data-website-id="" src=""></script>
 
-  <script defer data-domain="" src=""></script>
 
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
@@ -311,8 +309,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-        <p>※ 2021-09-05: v21.02.0 기준으로 업데이트</p>
+    <div class="post-body" itemprop="articleBody"><p>※ 2021-09-05: v21.02.0 기준으로 업데이트</p>
 <h1 id="들어가기-전에">들어가기 전에<a class="header-anchor" href="#들어가기-전에"></a></h1>
 <h2 id="글의-목적">글의 목적<a class="header-anchor" href="#글의-목적"></a></h2>
 <p>뭔가 그럴듯한 인트로를 적어보려고 했는데 적당한 표현이 떠오르지 않아 포기하기로 하고, 핵심만 말하자면 국내에 OpenWrt 개발자 공개 커뮤니티라고 할 만한 데가 없어(비공개 네이버 카페는 딥웹이라 보아야 한다고 생각합니다) 관련 정보를 찾기가 쉽지 않은 상황이 아쉬워서, 이런 튜토리얼 비스무리한 거라도 올려 경력있는 신입과 재야에 숨은 고수의 유입을 유도함으로써 저도 편하게 버스타고 가고 싶다는 사적인 소망을 이루고자 이 글을 썼다는 얘기입니다.</p>
@@ -758,7 +755,7 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
       <a href="https://mans0n.github.io/2020/08/22/openwrt-add-new-device/" title="OpenWrt에 새 기기 지원 추가하기">https://mans0n.github.io/2020/08/22/openwrt-add-new-device/</a>
   </li>
   <li class="post-copyright-license">
-    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-SA</span> unless stating additionally.
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-SA</span> unless stating additionally.
   </li>
 </ul>
 </div>
@@ -826,6 +823,8 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
+
+
 
 
 
