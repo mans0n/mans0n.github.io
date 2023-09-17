@@ -832,20 +832,21 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
   <entry>
     <title>DIY Wi-Fi 6E AP</title>
     <url>/2023/01/24/diy-6ghz-ap/</url>
-    <content><![CDATA[<h2 id="서론">서론<a class="header-anchor" href="#서론"></a></h2>
+    <content><![CDATA[<p>※ 2023-09-17: QCNFA765 테스트 내용 추가</p>
+<h2 id="서론">서론<a class="header-anchor" href="#서론"></a></h2>
 <p>Wi-Fi 6E가 <span class="exturl" data-url="aHR0cHM6Ly93d3cud2ktZmkub3JnL25ld3MtZXZlbnRzL25ld3Nyb29tL3dpLWZpLWFsbGlhbmNlLWJyaW5ncy13aS1maS02LWludG8tNi1naHo=">발표<i class="fa fa-external-link-alt"></i></span>된 지도 어언 3년.</p>
 <p>그냥 6GHz 대역을 한번 써보고 싶었습니다. 실사용 목적이라기보단 호기심에 가까운 편이라 가급적 저렴하게 Wi-Fi 6E 네트워크를 구성해보려고 했습니다.</p>
 <span id="more"></span>
 <ul>
 <li>AP: 시중의 비교적 저렴한<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> Wi-Fi 6E AP는 브로드컴 칩셋을 쓰는 것 같은데, OpenWrt를 올려서 쓰기엔 지원이 아직 부족합니다. 커펌을 포기하고 구매할 정도로 가성비가 훌륭한가 하면 제 입장에선 아닌 것 같네요.</li>
-<li>스마트폰 핫스팟: 아쉽게도 지금 제가 사용하는 스마트폰은 Wi-Fi 6E를 지원하지 않네요. 이거 하나 때문에 플래그십 스마트폰을 새로 들일 생각은 없고요.</li>
+<li>스마트폰 핫스팟: 아쉽게도 지금 제가 사용하는 스마트폰은 Wi-Fi 6E를 지원하지 않습니다. 이거 하나 때문에 플래그십 스마트폰을 새로 들일 생각은 없고요.</li>
 <li>PC 핫스팟: Wi-Fi 6E 무선랜카드가 그럭저럭 저렴한데요.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> SoftAP가 되는지가 관건이겠습니다.</li>
 </ul>
 <p>제가 알아본 6GHz 대역 무선랜카드 목록은 다음과 같습니다. (여기 있는게 전부는 아닙니다!)</p>
 <ul>
 <li>M.2 (CNVi 제외)
 <ul>
-<li>Intel: AX210NGW</li>
+<li>Intel: AX210NGW(WCSAX210)</li>
 <li>MediaTek: RZ608(MT7921K), RZ616(MT7922A)</li>
 <li>Qualcomm: <span class="exturl" data-url="aHR0cHM6Ly93d3cuYWN3aWZpLm5ldC8yMTk5NC5odG1s">QCNFA765<i class="fa fa-external-link-alt"></i></span>(WCN6856), WNFQ-268AXI(WCN6856), WMX7205(WCN6856)</li>
 </ul>
@@ -862,16 +863,17 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 </ul>
 </li>
 </ul>
-<p>이 중에서 제가 선택한 건 AX210과 MT7922A<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>입니다. 선택한 이유는,</p>
+<p>이 중에서 제가 선택한 건 AX210NGW와 MT7922A22M<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>입니다. 선택한 이유는,</p>
 <ul>
-<li>AX210: 평범하게 실사용하기엔 가장 무난하다고 봅니다. 사실 2021년 초에 알아봤을 땐 이것밖에 선택지가 없었습니다.</li>
-<li>MT7922A: 드라이버 면에서 ath11k보단 mt76이 더 친숙했고, USB보단 PCIe가 더 안정적일 것 같았고, AW7916-NPD도 끌리긴 했지만 그렇게까지 본격적으로 써볼 생각은 아니어서 단념했고, <span class="exturl" data-url="aHR0cHM6Ly8yNHdpcmVsZXNzLmluZm8vd2lmaS02LW1vZHVsZS1mb3ItcGM=">MT7921과 달리<i class="fa fa-external-link-alt"></i></span> MT7922는 160MHz 채널폭을 지원한다고 하는데 가격도 알리 기준으로 2만원 정도로 적당해서 골랐습니다.</li>
+<li>AX210NGW: 평범하게 실사용하기엔 가장 무난하다고 봅니다. 사실 2021년 초에 알아봤을 땐 이것밖에 선택지가 없었습니다.</li>
+<li>MT7922A22M: 드라이버 면에서 ath11k보단 mt76이 더 친숙했고, USB보단 PCIe가 더 안정적일 것 같았고, AW7916-NPD도 끌리긴 했지만 그렇게까지 본격적으로 써볼 생각은 아니어서 단념했고, <span class="exturl" data-url="aHR0cHM6Ly8yNHdpcmVsZXNzLmluZm8vd2lmaS02LW1vZHVsZS1mb3ItcGM=">MT7921과 달리<i class="fa fa-external-link-alt"></i></span> MT7922는 160MHz 채널폭을 지원한다고 하는데 가격도 알리 기준으로 2만원 정도로 적당해서 골랐습니다.</li>
 </ul>
 <p>검색해보니 CF-953AX에서 6GHz AP를 켜는 데 성공한 사례가 있네요.</p>
 <ul>
 <li><span class="exturl" data-url="aHR0cHM6Ly9jb21tdW5pdHkuZnJhbWUud29yay90L21haW5ib2FyZC1hcy1pbnRlcm5ldC1yb3V0ZXItd2lyZWxlc3MtYXAtbmFzLXByb2plY3QvMTgyNzIvNDM=">CF-953AX &amp; MT7921K<i class="fa fa-external-link-alt"></i></span></li>
 <li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21vcnJvd25yL1VTQi1XaUZpL2lzc3Vlcy8xMDMjaXNzdWVjb21tZW50LTEzMjA5NjAzOTQ=">CF-953AX &amp; WCN685x<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
+<p>아래서 AX210NGW, MT7922A22M, QCNFA765의 줄임말로 각각 AX210, MT7922, NFA765를 사용하겠습니다.</p>
 <h2 id="AX210">AX210<a class="header-anchor" href="#AX210"></a></h2>
 <p>AX210 구매 당시엔 단순히 인텔 무선랜카드에선 AP 모드를 지원 안 한다 정도로만 알고 있었는데,<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> 실상은 더 복잡했습니다.</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ iw phy phy0 info | grep -A8 &quot;Supported interface modes:&quot;</span><br><span class="line">	Supported interface modes:</span><br><span class="line">		 * IBSS</span><br><span class="line">		 * managed</span><br><span class="line">		 * AP</span><br><span class="line">		 * AP/VLAN</span><br><span class="line">		 * monitor</span><br><span class="line">		 * P2P-client</span><br><span class="line">		 * P2P-GO</span><br><span class="line">		 * P2P-device</span><br></pre></td></tr></table></figure>
@@ -885,12 +887,12 @@ factory 파티션은 보통 무선 칩셋이 사용하는 캘리브레이션 데
 <p>윈도우 11<sup class="footnote-ref"><a href="#fn7" id="fnref7">[7]</a></sup>에서도 6GHz 핫스팟은 안 되네요. 6GHz 대역 옵션 자체가 없습니다.</p>
 <p><img src="001-ax210-hotspot.png" alt="AX210 핫스팟"></p>
 <p>이에 대해 <span class="exturl" data-url="aHR0cHM6Ly9hbnN3ZXJzLm1pY3Jvc29mdC5jb20va28ta3Ivd2luZG93cy9mb3J1bS9hbGwvd2ktZmktNmUtNmdoei1ob3RzcG90LSVFQyVBNyU4MCVFQyU5QiU5MC81YTkzNmY2Zi1jOGY4LTQ3NzctOTA0ZS00NzQ2MTg0ZTQ3MGE=">마이크로소프트<i class="fa fa-external-link-alt"></i></span> 측에선 윈도우 문제는 아니라고 하고, <span class="exturl" data-url="aHR0cHM6Ly9jb21tdW5pdHkuaW50ZWwuY29tL3Q1L1dpcmVsZXNzL0ludGVsLUFYMjEwLWNhbi10LWNyZWF0ZS02R0h6LWhvdHNwb3QvbS1wLzEyMzg3NDUjTTMyNjcz">인텔<i class="fa fa-external-link-alt"></i></span> 측에선 규제 문제로 막아놨다고 합니다.</p>
-<h2 id="MT7922A">MT7922A<a class="header-anchor" href="#MT7922A"></a></h2>
-<p>MT7922A도 윈도우 11<sup class="footnote-ref"><a href="#fn8" id="fnref8">[8]</a></sup>에서 6GHz 핫스팟이 안 되네요. <span class="exturl" data-url="aHR0cHM6Ly9hbnN3ZXJzLm1pY3Jvc29mdC5jb20vZW4tdXMvd2luZG93cy9mb3J1bS9hbGwvcG9zc2libGUtdG8tZm9yY2UtNmUtaG90c3BvdC1pbi13aW5kb3dzLTExLzVhODA5ZmZjLWNhYzQtNDQxNC04YTUzLWQ2OTFhMzhkODE3NQ==">RZ608<i class="fa fa-external-link-alt"></i></span>에서 비슷한 보고가 있는 걸 보면 저만 안 되는 건 아닌가 봅니다.</p>
+<h2 id="MT7922">MT7922<a class="header-anchor" href="#MT7922"></a></h2>
+<p>MT7922도 윈도우 11<sup class="footnote-ref"><a href="#fn8" id="fnref8">[8]</a></sup>에서 6GHz 핫스팟이 안 되네요. <span class="exturl" data-url="aHR0cHM6Ly9hbnN3ZXJzLm1pY3Jvc29mdC5jb20vZW4tdXMvd2luZG93cy9mb3J1bS9hbGwvcG9zc2libGUtdG8tZm9yY2UtNmUtaG90c3BvdC1pbi13aW5kb3dzLTExLzVhODA5ZmZjLWNhYzQtNDQxNC04YTUzLWQ2OTFhMzhkODE3NQ==">RZ608<i class="fa fa-external-link-alt"></i></span>에서 비슷한 보고가 있는 걸 보면 저만 안 되는 건 아닌가 봅니다.</p>
 <p>대신 OpenWrt에서 시도해서 성공했습니다.</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">root@OpenWrt:/# iwinfo</span><br><span class="line">phy0-ap0  ESSID: &quot;wlan-6g&quot;</span><br><span class="line">          Access Point: XX:XX:XX:XX:XX:XX</span><br><span class="line">          Mode: Master  Channel: 85 (6.375 GHz)  HT Mode: HE160</span><br><span class="line">          Center Channel 1: 79 2: unknown</span><br><span class="line">          Tx-Power: 3 dBm  Link Quality: 62/70</span><br><span class="line">          Signal: -48 dBm  Noise: unknown</span><br><span class="line">          Bit Rate: 2401.9 MBit/s</span><br><span class="line">          Encryption: WPA3 SAE (CCMP)</span><br><span class="line">          Type: nl80211  HW Mode(s): 802.11ac/ax/b/g/n</span><br><span class="line">          Hardware: 14C3:0616 105B:E0CB [Generic MAC80211]</span><br><span class="line">          TX power offset: unknown</span><br><span class="line">          Frequency offset: unknown</span><br><span class="line">          Supports VAPs: no  PHY name: phy0</span><br></pre></td></tr></table></figure>
-<p>txpower가 3dBm으로 찍히는데 이건 왜인지 모르겠네요. 2.4GHz AP를 켜고 주위 AP와 RSSI를 비교해봤을 때 실제로 출력이 낮은 건 사실인 것 같습니다. 하드웨어 결함이거나 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvbXQ3Ni9pc3N1ZXMvNjg5">드라이버 탓<i class="fa fa-external-link-alt"></i></span>이거나 할 것 같은데, 작동에 문제는 없어서 일단 무시하고 넘어가겠습니다.</p>
-<p>6GHz AP를 켤 때 몇 가지 주의사항이 있습니다. 이것도 다른 사람들이 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21vcnJvd25yL1VTQi1XaUZpL2lzc3Vlcy84NyNpc3N1ZWNvbW1lbnQtMTMyMDk1MjA0NQ==">이미<i class="fa fa-external-link-alt"></i></span> <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21vcnJvd25yL1VTQi1XaUZpL2lzc3Vlcy8xMDMjaXNzdWVjb21tZW50LTEzMjA5NjAzOTQ=">다<i class="fa fa-external-link-alt"></i></span> <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2dlZXJsaW5nZ3V5L3Jhc3BiZXJyeS1waS1wY2llLWRldmljZXMvaXNzdWVzLzEyMCNpc3N1ZWNvbW1lbnQtMTMwOTc1Njg0MA==">알아낸<i class="fa fa-external-link-alt"></i></span> 건데 저는 혼자 삽질을 하루 밤낮 하고서야 깨달았네요…</p>
+<p>txpower가 3dBm으로 찍히는데 이건 왜인지 모르겠네요. 하드웨어 결함이거나 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvbXQ3Ni9pc3N1ZXMvNjg5">드라이버 탓<i class="fa fa-external-link-alt"></i></span>이거나 할 것 같은데, 작동에 문제는 없어서 일단 무시하고 넘어가겠습니다.</p>
+<p>6GHz AP를 켤 때 몇 가지 주의사항이 있습니다. 이것도 다른 사람들이 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21vcnJvd25yL1VTQi1XaUZpL2lzc3Vlcy84NyNpc3N1ZWNvbW1lbnQtMTMyMDk1MjA0NQ==">이미<i class="fa fa-external-link-alt"></i></span> <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21vcnJvd25yL1VTQi1XaUZpL2lzc3Vlcy8xMDMjaXNzdWVjb21tZW50LTEzMjA5NjAzOTQ=">다<i class="fa fa-external-link-alt"></i></span> <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2dlZXJsaW5nZ3V5L3Jhc3BiZXJyeS1waS1wY2llLWRldmljZXMvaXNzdWVzLzEyMCNpc3N1ZWNvbW1lbnQtMTMwOTc1Njg0MA==">알아낸<i class="fa fa-external-link-alt"></i></span> 건데 저는 혼자 삽질을 한참 하고서야 깨달았네요…</p>
 <ol>
 <li>당연하지만 (6GHz 사용이 허용된 국가로) country를 설정해줘야 합니다.<br>
 미설정시 6GHz 대역을 사용할 수 없습니다.</li>
@@ -900,9 +902,9 @@ AP에서 non-PSC를 주 채널로 삼으면 STA에서 AP를 찾지 못할 수 �
 <li>암호화 방식으로 OWE(Enhanced Open), SAE(WPA3-Personal), WPA3-Enterprise를 사용해야 합니다.<br>
 표준에서 6GHz에서 사용 가능한 암호화 방식에 제약을 걸어두었습니다.<sup class="footnote-ref"><a href="#fn10" id="fnref10">[10]</a></sup> WPA2-PSK나 암호화 미사용 등을 선택하면 hostapd에서 오류메시지를 띄우며 작동에 실패합니다.</li>
 <li>SSID를 숨기지 않는 게 좋습니다.<br>
-hidden 옵션을 켜면 STA에서 AP에 접속하지 못합니다. 아마 <span class="exturl" data-url="aHR0cHM6Ly9jb21tdW5pdHkuaW50ZWwuY29tL3Q1L1dpcmVsZXNzL0ludGVsLVItV2ktRmktNkUtQVgyMTAtMTYwTUh6LW5vdC1jb25uZWN0LXRvLXdpZmktNkUtNi1HSHovbS1wLzE0MTA2NTgvaGlnaGxpZ2h0L3RydWUjTTQyOTQ1">AX210의 no IR 플래그와 연관된 문제<i class="fa fa-external-link-alt"></i></span>인 것 같은데, 다른 무선랜카드에선 이런 문제가 없는지는 확인하지 못했습니다.</li>
+hidden 옵션을 켜면 STA에서 AP에 접속하지 못합니다. 아마 <span class="exturl" data-url="aHR0cHM6Ly9jb21tdW5pdHkuaW50ZWwuY29tL3Q1L1dpcmVsZXNzL0ludGVsLVItV2ktRmktNkUtQVgyMTAtMTYwTUh6LW5vdC1jb25uZWN0LXRvLXdpZmktNkUtNi1HSHovbS1wLzE0MTA2NTgvaGlnaGxpZ2h0L3RydWUjTTQyOTQ1">AX210의 no IR 플래그와 연관된 문제<i class="fa fa-external-link-alt"></i></span>인 것 같은데, <s>다른 무선랜카드에선 이런 문제가 없는지는 확인하지 못했습니다.</s> MT7922로는 hidden AP에도 접속됩니다.</li>
 </ol>
-<p>OpenWrt snapshot에서 MT7922A/AP AX210/STA 조합으로 6GHz 대역 네트워크를 세팅하는 과정은 다음과 같습니다.</p>
+<p>OpenWrt snapshot에서 MT7922/AP AX210/STA 조합으로 6GHz 대역 네트워크를 세팅하는 과정은 다음과 같습니다.</p>
 <ol>
 <li>
 <p>무선랜카드 드라이버와 펌웨어 설치</p>
@@ -911,7 +913,7 @@ hidden 옵션을 켜면 STA에서 AP에 접속하지 못합니다. 아마 <span 
 <p>AX210: <code>opkg install kmod-iwlwifi iwlwifi-firmware-ax210</code></p>
 </li>
 <li>
-<p>MT7922A: <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9wdWxsLzEwNTY0">펌웨어 패키지<i class="fa fa-external-link-alt"></i></span>가 생기기 전까진 따로 다운로드 해줘야 합니다.</p>
+<p>MT7922: <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9wdWxsLzEwNTY0">펌웨어 패키지<i class="fa fa-external-link-alt"></i></span>가 생기기 전까진 따로 다운로드 해줘야 합니다.</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">opkg install kmod-mt7921e</span><br><span class="line"><span class="built_in">cd</span> /lib/firmware/mediatek</span><br><span class="line">wget https://github.com/openwrt/mt76/raw/master/firmware/WIFI_MT7922_patch_mcu_1_1_hdr.bin</span><br><span class="line">wget https://github.com/openwrt/mt76/raw/master/firmware/WIFI_RAM_CODE_MT7922_1.bin</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
@@ -959,8 +961,8 @@ hidden 옵션을 켜면 STA에서 AP에 접속하지 못합니다. 아마 <span 
 <p>물론 안테나 간 거리와 각도를 최적화해서 얻은 결과이고, 실사용 세팅에선 이만큼 안 나옵니다.<br>
 160MHz 채널폭에서 생각보다 속도가 안 나오는 게 아쉽네요. 컴퓨터가 느린 걸까요.</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">root@OpenWrt:/# iw dev phy0-sta0 link</span><br><span class="line">Connected to xx:xx:xx:xx:xx:xx (on phy0-sta0)</span><br><span class="line">	SSID: wlan-6g</span><br><span class="line">	freq: 6375</span><br><span class="line">	RX: 2767077980 bytes (5019078 packets)</span><br><span class="line">	TX: 2176796464 bytes (205189 packets)</span><br><span class="line">	signal: -30 dBm</span><br><span class="line">	rx bitrate: 2401.9 MBit/s 160MHz HE-MCS 11 HE-NSS 2 HE-GI 0 HE-DCM 0</span><br><span class="line">	tx bitrate: 1200.9 MBit/s 80MHz HE-MCS 11 HE-NSS 2 HE-GI 0 HE-DCM 0</span><br><span class="line"></span><br><span class="line">	bss flags:	short-slot-time</span><br><span class="line">	dtim period:	2</span><br><span class="line">	beacon int:	100</span><br></pre></td></tr></table></figure>
-<p>160MHz 채널폭 세팅을 했는데도 실제론 MT7922A → AX210에서만 160MHz를 쓰고 AX210 → MT7922A에선 80MHz밖에 안 쓰는 것 같습니다. 이것도 왜인지 모르겠네요. 5GHz VHT160 세팅에선 속도가 기대한 대로 나오는 걸 봐선 HE160 지원 문제인 것 같기도 하고요.</p>
-<p>그 외에도 MT7922A에 자잘하게 아쉬운 점이 좀 있네요. 드라이버와 펌웨어 개발이 더 진척되면 나아지겠죠.</p>
+<p>160MHz 채널폭 세팅을 했는데도 실제론 MT7922 → AX210에서만 160MHz를 쓰고 AX210 → MT7922에선 80MHz밖에 안 쓰는 것 같습니다. 이것도 왜인지 모르겠네요. 5GHz VHT160 세팅에선 속도가 기대한 대로 나오는 걸 봐선 HE160 지원 문제인 것 같기도 하고요.</p>
+<p>그 외에도 MT7922에 자잘하게 아쉬운 점이 좀 있네요. 드라이버와 펌웨어 개발이 더 진척되면 나아지겠죠.</p>
 <h2 id="사족">사족<a class="header-anchor" href="#사족"></a></h2>
 <p>1️⃣ 아시다시피 이미 몇 년 전부터 <span class="exturl" data-url="aHR0cHM6Ly93d3cubXNpdC5nby5rci9iYnMvdmlldy5kbz9zQ29kZT11c2VyJm1JZD0xMTMmbVBpZD0xMTImYmJzU2VxTm89OTQmbnR0U2VxTm89MzE0MDcxNQ==">국내 법규<i class="fa fa-external-link-alt"></i></span>상 Wi-Fi 6GHz 대역이 허용되었습니다.<br>
 국내 전파규제는 2.4/5 GHz에서 최대 복사전력(EIRP)을 고정하는 방식을 택했고, 이 방식에선 대역폭(BW)이 넓어질수록 전력밀도(PSD)가 떨어집니다. (<code>EIRP = 10*log(BW) + PSD + G</code>인데 여기서 안테나 이득 G는 잠시 무시하겠습니다.)</p>
@@ -1035,7 +1037,7 @@ hidden 옵션을 켜면 STA에서 AP에 접속하지 못합니다. 아마 <span 
 <li>실내외: 5925-6425 MHz 대역에서 최대 14dBm EIRP</li>
 </ul>
 <p>전자가 LPI, 후자가 VLP에 해당합니다. <span class="exturl" data-url="aHR0cHM6Ly93d3cubXNpdC5nby5rci9iYnMvdmlldy5kbz9zQ29kZT11c2VyJm1JZD0xMTMmbVBpZD0xMTImYmJzU2VxTm89OTQmbnR0U2VxTm89MzE0MDcxNQ==">정부 발표<i class="fa fa-external-link-alt"></i></span>에서도 후자는 테더링 용도로 쓸 수 있다고 밝혔으니 이게 바로 일반적인 핫스팟용인가 봅니다.</p>
-<p>제 경우 노트북을 핫스팟으로 만들었기 때문에 본문에서 14dBm 출력제한을 걸었습니다. 어차피 MT7922A가 한참 낮은 출력수준에서 골골거리고 있어서 별 의미는 없습니다만…</p>
+<p>제 경우 노트북을 핫스팟으로 만들었기 때문에 본문에서 14dBm 출력제한을 걸었습니다.</p>
 <p>3️⃣ 안테나는 뭘 써야 할까요? 6GHz 대역을 쓰려면 6GHz 지원 안테나가 따로 필요할까요?<br>
 고급 AP야 알아서 잘 나오겠지만, 알리에서 무선랜카드를 구매하면 6GHz 지원 안테나는 구매옵션에도 없단 말이에요. 기존 노트북 안테나 그대로 쓰면 성능이 떨어지거나 무선랜카드에 부담이 가진 않을까요?<br>
 <span class="exturl" data-url="aHR0cHM6Ly93d3cucmVkZGl0LmNvbS9yL0hvbWVOZXR3b3JraW5nL2NvbW1lbnRzL3E3cXgxei9kb2VzX3dpZmlfNmVzXzZnaHpfYmFuZF9yZXF1aXJlX25ld19hbnRlbm5hcy8=">이런 질문<i class="fa fa-external-link-alt"></i></span>이 올라오면 답변끼리 갑론을박이 벌어지는 모양입니다. 1) 6GHz에 맞게 튜닝된 안테나를 쓰는 게 좋다. 2) 기존의 2.4/5 GHz 듀얼밴드 안테나 써도 딱히 문제 없다.</p>
@@ -1043,17 +1045,32 @@ hidden 옵션을 켜면 STA에서 AP에 접속하지 못합니다. 아마 <span 
 <p>1)과 2)를 적당히 절충해보자면, 기존 안테나로 6GHz 신호 쏜다고 무선랜카드가 죽진 않겠지만 아무래도 최고의 성능을 이끌어내려면 안테나도 좋은 걸 써야 한다, 는 뻔한 얘기가 나오는데, 이런 절충식 결론에 납득하고 싶진 않으니 누가 실제로 비교 측정을 하든가 놀라운 업계 지식으로 썰을 풀든가 해서 저 같은 찜찜이를 납득시켜주면 좋겠네요.</p>
 <p>본문의 측정 결과는 전부 기존 듀얼밴드 안테나 달고 얻은 결과입니다.</p>
 <p>4️⃣ regdb를 일종의 키-값 데이터베이스로 본다면 키에 해당하는 것은 국가 코드이고, 값에 해당하는 것은 주파수 및 출력 제한이겠지요.<br>
-전파규제를 자체적으로 관리하는 무선랜카드 중에 &quot;키&quot;만 제공하는 경우가 있고,<sup class="footnote-ref"><a href="#fn12" id="fnref12">[12]</a></sup> &quot;키&quot;와 &quot;값&quot;을 모두 제공하는 경우가 있습니다. 전자의 예시로는 <span class="exturl" data-url="aHR0cHM6Ly93aXJlbGVzcy53aWtpLmtlcm5lbC5vcmcvZW4vdXNlcnMvRHJpdmVycy9hdGgjcmVndWxhdG9yeQ==">아데로스 카드<i class="fa fa-external-link-alt"></i></span>가 있고, 후자의 예시는 위에서 설명한 인텔 카드입니다. 확인을 더 해봐야겠지만 MT7922A도 전자에 속하는 것 같네요.<br>
+전파규제를 자체적으로 관리하는 무선랜카드 중에 &quot;키&quot;만 제공하는 경우가 있고,<sup class="footnote-ref"><a href="#fn12" id="fnref12">[12]</a></sup> &quot;키&quot;와 &quot;값&quot;을 모두 제공하는 경우가 있습니다. 전자의 예시로는 <span class="exturl" data-url="aHR0cHM6Ly93aXJlbGVzcy53aWtpLmtlcm5lbC5vcmcvZW4vdXNlcnMvRHJpdmVycy9hdGgjcmVndWxhdG9yeQ==">아데로스 카드<i class="fa fa-external-link-alt"></i></span>가 있고, 후자의 예시는 위에서 설명한 인텔 카드입니다.<br>
 전자의 경우는 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iLzIyMWZiZmEyZDg1NGNjYjZjZDAwM2MwNjVlYzMwOGZiYzA2NTFiMTEvcGFja2FnZS9rZXJuZWwvbWFjODAyMTEvYXRoLm1rI0w3OA==">우회할 방법<i class="fa fa-external-link-alt"></i></span>이 없지 않은데, 후자의 경우는…펌웨어에 손댈 거 아니면 어렵겠죠.</p>
 <p>근데 알아보니 ath11k에도 <span class="exturl" data-url="aHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0L2NvbW1pdC8/aWQ9MDE0MTdlNTc5MzlmYWZmZWJmZGViMmFlZjFmNDM4OGU5NWNmOTI3MQ==">자체 regdb<i class="fa fa-external-link-alt"></i></span>가 도입됐나 본데요. 헉 너도 이러기야?</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">output of &quot;iw reg get&quot;</span><br><span class="line">global</span><br><span class="line">country US: DFS-FCC</span><br><span class="line">	(2402 - 2472 @ 40), (N/A, 30), (N/A)</span><br><span class="line">	(5170 - 5250 @ 80), (N/A, 23), (N/A), AUTO-BW</span><br><span class="line">	(5250 - 5330 @ 80), (N/A, 23), (0 ms), DFS, AUTO-BW</span><br><span class="line">	(5490 - 5730 @ 160), (N/A, 23), (0 ms), DFS</span><br><span class="line">	(5735 - 5835 @ 80), (N/A, 30), (N/A)</span><br><span class="line">	(57240 - 63720 @ 2160), (N/A, 40), (N/A)</span><br><span class="line"></span><br><span class="line">phy#0 (self-managed)</span><br><span class="line">country US: DFS-FCC</span><br><span class="line">	(2402 - 2472 @ 40), (6, 30), (N/A)</span><br><span class="line">	(5170 - 5250 @ 80), (N/A, 24), (N/A), AUTO-BW</span><br><span class="line">	(5250 - 5330 @ 80), (N/A, 24), (0 ms), DFS, AUTO-BW</span><br><span class="line">	(5490 - 5730 @ 160), (N/A, 24), (0 ms), DFS, AUTO-BW</span><br><span class="line">	(5735 - 5895 @ 160), (N/A, 30), (N/A), AUTO-BW</span><br><span class="line">	(5945 - 7125 @ 160), (N/A, 24), (N/A), NO-OUTDOOR, AUTO-BW</span><br></pre></td></tr></table></figure>
-<p><s>근데 여기엔 PASSIVE-SCAN 플래그가 없는 걸 봐선 AP 모드로 쓸 수 있을지도요? 누가 QCNFA765로 테스트 해주시길…</s> KR에선 아직 안 된다고 <span class="exturl" data-url="aHR0cHM6Ly93d3cucHVzbm93LmNvbS9ub3RlL3FjbmZhNzY1LXdpZmktNi1hcC8=">합니다<i class="fa fa-external-link-alt"></i></span>.</p>
+<p>근데 여기엔 PASSIVE-SCAN 플래그가 없는 걸 봐선 AP 모드로 쓸 수 있을지도요? <s>누가 NFA765로 테스트 해주시길…</s> <s>KR에선 안 된다고 <span class="exturl" data-url="aHR0cHM6Ly93d3cucHVzbm93LmNvbS9ub3RlL3FjbmZhNzY1LXdpZmktNi1hcC8=">합니다<i class="fa fa-external-link-alt"></i></span>.</s> 직접 테스트해보니 <a href="#NFA765">되네요</a>.</p>
+<h2 id="NFA765">NFA765<a class="header-anchor" href="#NFA765"></a></h2>
+<p>이건 원래 계획에 없었는데 다른 목적으로 필요해져서 뒤늦게 구매했습니다.</p>
+<p>윈도우 11<sup class="footnote-ref"><a href="#fn13" id="fnref13">[13]</a></sup>은 여전히 6GHz 핫스팟을 지원하지 않습니다. 게다가 아무리 기다려도 AP 스캔 목록에 6GHz AP가 아예 안 뜨네요. 저만 그런 게 아니라면 아무래도 드라이버에서 6GHz 대역을 못 쓰게 막아둔 것 같은데… 레지스트리를 수정하면 된다는 <span class="exturl" data-url="aHR0cHM6Ly93d3cuc25iZm9ydW1zLmNvbS90aHJlYWRzL2FueS0yMjMwLW0tMi13aWZpLWNhcmQtdGhhdC1hY3R1YWxseS1oYXMtdXNhYmxlLTYtZ2h6Ljg0MDAxLyNwb3N0LTgyODMwNw==">얘기<i class="fa fa-external-link-alt"></i></span>도 있던데 저는 못 켜겠네요. 어차피 윈도우는 크게 관심이 없으니 이쯤에서 포기할랍니다.</p>
+<p>OpenWrt snapshot에서는 잘 작동합니다. <code>opkg install kmod-ath11k-pci ath11k-firmware-wcn6855</code>로 커널 모듈과 펌웨어를 설치하면 됩니다.<br>
+참고로 OpenWrt는 ath 드라이버 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW53cnQvb3BlbndydC9ibG9iLzg2MzQ0NGY5Y2IzOTA4ODgwZWFhYTE1YTk5ODA4ZjdmODAyODgxYjQvcGFja2FnZS9rZXJuZWwvbWFjODAyMTEvYXRoLm1rI0w4NS1MOTU=">설정 및 패치<i class="fa fa-external-link-alt"></i></span>가 잘 되어있어 사용자가 regdomain을 제어하기 한결 수월합니다.</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">root@OpenWrt:/# iw reg get</span><br><span class="line">global</span><br><span class="line">country KR: DFS-JP</span><br><span class="line">	(2400 - 2483 @ 40), (N/A, 23), (N/A)</span><br><span class="line">	(5150 - 5230 @ 40), (N/A, 23), (N/A), AUTO-BW</span><br><span class="line">	(5230 - 5250 @ 20), (N/A, 17), (N/A), AUTO-BW</span><br><span class="line">	(5250 - 5350 @ 80), (N/A, 20), (0 ms), DFS, AUTO-BW</span><br><span class="line">	(5470 - 5725 @ 160), (N/A, 20), (0 ms), DFS</span><br><span class="line">	(5725 - 5850 @ 80), (N/A, 23), (N/A)</span><br><span class="line">	(5925 - 7125 @ 160), (N/A, 15), (N/A), NO-OUTDOOR</span><br><span class="line">	(57000 - 66000 @ 2160), (N/A, 43), (N/A)</span><br><span class="line"></span><br><span class="line">phy#0 (self-managed)</span><br><span class="line">country KR: DFS-ETSI</span><br><span class="line">	(2402 - 2482 @ 40), (N/A, 23), (N/A)</span><br><span class="line">	(5170 - 5250 @ 80), (6, 23), (N/A), AUTO-BW</span><br><span class="line">	(5250 - 5330 @ 80), (6, 23), (0 ms), DFS, AUTO-BW</span><br><span class="line">	(5490 - 5730 @ 160), (6, 23), (0 ms), DFS, AUTO-BW</span><br><span class="line">	(5735 - 5835 @ 80), (6, 23), (N/A), AUTO-BW</span><br><span class="line">	(5945 - 7125 @ 160), (N/A, 20), (N/A), NO-OUTDOOR, AUTO-BW</span><br></pre></td></tr></table></figure>
+<p>속도도 MT7922에 비해 더 잘 뽑히네요. STA가 AX210일 때 HE160에서 UL 속도가 1.74 Gbps까지 나오는 것을 확인했습니다. 근데 DL 속도는 그만큼 안 나오더라고요. AP로 쓰려면 DL 속도가 더 중요할텐데 흠…</p>
+<p>그리고 세팅에 따라 송신전력이 널뛰기를 많이 하네요.</p>
+<ul>
+<li>2.4GHz: 5dBm(AP), 18dBm(STA)</li>
+<li>5GHz: 18dBm(~80MHz), 17dBm(160MHz)</li>
+<li>6GHz: {3,6,9,11}dBm(각각 {20,40,80,160}MHz)</li>
+</ul>
+<p>이에 비해 AX210은 거의 모든 세팅에서 22dBm으로 일정합니다. MT7922도 항상 3dBm 고정이긴 하지만 버그일 것 같으니 무시하고요.</p>
+<p>그래서 MT7922와 NFA765 둘 중에 어느 게 6GHz AP로 쓰기에 더 나을까요? HE160을 쓸 거라면 NFA765가 낫긴 하겠습니다만… 실사용 환경을 구축해보지 않아서 확신은 못 하겠네요. STA로 쓰기엔 AX210이 가장 안정적인 것 같습니다.</p>
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
 <li id="fn1" class="footnote-item"><p>다나와 기준으로 Archer AXE75가 20만원쯤 하네요. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn2" class="footnote-item"><p>다나와 기준으로 AX210이 2만원쯤 하네요. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+<li id="fn2" class="footnote-item"><p>다나와 기준으로 AX210NGW가 2만원쯤 하네요. <a href="#fnref2" class="footnote-backref">↩︎</a></p>
 </li>
 <li id="fn3" class="footnote-item"><p>RZ616은 아니고 비슷하게 생긴 카드인데 별 차이 없겠죠… <a href="#fnref3" class="footnote-backref">↩︎</a></p>
 </li>
@@ -1063,9 +1080,9 @@ hidden 옵션을 켜면 STA에서 AP에 접속하지 못합니다. 아마 <span 
 </li>
 <li id="fn6" class="footnote-item"><p>참고로 <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9hZHJpYW5ncmFuYWRvcy9zdGF0dXMvMTUyOTU3NzU1ODQ5MjIwMDk2MA==">모니터 모드<i class="fa fa-external-link-alt"></i></span>로는 사용 가능합니다. <a href="#fnref6" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn7" class="footnote-item"><p>AX210 드라이버 버전 22.190.0.4 <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+<li id="fn7" class="footnote-item"><p>인텔 무선랜 드라이버 버전 22.190.0.4 <a href="#fnref7" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn8" class="footnote-item"><p>MT7922 드라이버 버전 <span class="exturl" data-url="aHR0cHM6Ly93d3cuY2F0YWxvZy51cGRhdGUubWljcm9zb2Z0LmNvbS9TZWFyY2guYXNweD9xPU1UNzkyMg==">3.3.0.685<i class="fa fa-external-link-alt"></i></span> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+<li id="fn8" class="footnote-item"><p>미디어텍 무선랜 드라이버 버전 <span class="exturl" data-url="aHR0cHM6Ly93d3cuY2F0YWxvZy51cGRhdGUubWljcm9zb2Z0LmNvbS9TZWFyY2guYXNweD9xPU1UNzkyMg==">3.3.0.685<i class="fa fa-external-link-alt"></i></span> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
 </li>
 <li id="fn9" class="footnote-item"><p>802.11ax-2021 26.17.2.3.2 AP behavior for fast passive scanning <a href="#fnref9" class="footnote-backref">↩︎</a></p>
 </li>
@@ -1074,6 +1091,8 @@ hidden 옵션을 켜면 STA에서 AP에 접속하지 못합니다. 아마 <span 
 <li id="fn11" class="footnote-item"><p>국내 규정에서 &quot;전원에 연결되어 설치 운용&quot;이라고만 짧게 단서를 달고 넘어간 것과 비교가 되는 지점입니다. <a href="#fnref11" class="footnote-backref">↩︎</a></p>
 </li>
 <li id="fn12" class="footnote-item"><p>이때 &quot;값&quot;은 wireless-regdb가 제공합니다. <a href="#fnref12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p>퀄컴 무선랜 드라이버 버전 <span class="exturl" data-url="aHR0cHM6Ly9jYXRhbG9nLnVwZGF0ZS5taWNyb3NvZnQuY29tL1NlYXJjaC5hc3B4P3E9V0NONjg1eA==">2.0.0.1016<i class="fa fa-external-link-alt"></i></span> <a href="#fnref13" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
